@@ -1,1430 +1,1647 @@
-import React, { useState, useEffect, useRef, createContext, useContext } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { 
-  Menu, X, ArrowRight, MapPin, Phone, Mail, ArrowUpRight, Instagram, Linkedin, Plus, Minus, Play
+  ArrowRight, 
+  Terminal, 
+  Activity, 
+  Layers, 
+  Cpu, 
+  Zap, 
+  CheckCircle2, 
+  ShieldAlert, 
+  Workflow, 
+  ChevronRight,
+  Command,
+  Database,
+  Network,
+  Globe2
 } from 'lucide-react';
 
-// --- CONTEXT FOR CUSTOM CURSOR ---
-const CursorContext = createContext();
+// --- SEO, GEO, & AIO: STRUCTURED DATA ---
+const StructuredData = () => {
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.text = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "ProfessionalService",
+      "name": "AI Systems Architect",
+      "description": "I turn messy, manual businesses into AI-powered operating systems in 10-51 days. I build how your business runs.",
+      "url": window.location.href,
+      "areaServed": [
+        { "@type": "Country", "name": "India" },
+        { "@type": "Country", "name": "United States" },
+        { "@type": "Country", "name": "United Arab Emirates" },
+        { "@type": "Country", "name": "Saudi Arabia" }
+      ],
+      "knowsAbout": [
+        "AI Operating Systems",
+        "Workflow Automation",
+        "AI ERP for SMEs",
+        "Business Systems Architecture",
+        "Operations Management"
+      ],
+      "slogan": "Your business is not broken. Your system is."
+    });
+    document.head.appendChild(script);
+    return () => document.head.removeChild(script);
+  }, []);
+  return null;
+};
 
-// --- CUSTOM CSS (Injected) ---
-const ultraModernStyles = `
-  @import url('https://fonts.googleapis.com/css2?family=Urbanist:wght@100;200;300;400;500;600;700;800;900&display=swap');
+// --- UTILITY COMPONENTS & HOOKS ---
 
-  :root {
-    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-    --ease-in-out-quint: cubic-bezier(0.83, 0, 0.17, 1);
-  }
-  
-  html, body {
-    cursor: none; /* Hide default cursor for desktop */
-    scroll-behavior: smooth;
-    font-family: 'Urbanist', sans-serif;
-  }
-
-  /* Clip Path Unveil Animation */
-  .clip-hidden {
-    clip-path: polygon(0 100%, 100% 100%, 100% 100%, 0 100%);
-  }
-  .clip-visible {
-    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
-  }
-  .clip-transition {
-    transition: clip-path 1.5s var(--ease-in-out-quint);
-  }
-
-  /* Hide scrollbar for clean look */
-  ::-webkit-scrollbar { width: 8px; }
-  ::-webkit-scrollbar-track { background: #fafafa; }
-  ::-webkit-scrollbar-thumb { background: #e4e4e7; }
-  ::-webkit-scrollbar-thumb:hover { background: #d4d4d8; }
-
-  @media (max-width: 768px) {
-    html, body { cursor: auto; }
-    #custom-cursor { display: none !important; }
-  }
-
-  /* Hollow Text Effect */
-  .text-hollow {
-    color: transparent;
-    -webkit-text-stroke: 1px #09090b; /* zinc-950 */
-  }
-  .text-hollow-white {
-    color: transparent;
-    -webkit-text-stroke: 1px #ffffff;
-  }
-  @media (min-width: 768px) {
-    .text-hollow { -webkit-text-stroke: 2px #09090b; }
-    .text-hollow-white { -webkit-text-stroke: 2px #ffffff; }
-  }
-
-  /* Seamless Marquee Animation */
-  @keyframes marquee {
-    0% { transform: translateX(0%); }
-    100% { transform: translateX(-50%); }
-  }
-  .animate-marquee {
-    display: flex;
-    width: max-content;
-    animation: marquee 30s linear infinite;
-  }
-`;
-
-// --- INTERACTIVE COMPONENTS ---
-
-const CustomCursor = () => {
-  const { isHovering } = useContext(CursorContext);
-  const [position, setPosition] = useState({ x: -100, y: -100 });
-  const [isClicking, setIsClicking] = useState(false);
+const FadeIn = ({ children, delay = 0, direction = 'up', className = "", duration = 1000 }) => {
+  const [isVisible, setIsVisible] = useState(false);
+  const ref = useRef(null);
 
   useEffect(() => {
-    const updatePosition = (e) => setPosition({ x: e.clientX, y: e.clientY });
-    const handleMouseDown = () => setIsClicking(true);
-    const handleMouseUp = () => setIsClicking(false);
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.unobserve(entry.target);
+        }
+      },
+      { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
+    );
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, []);
 
-    window.addEventListener('mousemove', updatePosition);
-    window.addEventListener('mousedown', handleMouseDown);
-    window.addEventListener('mouseup', handleMouseUp);
+  const getTransform = () => {
+    if (isVisible) return 'translate-y-0 translate-x-0 scale-100';
+    switch (direction) {
+      case 'up': return 'translate-y-8 scale-95';
+      case 'down': return '-translate-y-8 scale-95';
+      case 'left': return 'translate-x-8 scale-95';
+      case 'right': return '-translate-x-8 scale-95';
+      default: return 'translate-y-8 scale-95';
+    }
+  };
 
+  return (
+    <div
+      ref={ref}
+      className={`transition-all ease-[cubic-bezier(0.16,1,0.3,1)] ${
+        isVisible ? 'opacity-100 blur-0' : 'opacity-0 blur-[8px]'
+      } ${getTransform()} ${className}`}
+      style={{ transitionDuration: `${duration}ms`, transitionDelay: `${delay}ms` }}
+    >
+      {children}
+    </div>
+  );
+};
+
+const RevealLine = ({ delay = 0, orientation = 'horizontal', className = "" }) => {
+  const [isVisible, setIsVisible] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.unobserve(entry.target);
+        }
+      },
+      { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
+    );
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, []);
+
+  const baseStyle = orientation === 'horizontal' 
+    ? "h-[1px] w-full origin-left bg-white/[0.04]" 
+    : "w-[1px] h-full origin-top bg-white/[0.04]";
+    
+  const transform = orientation === 'horizontal'
+    ? (isVisible ? 'scale-x-100' : 'scale-x-0')
+    : (isVisible ? 'scale-y-100' : 'scale-y-0');
+
+  return (
+    <div
+      ref={ref}
+      className={`transition-transform duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] ${baseStyle} ${transform} ${className}`}
+      style={{ transitionDelay: `${delay}ms` }}
+    />
+  );
+};
+
+const ScrollRevealText = ({ children, className = "", baseColor = "#333333", revealColor = "#ffffff", as: Component = "span" }) => {
+  const ref = useRef(null);
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!ref.current) return;
+      const rect = ref.current.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+      
+      const start = windowHeight * 0.9; 
+      const end = windowHeight * 0.4;   
+      
+      let p = (start - rect.top) / (start - end);
+      p = Math.max(0, Math.min(1, p));
+      setProgress(p);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    window.addEventListener('resize', handleScroll);
+    
     return () => {
-      window.removeEventListener('mousemove', updatePosition);
-      window.removeEventListener('mousedown', handleMouseDown);
-      window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
     };
   }, []);
 
-  return (
-    <div 
-      id="custom-cursor"
-      className="fixed top-0 left-0 w-8 h-8 pointer-events-none z-[100] mix-blend-difference flex items-center justify-center transition-transform duration-300 ease-out"
-      style={{ transform: `translate(${position.x - 16}px, ${position.y - 16}px)` }}
-    >
-      <div 
-        className={`bg-white rounded-full transition-all duration-300 ${
-          isHovering ? 'w-16 h-16 opacity-100' : (isClicking ? 'w-2 h-2 opacity-50' : 'w-4 h-4 opacity-100')
-        }`}
-      />
-    </div>
-  );
-};
+  const percentage = progress * 100;
 
-const Interactive = ({ children, className = '', onClick }) => {
-  const { setIsHovering } = useContext(CursorContext);
   return (
-    <div 
+    <Component 
+      ref={ref} 
       className={className}
-      onMouseEnter={() => setIsHovering(true)}
-      onMouseLeave={() => setIsHovering(false)}
-      onClick={onClick}
+      style={{
+        backgroundImage: `linear-gradient(to bottom, ${revealColor} ${percentage - 20}%, ${revealColor} ${percentage}%, ${baseColor} ${percentage + 20}%)`,
+        WebkitBackgroundClip: 'text',
+        WebkitTextFillColor: 'transparent',
+        backgroundClip: 'text',
+        color: 'transparent',
+        display: Component === 'span' ? 'inline' : 'block'
+      }}
     >
       {children}
-    </div>
+    </Component>
   );
 };
 
-const useOnScreen = (options) => {
-  const ref = useRef();
-  const [isVisible, setIsVisible] = useState(false);
+const DecodeText = ({ text, className = "" }) => {
+  const [display, setDisplay] = useState(text);
+  const intervalRef = useRef(null);
+  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*";
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        setIsVisible(true);
-        if (ref.current) observer.unobserve(ref.current);
-      }
-    }, { threshold: 0.1, ...options });
-
-    const currentRef = ref.current;
-    if (currentRef) observer.observe(currentRef);
-    return () => { if (currentRef) observer.unobserve(currentRef); };
-  }, [options]);
-
-  return [ref, isVisible];
-};
-
-const UnveilImage = ({ src, alt, className = '' }) => {
-  const [ref, isVisible] = useOnScreen({ threshold: 0.2 });
-  return (
-    <div ref={ref} className={`overflow-hidden relative ${className}`}>
-      <img 
-        src={src} 
-        alt={alt} 
-        className={`w-full h-full object-cover clip-transition ${isVisible ? 'clip-visible scale-100' : 'clip-hidden scale-110'} transition-transform duration-[2s] ease-out`}
-      />
-    </div>
-  );
-};
-
-const UnveilVideo = ({ src, className = '' }) => {
-  const [ref, isVisible] = useOnScreen({ threshold: 0.2 });
-  return (
-    <div ref={ref} className={`overflow-hidden relative ${className}`}>
-      <video 
-        autoPlay 
-        loop 
-        muted 
-        playsInline 
-        src={src}
-        className={`w-full h-full object-cover clip-transition ${isVisible ? 'clip-visible scale-100' : 'clip-hidden scale-110'} transition-transform duration-[2s] ease-out`}
-      />
-    </div>
-  );
-};
-
-const HeroImageReveal = ({ src, alt, className = '' }) => {
-  const [isLoaded, setIsLoaded] = useState(false);
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoaded(true), 100);
-    return () => clearTimeout(timer);
-  }, []);
-  return (
-    <div className={`overflow-hidden relative ${className}`}>
-      <img 
-        src={src} 
-        alt={alt} 
-        className={`w-full h-full object-cover clip-transition ${isLoaded ? 'clip-visible scale-100' : 'clip-hidden scale-110'} transition-transform duration-[2s] ease-out`}
-      />
-    </div>
-  );
-};
-
-const RevealText = ({ text, className = '', delay = 0 }) => {
-  const [ref, isVisible] = useOnScreen();
-  return (
-    <div ref={ref} className={`overflow-hidden ${className}`}>
-      <div 
-        className={`transition-transform duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-[100%] opacity-0'}`}
-        style={{ transitionDelay: `${delay}ms` }}
-      >
-        {text}
-      </div>
-    </div>
-  );
-};
-
-const Accordion = ({ question, answer, isOpen, onClick }) => {
-  return (
-    <div className="border-b border-zinc-200">
-      <Interactive>
-        <button 
-          onClick={onClick} 
-          className="w-full py-8 flex justify-between items-center text-left focus:outline-none"
-        >
-          <span className="text-xl md:text-3xl font-light text-zinc-950">{question}</span>
-          <span className="ml-4 flex-shrink-0 text-zinc-400">
-            {isOpen ? <Minus className="w-6 h-6" /> : <Plus className="w-6 h-6" />}
-          </span>
-        </button>
-      </Interactive>
-      <div 
-        className={`overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${isOpen ? 'max-h-96 pb-8 opacity-100' : 'max-h-0 opacity-0'}`}
-      >
-        <p className="text-lg md:text-xl font-light text-zinc-500 max-w-3xl leading-relaxed">{answer}</p>
-      </div>
-    </div>
-  );
-};
-
-// --- LAYOUT WRAPPER ---
-const Section = ({ children, className = '', innerClassName = '', noVerticalPadding = false }) => (
-  <section className={`${noVerticalPadding ? '' : 'py-32 md:py-40'} px-[3%] ${className}`}>
-    <div className={`max-w-[1600px] mx-auto w-full ${innerClassName}`}>
-      {children}
-    </div>
-  </section>
-);
-
-
-// --- DUMMY CMS DATA ---
-const projectsData = [
-  { id: 1, title: 'Hobsonville Col.', location: 'Auckland', status: 'Completed', image: 'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80' },
-  { id: 2, title: 'Epsom Arch.', location: 'Auckland', status: 'Completed', image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80' },
-  { id: 3, title: 'Peninsula Terraces', location: 'Te Atatu', status: 'Selling Now', image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80' }
-];
-
-const servicesData = [
-  { 
-    title: 'Development', 
-    desc: 'From identifying great locations to thoughtfully planned residential communities. Full lifecycle management.', 
-    image: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
-    features: ['Site Acquisition', 'Feasibility Studies', 'Resource Consents', 'Community Planning']
-  },
-  { 
-    title: 'Construction', 
-    desc: 'Reliable, high-quality construction with absolute attention to detail, timelines, and cost control.', 
-    image: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
-    features: ['Fixed-Price Contracts', 'Rigorous Quality Assurance', 'Timely Execution', 'Health & Safety Compliance']
-  },
-  { 
-    title: 'Custom Homes', 
-    desc: 'Standalone homes tailored to modern lifestyles, combining smart architectural design with long-term value.', 
-    image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
-    features: ['Bespoke Architectural Design', 'Premium Material Sourcing', 'Interior Design Consulting', 'Turnkey Solutions']
-  },
-  { 
-    title: 'Project Management', 
-    desc: 'From planning to subdivision, compliance, and completion, we handle every stage of the journey.', 
-    image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
-    features: ['Timeline Management', 'Budget Control', 'Contractor Coordination', 'Final Certification']
-  }
-];
-
-const valuesData = [
-  { num: '01', title: 'Architectural Integrity', desc: 'We never compromise on design. Every home is built with a focus on spatial flow, natural light, and premium materials.' },
-  { num: '02', title: 'Transparent Process', desc: 'From day one, our clients have full visibility into costs, timelines, and construction progress. No surprises.' },
-  { num: '03', title: 'Enduring Quality', desc: 'We build homes that last generations. Our rigorous quality assurance guarantees excellence at every phase.' }
-];
-
-const processData = [
-  { step: '01', title: 'Discovery', desc: 'We begin with a deep dive into your vision, site potential, and feasibility. We establish clear parameters for success.' },
-  { step: '02', title: 'Architecture', desc: 'Our design team translates your brief into conceptual frameworks, managing all local council compliance and resource consents.' },
-  { step: '03', title: 'Construction', desc: 'Execution with precision. Our experienced project managers and builders bring the architectural plans to life.' },
-  { step: '04', title: 'Handover', desc: 'Rigorous quality assurance, final certifications, and the moment we hand over the keys to your completed property.' }
-];
-
-const faqData = [
-  { q: "Do you handle both design and construction?", a: "Yes. Pillar Properties operates as an end-to-end partner. We manage the entire lifecycle from initial architectural concepts and council consents through to the final build and interior finishing." },
-  { q: "What areas of Auckland do you service?", a: "We primarily operate across the greater Auckland region, with a strong focus on the central suburbs, North Shore, and emerging developments in the West and South." },
-  { q: "Do you work with investors for multi-unit developments?", a: "Absolutely. A large portion of our portfolio consists of high-yield townhouse and terraced home developments tailored for property investors and syndicates." },
-  { q: "How do you ensure projects stay on budget?", a: "We provide fixed-price contracts and highly detailed initial scoping. Our transparent procurement process and tight project management eliminate unexpected variations." }
-];
-
-const teamData = [
-  { name: 'James Carter', role: 'Managing Director', image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' },
-  { name: 'Elena Rostova', role: 'Head of Architecture', image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' },
-  { name: 'Marcus Chen', role: 'Lead Developer', image: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' }
-];
-
-const milestonesData = [
-  { year: '2019', title: 'The Foundation', desc: 'Pillar Properties was established with a vision to redefine Auckland residential architecture.' },
-  { year: '2021', title: 'First Major Project', desc: 'Completed the landmark Epsom Architectural series, setting a new benchmark for luxury.' },
-  { year: '2023', title: 'Expansion & Growth', desc: 'Scaled operations to manage over 15 active sites simultaneously across the greater Auckland region.' },
-  { year: '2026', title: 'Sustainable Future', desc: 'Committed to 100% passive heating integration and carbon-neutral construction practices.' }
-];
-
-const awardsData = [
-  { year: '2024', title: 'NZIA Local Architecture Award', category: 'Housing - Multi Unit' },
-  { year: '2025', title: 'Master Builders House of the Year', category: 'Gold Award' },
-  { year: '2026', title: 'Sustainable Design Excellence', category: 'Innovation in Building' }
-];
-
-const insightsData = [
-  { category: 'Architecture', date: 'March 2026', title: 'The Rise of Minimalist Concrete in Auckland Homes' },
-  { category: 'Market Update', date: 'February 2026', title: 'Navigating Resource Consents for Multi-Unit Builds' },
-  { category: 'Sustainability', date: 'January 2026', title: 'Integrating Passive Heating into Luxury Designs' }
-];
-
-const futureProjectsData = [
-  { title: 'The Parnell Ascend', location: 'Parnell, Auckland', expected: 'Q3 2026' },
-  { title: 'Orakei Basin Villas', location: 'Orakei, Auckland', expected: 'Q4 2026' },
-  { title: 'Grey Lynn Urban', location: 'Grey Lynn, Auckland', expected: 'Q1 2027' }
-];
-
-const signatureDetails = [
-  { title: "Bespoke Joinery", desc: "Custom cabinetry and shelving designed to blend seamlessly into the architectural form, eliminating visual clutter.", image: "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" },
-  { title: "Polished Concrete", desc: "Thermal mass heating meets industrial elegance with our signature poured and ground floors.", image: "https://images.unsplash.com/photo-1600607686527-6fb886090705?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" },
-  { title: "Spatial Harmony", desc: "Double-height voids and floor-to-ceiling glazing engineered to capture and maximize natural Auckland light.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" }
-];
-
-const galleryData = [
-  "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-  "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-  "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-  "https://images.unsplash.com/photo-1613490908677-62a26500ac13?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-  "https://images.unsplash.com/photo-1503387762-592deb58ef4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-  "https://images.unsplash.com/photo-1541888086925-0c13bb4229f7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-  "https://images.unsplash.com/photo-1518780664697-55e3ad937233?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-  "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-  "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-  "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-  "https://images.unsplash.com/photo-1556910103-1c02745aae4d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-  "https://images.unsplash.com/photo-1600585154363-67eb9e2e2099?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-  "https://images.unsplash.com/photo-1512915922686-57c11dde9b6b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-  "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-  "https://images.unsplash.com/photo-1576013551627-c0208f3216fa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-  "https://images.unsplash.com/photo-1616594039964-ae9021a400a0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-  "https://images.unsplash.com/photo-1600607686527-6fb886090705?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
-];
-
-// Marquee Text Loop
-const marqueeItems = [
-  "Residential Developers", "Architectural Builders", "Project Managers", "Investment Partners",
-  "Residential Developers", "Architectural Builders", "Project Managers", "Investment Partners"
-];
-
-// --- AI HELPER FUNCTION ---
-const generateAIBrief = async (userPrompt) => {
-  const apiKey = "";
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
-  
-  const systemInstruction = `You are an expert architectural consultant for Pillar Properties, a premium residential developer in Auckland, New Zealand. 
-The user will describe their dream home or investment project. 
-Respond with a highly professional, minimalist, and structured architectural brief containing exactly these three sections:
-CONCEPT SUMMARY: A 2-sentence sophisticated summary of the vision.
-DESIGN DIRECTION: Recommended materials, architectural style, and spatial flow.
-PROJECTED TIMELINE: A realistic high-level timeline for Auckland (e.g., Feasibility, Consent, Build).
-Keep the tone ultra-premium, confident, and concise. Use simple plain text with capital letters for section headers. Do not use asterisks or markdown styling.`;
-
-  const payload = {
-    contents: [{ parts: [{ text: userPrompt }] }],
-    systemInstruction: { parts: [{ text: systemInstruction }] }
-  };
-
-  const delays = [1000, 2000, 4000, 8000, 16000];
-  let lastError = null;
-
-  for (let i = 0; i <= delays.length; i++) {
-    try {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      const data = await response.json();
-      return data.candidates?.[0]?.content?.parts?.[0]?.text || "No brief generated. Please try again.";
-    } catch (error) {
-      lastError = error;
-      if (i < delays.length) {
-        await new Promise(resolve => setTimeout(resolve, delays[i]));
-      }
-    }
-  }
-  return "We are currently experiencing high demand. Please contact us directly to discuss your vision.";
-};
-
-// --- PAGES ---
-
-const HomePage = ({ navigate }) => {
-  const [hoveredProject, setHoveredProject] = useState(projectsData[0].image);
-  const [activeDetail, setActiveDetail] = useState(0);
-  const [openFaqIndex, setOpenFaqIndex] = useState(null);
-
-  return (
-    <div className="animate-in fade-in duration-1000 bg-[#fafafa]">
+  const handleMouseOver = () => {
+    let iteration = 0;
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    
+    intervalRef.current = setInterval(() => {
+      setDisplay(text.split("").map((letter, index) => {
+        if(index < iteration) return text[index];
+        if(letter === " ") return " "; 
+        return letters[Math.floor(Math.random() * letters.length)];
+      }).join(""));
       
-      {/* Hero Section */}
-      <section className="relative h-screen min-h-[700px] flex flex-col w-full overflow-hidden justify-end pb-12 md:pb-16 px-[3%]">
-        {/* Cinematic Video Background */}
-        <div className="absolute inset-0 z-0 bg-zinc-950">
-          <video
-            autoPlay
-            loop
-            muted
-            playsInline
-            className="w-full h-full object-cover opacity-60 scale-105"
-            src="https://video.wixstatic.com/video/548938_44a59f7f875641ef8e61ad3cc16fcdd0/1080p/mp4/file.mp4"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-zinc-950/40"></div>
-        </div>
+      if(iteration >= text.length) clearInterval(intervalRef.current);
+      iteration += 1 / 3;
+    }, 30);
+  };
 
-        {/* New Hero Content */}
-        <div className="w-full max-w-[1600px] mx-auto z-10 flex flex-col">
-          <RevealText text="AUCKLAND'S PREMIER RESIDENTIAL DEVELOPER" className="text-xs md:text-sm tracking-[0.3em] uppercase text-zinc-300 font-semibold mb-6" />
-          <div className="text-5xl md:text-7xl lg:text-[7vw] font-light tracking-tight text-white mb-8 md:mb-16 max-w-5xl leading-[1.1]">
-            <RevealText text="Crafting Auckland's" />
-            <RevealText text="finest homes." delay={100} />
-          </div>
-          <div className="flex flex-col md:flex-row md:items-end justify-between w-full gap-8 border-t border-white/20 pt-8">
-             <RevealText text="Over 600 premium homes delivered with uncompromising architectural integrity. Built on trust, driven by design." className="text-lg md:text-xl font-light text-zinc-300 max-w-xl" delay={200} />
-             <Interactive onClick={() => navigate('projects')} className="group flex items-center gap-4 cursor-pointer text-white">
-                <div className="w-14 h-14 rounded-full border border-white/30 backdrop-blur-sm flex items-center justify-center group-hover:bg-white group-hover:text-zinc-950 transition-colors duration-500">
-                  <ArrowRight className="w-6 h-6 transition-colors duration-500" />
-                </div>
-                <span className="uppercase tracking-[0.2em] text-sm font-semibold">Explore Portfolio</span>
-              </Interactive>
-          </div>
-        </div>
-      </section>
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    }
+  }, []);
 
-      {/* Statement Section */}
-      <Section className="bg-white">
-        <div className="max-w-5xl">
-          <div className="text-3xl md:text-5xl lg:text-7xl font-light leading-tight tracking-tight text-zinc-950">
-            <RevealText text="We don't just build houses." />
-            <RevealText text="We design, develop, and manage" delay={100} className="text-zinc-400" />
-            <RevealText text="high-quality homes tailored" delay={200} />
-            <RevealText text="to modern lifestyles." delay={300} />
-          </div>
-        </div>
-        
-        {/* Trust/Conversion Strip */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-24 md:mt-32 border-t border-zinc-200 pt-12">
-          {[
-            { num: '600+', label: 'Homes Delivered' },
-            { num: '07', label: 'Years Experience' },
-            { num: '100%', label: 'Auckland Owned' },
-            { num: '15+', label: 'Active Sites' }
-          ].map((stat, i) => (
-            <div key={i} className="flex flex-col">
-              <RevealText text={stat.num} delay={i * 100} className="text-4xl md:text-5xl font-light text-zinc-950 mb-2" />
-              <RevealText text={stat.label} delay={i * 100 + 50} className="text-[10px] md:text-xs tracking-[0.2em] uppercase text-zinc-400 font-semibold" />
-            </div>
-          ))}
-        </div>
-      </Section>
-
-      {/* Infinite Marquee Section - Perfectly Seamless Loop */}
-      <section className="py-8 bg-zinc-950 text-white overflow-hidden flex border-y border-zinc-800 w-full relative">
-        <div className="animate-marquee text-[10px] md:text-sm tracking-[0.3em] uppercase font-semibold text-zinc-400 items-center">
-          {/* First Block */}
-          <div className="flex shrink-0 items-center">
-            {marqueeItems.map((item, idx) => (
-              <React.Fragment key={idx}>
-                <span className="mx-8 whitespace-nowrap">{item}</span>
-                <span className="mx-8 opacity-30 shrink-0">•</span>
-              </React.Fragment>
-            ))}
-          </div>
-          {/* Exact Duplicate Block for Seamless Looping */}
-          <div className="flex shrink-0 items-center">
-            {marqueeItems.map((item, idx) => (
-              <React.Fragment key={`dup-${idx}`}>
-                <span className="mx-8 whitespace-nowrap">{item}</span>
-                <span className="mx-8 opacity-30 shrink-0">•</span>
-              </React.Fragment>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Process Section (Conversion Factor: Transparency) */}
-      <Section className="bg-[#fafafa]">
-        <RevealText text="METHODOLOGY" className="text-xs tracking-[0.3em] uppercase text-zinc-400 font-semibold mb-20" />
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
-          {processData.map((process, idx) => (
-            <div key={idx} className="border-t border-zinc-200 pt-8 group">
-              <RevealText text={process.step} delay={idx * 100} className="text-5xl font-thin text-zinc-300 mb-8 group-hover:text-zinc-950 transition-colors duration-500" />
-              <RevealText text={process.title} delay={idx * 100 + 50} className="text-2xl font-light text-zinc-950 mb-4" />
-              <RevealText text={process.desc} delay={idx * 100 + 100} className="text-zinc-500 font-light leading-relaxed text-sm md:text-base" />
-            </div>
-          ))}
-        </div>
-      </Section>
-
-      {/* Signature Details (Interactive Hover Gallery) */}
-      <Section className="bg-white border-t border-zinc-200" innerClassName="flex flex-col lg:flex-row gap-16 lg:gap-24 items-center">
-        <div className="w-full lg:w-1/2 flex flex-col justify-center">
-          <RevealText text="SIGNATURE FINISHES" className="text-xs tracking-[0.3em] uppercase text-zinc-400 font-semibold mb-12" />
-          <div className="flex flex-col gap-8">
-            {signatureDetails.map((detail, idx) => (
-              <div 
-                key={idx} 
-                onMouseEnter={() => setActiveDetail(idx)}
-                className="cursor-pointer group border-b border-zinc-100 pb-8 last:border-0"
-              >
-                <h3 className={`text-4xl md:text-5xl lg:text-6xl font-light tracking-tight transition-colors duration-500 ${activeDetail === idx ? 'text-zinc-950' : 'text-zinc-300 group-hover:text-zinc-400'}`}>
-                  {detail.title}
-                </h3>
-                <div className={`overflow-hidden transition-all duration-500 ease-out ${activeDetail === idx ? 'max-h-40 mt-6 opacity-100' : 'max-h-0 opacity-0'}`}>
-                  <p className="text-zinc-500 font-light max-w-sm leading-relaxed">{detail.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="w-full lg:w-1/2 h-[500px] md:h-[700px] overflow-hidden relative bg-zinc-100 rounded-3xl shadow-sm">
-          {signatureDetails.map((detail, idx) => (
-            <img 
-              key={idx}
-              src={detail.image} 
-              alt={detail.title} 
-              className={`absolute inset-0 w-full h-full object-cover transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] ${activeDetail === idx ? 'opacity-100 scale-100 z-10' : 'opacity-0 scale-105 z-0'}`}
-            />
-          ))}
-        </div>
-      </Section>
-
-      {/* Interactive Project Roster */}
-      <Section className="bg-zinc-950 text-white relative" innerClassName="relative z-10">
-        <div className="mb-20 flex justify-between items-end">
-          <RevealText text="SELECTED WORKS" className="text-xs tracking-[0.3em] uppercase text-zinc-500 font-semibold" />
-          <Interactive onClick={() => navigate('projects')} className="hidden md:flex items-center gap-2 cursor-pointer text-zinc-400 hover:text-white transition-colors">
-            <span className="text-xs tracking-[0.2em] uppercase font-semibold">View Full Portfolio</span>
-          </Interactive>
-        </div>
-
-        <div className="border-t border-zinc-800">
-          {projectsData.map((project, idx) => (
-            <Interactive key={project.id} onClick={() => navigate('projects')}>
-              <div 
-                className="group flex flex-col md:flex-row justify-between items-start md:items-center py-10 md:py-16 border-b border-zinc-800 cursor-pointer relative"
-                onMouseEnter={() => setHoveredProject(project.image)}
-              >
-                {/* Hover Image Reveal for Mobile (Smoothly Animated) */}
-                <div className="md:hidden w-full overflow-hidden transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] max-h-0 opacity-0 group-hover:max-h-[500px] group-hover:opacity-100 group-hover:mb-6 rounded-2xl">
-                  <img src={project.image} alt={project.title} className="w-full h-64 object-cover" />
-                </div>
-
-                <RevealText text={`0${idx + 1}`} className="text-sm tracking-[0.2em] text-zinc-600 mb-4 md:mb-0 md:w-24" />
-                
-                <div className="flex-1 flex flex-col md:flex-row md:items-center justify-between w-full">
-                  <h3 className="text-3xl md:text-5xl lg:text-6xl font-light tracking-tight transform group-hover:translate-x-4 transition-all duration-500 ease-out text-zinc-300 group-hover:text-white inline-block">{project.title}</h3>
-                  <div className="flex items-center gap-8 mt-4 md:mt-0 text-zinc-500 group-hover:text-zinc-300 transition-colors duration-500">
-                    <span className="text-[10px] md:text-xs tracking-widest uppercase font-semibold">{project.location}</span>
-                    <ArrowUpRight className="w-6 h-6 opacity-0 -translate-y-4 translate-x-4 group-hover:opacity-100 group-hover:translate-y-0 group-hover:translate-x-0 transition-all duration-500 ease-out hidden md:block" />
-                  </div>
-                </div>
-              </div>
-            </Interactive>
-          ))}
-        </div>
-        
-        {/* Floating Desktop Image Follower (Bulletproof Crossfade) */}
-        <div className="hidden md:block absolute top-1/2 right-0 -translate-y-1/2 w-[35vw] max-w-[500px] h-[60vh] max-h-[700px] pointer-events-none overflow-hidden rounded-3xl z-0 shadow-2xl">
-          {projectsData.map((proj) => (
-            <img 
-              key={proj.id}
-              src={proj.image} 
-              alt={proj.title} 
-              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ease-out ${hoveredProject === proj.image ? 'opacity-80' : 'opacity-0'}`}
-            />
-          ))}
-        </div>
-      </Section>
-
-      {/* Services Minimal */}
-      <Section className="bg-white">
-        <RevealText text="EXPERTISE" className="text-xs tracking-[0.3em] uppercase text-zinc-400 font-semibold mb-20" />
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-16">
-          {servicesData.map((service, idx) => (
-            <Interactive key={idx} onClick={() => navigate('services')} className="group cursor-pointer flex flex-col h-full">
-              <div className="w-full aspect-[4/5] md:h-[450px] overflow-hidden mb-8 bg-zinc-100 rounded-3xl shadow-sm">
-                <img src={service.image} className="w-full h-full object-cover grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-105 transition-all duration-[1.5s] ease-out" alt={service.title} />
-              </div>
-              <RevealText text={service.title} className="text-2xl font-light mb-4 text-zinc-950 border-b border-zinc-200 pb-4 flex justify-between items-center group-hover:border-zinc-950 transition-colors duration-500">
-                  {service.title}
-                  <ArrowRight className="w-4 h-4 opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500" />
-              </RevealText>
-              <RevealText text={service.desc} delay={100} className="text-zinc-500 font-light leading-relaxed text-sm md:text-base" />
-            </Interactive>
-          ))}
-        </div>
-      </Section>
-
-      {/* Testimonial Section (Social Proof) */}
-      <Section className="bg-zinc-50 border-t border-zinc-200" innerClassName="flex flex-col items-center text-center">
-        <div className="max-w-5xl">
-          <RevealText text="CLIENT PERSPECTIVE" className="text-xs tracking-[0.3em] uppercase text-zinc-400 font-semibold mb-16" />
-          <RevealText text="“Pillar Properties delivered our architectural build flawlessly. Their transparency regarding costs and absolute refusal to compromise on finish quality set them apart in the Auckland market.”" className="text-2xl md:text-4xl lg:text-5xl font-light text-zinc-950 leading-snug tracking-tight mb-12" delay={100} />
-          <div className="flex flex-col items-center">
-             <RevealText text="Sarah & James T." className="text-sm tracking-widest uppercase font-semibold text-zinc-950 mb-1" delay={200} />
-             <RevealText text="Epsom Custom Build" className="text-xs tracking-widest uppercase text-zinc-400" delay={300} />
-          </div>
-        </div>
-      </Section>
-
-      {/* Cinematic Video Teaser */}
-      <section className="py-12 md:py-24 px-[3%] bg-[#fafafa]">
-        <div className="max-w-[1600px] mx-auto relative h-[60vh] md:h-[80vh] overflow-hidden group rounded-[2rem] md:rounded-[3rem] bg-zinc-950 w-full shadow-lg">
-          <UnveilVideo 
-            src="https://cdn.coverr.co/videos/coverr-walking-through-a-modern-house-2525/1080p.mp4" 
-            className="absolute inset-0 w-full h-full opacity-70 group-hover:opacity-100 group-hover:scale-105 transition-all duration-[3s] ease-out pointer-events-none"
-          />
-          <div className="absolute inset-0 flex items-center justify-center z-10">
-            <Interactive>
-              <button className="w-24 h-24 md:w-32 md:h-32 rounded-full border border-white/30 backdrop-blur-md flex flex-col items-center justify-center group-hover:bg-white text-white group-hover:text-zinc-950 transition-all duration-500 hover:scale-110">
-                <Play className="w-6 h-6 md:w-8 md:h-8 mb-1 ml-1" fill="currentColor" />
-                <span className="text-[10px] tracking-[0.2em] uppercase font-semibold mt-1">Play Reel</span>
-              </button>
-            </Interactive>
-          </div>
-          <div className="absolute bottom-10 left-6 md:left-12 z-10 pointer-events-none">
-            <RevealText text="THE PILLAR DIFFERENCE" className="text-xs tracking-[0.3em] uppercase text-white/70 font-semibold mb-3" />
-            <RevealText text="Watch our brand film." className="text-2xl md:text-3xl font-light text-white" delay={100} />
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ Accordion Section */}
-      <Section className="bg-white">
-        <div className="w-[90%] mx-auto">
-          <RevealText text="FREQUENTLY ASKED" className="text-xs tracking-[0.3em] uppercase text-zinc-400 font-semibold mb-16" />
-          <div className="border-t border-zinc-200">
-            {faqData.map((faq, idx) => (
-              <Accordion 
-                key={idx} 
-                question={faq.q} 
-                answer={faq.a} 
-                isOpen={openFaqIndex === idx}
-                onClick={() => setOpenFaqIndex(openFaqIndex === idx ? null : idx)}
-              />
-            ))}
-          </div>
-        </div>
-      </Section>
-
-      {/* Insights / Journal Section */}
-      <Section className="bg-zinc-50 border-t border-zinc-200">
-        <div className="flex justify-between items-end mb-20">
-          <RevealText text="JOURNAL & INSIGHTS" className="text-xs tracking-[0.3em] uppercase text-zinc-400 font-semibold" />
-          <Interactive className="hidden md:flex items-center gap-2 cursor-pointer text-zinc-950 hover:opacity-50 transition-opacity">
-            <span className="text-xs tracking-[0.2em] uppercase font-semibold">Read All</span>
-          </Interactive>
-        </div>
-        <div className="grid md:grid-cols-3 gap-12">
-          {insightsData.map((insight, idx) => (
-            <Interactive key={idx} className="group cursor-pointer border-t border-zinc-200 pt-8">
-              <div className="flex justify-between items-center mb-6">
-                <RevealText text={insight.category} delay={idx * 100} className="text-[10px] tracking-widest uppercase font-semibold text-zinc-400" />
-                <RevealText text={insight.date} delay={idx * 100 + 50} className="text-[10px] tracking-widest uppercase font-semibold text-zinc-400" />
-              </div>
-              <RevealText text={insight.title} delay={idx * 100 + 100} className="text-2xl font-light text-zinc-950 group-hover:text-zinc-500 transition-colors duration-500 pr-8" />
-            </Interactive>
-          ))}
-        </div>
-      </Section>
-
-      {/* NEW: Partner / Press Section */}
-      <Section className="bg-white border-t border-zinc-200 text-center" noVerticalPadding>
-         <div className="py-24 md:py-32">
-            <RevealText text="AS FEATURED IN" className="text-xs tracking-[0.3em] uppercase text-zinc-400 font-semibold mb-12" />
-            <div className="flex flex-wrap justify-center items-center gap-12 md:gap-24 opacity-50 grayscale">
-                <span className="text-2xl md:text-3xl font-bold tracking-tighter">ArchDigest</span>
-                <span className="text-2xl md:text-3xl font-serif italic">Home & Garden</span>
-                <span className="text-2xl md:text-3xl font-light uppercase tracking-widest">Dwell</span>
-                <span className="text-2xl md:text-3xl font-black tracking-tight">VOGUE<span className="font-light">LIVING</span></span>
-            </div>
-         </div>
-      </Section>
-
-      {/* Massive CTA Section */}
-      <Section className="bg-[#fafafa] border-t border-zinc-200" innerClassName="flex flex-col items-center text-center">
-        <RevealText text="START YOUR PROJECT" className="text-xs tracking-[0.3em] uppercase text-zinc-400 font-semibold mb-8" />
-        <Interactive onClick={() => navigate('contact')}>
-          <h2 className="text-6xl md:text-8xl lg:text-[10vw] font-light tracking-tighter cursor-pointer hover:opacity-50 transition-opacity duration-500 text-zinc-950 mb-12 leading-none">
-            Let's Talk.
-          </h2>
-        </Interactive>
-        <p className="text-zinc-500 text-lg md:text-xl font-light max-w-md">Schedule a complimentary consultation to discuss your land, vision, or investment strategy.</p>
-      </Section>
-    </div>
+  return (
+    <span 
+      onMouseEnter={handleMouseOver} 
+      className={`relative inline-block ${className}`}
+    >
+      <span className="invisible whitespace-nowrap">{text}</span>
+      <span className="absolute top-0 left-0 whitespace-nowrap">{display}</span>
+    </span>
   );
 };
 
-const AboutPage = () => (
-  <div className="animate-in fade-in duration-1000 bg-white min-h-screen pt-32 md:pt-48 pb-32">
-    <Section noVerticalPadding>
-      <RevealText text="OUR STORY" className="text-xs tracking-[0.3em] uppercase text-zinc-400 font-semibold mb-8" />
-      <RevealText text="Building foundations" className="text-5xl md:text-7xl font-light tracking-tight text-zinc-950" />
-      <RevealText text="for the future." className="text-5xl md:text-7xl font-light tracking-tight text-zinc-950 mb-24" delay={100} />
+const GlowCard = ({ children, className = "" }) => {
+  const ref = useRef(null);
+  const [pos, setPos] = useState({ x: 0, y: 0 });
+  const [opacity, setOpacity] = useState(0);
 
-      <div className="grid lg:grid-cols-2 gap-16 items-start mb-32">
-        <div>
-          <RevealText text="Pillar Properties Ltd is a premier residential development and construction company based in the heart of Auckland." className="text-2xl font-light text-zinc-950 leading-relaxed mb-8" />
-          <RevealText text="While our brand name is new to the market, the foundation of our company is built on extensive industry experience. For over seven years, our dedicated team has been instrumental in delivering more than 600 homes across the region." className="text-lg text-zinc-500 font-light leading-relaxed mb-8" delay={100} />
-          <RevealText text="We don't just build houses; we design, develop, build, and manage high-quality homes that cater to modern lifestyles. Our core philosophy ensures that every project we undertake is functional, aesthetically pleasing, and above all, affordable without compromising on the premium feel." className="text-lg text-zinc-500 font-light leading-relaxed" delay={200} />
-        </div>
-        <div className="w-full h-[400px] md:h-[600px] rounded-3xl overflow-hidden shadow-sm">
-          <UnveilImage src="https://images.unsplash.com/photo-1503387762-592deb58ef4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Architectural Structure" className="w-full h-full object-cover" />
-        </div>
-      </div>
-
-      <RevealText text="CORE PHILOSOPHY" className="text-xs tracking-[0.3em] uppercase text-zinc-400 font-semibold mb-16" />
-      <div className="grid md:grid-cols-3 gap-12 border-t border-zinc-200 pt-16">
-        {valuesData.map((val, idx) => (
-          <div key={idx}>
-            <RevealText text={val.num} className="text-4xl font-thin text-zinc-300 mb-6" />
-            <RevealText text={val.title} className="text-2xl font-light text-zinc-950 mb-4" />
-            <RevealText text={val.desc} className="text-zinc-500 font-light leading-relaxed" />
-          </div>
-        ))}
-      </div>
-
-      <div className="mt-40">
-        <RevealText text="LEADERSHIP" className="text-xs tracking-[0.3em] uppercase text-zinc-400 font-semibold mb-16" />
-        <div className="grid md:grid-cols-3 gap-12 border-t border-zinc-200 pt-16">
-          {teamData.map((member, idx) => (
-            <Interactive key={idx} className="group">
-              <div className="w-full aspect-[3/4] overflow-hidden mb-6 bg-zinc-100 rounded-3xl shadow-sm">
-                <img src={member.image} alt={member.name} className="w-full h-full object-cover grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 ease-out" />
-              </div>
-              <RevealText text={member.name} className="text-2xl font-light text-zinc-950 mb-1" />
-              <RevealText text={member.role} className="text-xs tracking-widest uppercase text-zinc-400 font-semibold" delay={100} />
-            </Interactive>
-          ))}
-        </div>
-      </div>
-
-      <div className="mt-40">
-        <RevealText text="MILESTONES" className="text-xs tracking-[0.3em] uppercase text-zinc-400 font-semibold mb-16" />
-        <div className="border-t border-zinc-200 pt-16 space-y-16">
-          {milestonesData.map((milestone, idx) => (
-            <div key={idx} className="grid md:grid-cols-4 gap-8 md:gap-12 items-start group">
-              <RevealText text={milestone.year} className="text-4xl md:text-5xl font-thin text-zinc-300 group-hover:text-zinc-950 transition-colors duration-500" />
-              <div className="md:col-span-3 border-l border-zinc-200 pl-8 md:pl-12">
-                <RevealText text={milestone.title} className="text-2xl font-light text-zinc-950 mb-4" />
-                <RevealText text={milestone.desc} className="text-zinc-500 font-light leading-relaxed max-w-2xl" />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="mt-40">
-        <RevealText text="RECOGNITION" className="text-xs tracking-[0.3em] uppercase text-zinc-400 font-semibold mb-16" />
-        <div className="grid md:grid-cols-3 gap-8 border-t border-zinc-200 pt-16">
-          {awardsData.map((award, idx) => (
-            <div key={idx} className="bg-[#fafafa] p-8 md:p-12 rounded-3xl border border-zinc-100 hover:border-zinc-300 transition-colors duration-500">
-              <RevealText text={award.year} className="text-xs tracking-[0.2em] uppercase text-zinc-400 font-semibold mb-6" />
-              <RevealText text={award.title} className="text-xl md:text-2xl font-light text-zinc-950 mb-4" />
-              <RevealText text={award.category} className="text-sm text-zinc-500 font-light" />
-            </div>
-          ))}
-        </div>
-      </div>
-    </Section>
-
-    <Section className="bg-zinc-950 text-white mt-32 md:mt-40 rounded-[2rem] md:rounded-[3rem] shadow-xl mx-4 md:mx-12 lg:mx-16" innerClassName="flex flex-col md:flex-row gap-16 items-center">
-      <div className="w-full md:w-1/2">
-        <RevealText text="SUSTAINABILITY" className="text-xs tracking-[0.3em] uppercase text-zinc-500 font-semibold mb-8" />
-        <RevealText text="Building for the next century." className="text-4xl md:text-6xl font-light tracking-tight mb-8 text-zinc-200" />
-        <RevealText text="Our commitment extends beyond aesthetics. We integrate passive heating, solar readiness, and ethically sourced timber into our standard specifications, ensuring a minimal footprint and maximum efficiency." className="text-lg text-zinc-400 font-light leading-relaxed mb-8" delay={100} />
-      </div>
-      <div className="w-full md:w-1/2 h-[400px] rounded-3xl overflow-hidden">
-          <UnveilImage src="https://images.unsplash.com/photo-1518780664697-55e3ad937233?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Sustainable details" className="w-full h-full object-cover opacity-80" />
-      </div>
-    </Section>
-
-    {/* NEW: Culture & Community */}
-    <Section className="bg-white mt-32 md:mt-40">
-      <RevealText text="CULTURE" className="text-xs tracking-[0.3em] uppercase text-zinc-400 font-semibold mb-8" />
-      <div className="grid md:grid-cols-2 gap-16 items-center">
-        <div className="order-2 md:order-1 h-[400px] md:h-[500px] rounded-3xl overflow-hidden shadow-sm">
-           <UnveilImage src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Team Culture" className="w-full h-full object-cover" />
-        </div>
-        <div className="order-1 md:order-2">
-          <RevealText text="Beyond the blueprint." className="text-4xl md:text-6xl font-light tracking-tight text-zinc-950 mb-8" />
-          <RevealText text="We foster a collaborative environment where architects, project managers, and builders work side-by-side. Our commitment extends to the local Auckland community through active sponsorship of sustainable design initiatives and youth trade apprenticeships." className="text-lg text-zinc-500 font-light leading-relaxed" />
-        </div>
-      </div>
-    </Section>
-
-    <Section className="bg-[#fafafa] border-t border-zinc-200 mt-32 md:mt-40 text-center" innerClassName="flex flex-col items-center">
-        <RevealText text="CAREERS" className="text-xs tracking-[0.3em] uppercase text-zinc-400 font-semibold mb-8" />
-        <RevealText text="Build with us." className="text-5xl md:text-7xl font-light tracking-tight text-zinc-950 mb-8" />
-        <RevealText text="We are always looking for visionary architects, rigorous project managers, and master builders to join our growing team." className="text-xl text-zinc-500 font-light max-w-2xl leading-relaxed mb-12" delay={100} />
-        <Interactive>
-          <button className="bg-zinc-950 text-white px-8 py-4 text-xs tracking-[0.2em] uppercase font-semibold rounded-full hover:bg-zinc-800 transition-colors flex items-center gap-2">
-            View Open Positions <ArrowRight className="w-4 h-4" />
-          </button>
-        </Interactive>
-    </Section>
-  </div>
-);
-
-const ServicesPage = () => (
-  <div className="animate-in fade-in duration-1000 bg-[#fafafa] min-h-screen pt-32 md:pt-48 pb-32">
-    <Section noVerticalPadding>
-      <RevealText text="OUR EXPERTISE" className="text-xs tracking-[0.3em] uppercase text-zinc-400 font-semibold mb-8" />
-      <RevealText text="End-to-end" className="text-5xl md:text-7xl font-light tracking-tight text-zinc-950" />
-      <RevealText text="development." className="text-5xl md:text-7xl font-light tracking-tight text-zinc-950 mb-32" delay={100} />
-
-      <div className="space-y-32">
-        {servicesData.map((service, idx) => (
-          <div key={idx} className={`flex flex-col ${idx % 2 === 1 ? 'lg:flex-row-reverse' : 'lg:flex-row'} items-center gap-16 lg:gap-24`}>
-            <div className="w-full lg:w-1/2 h-[400px] md:h-[500px] rounded-3xl overflow-hidden shadow-sm">
-              <UnveilImage src={service.image} alt={service.title} className="w-full h-full object-cover" />
-            </div>
-            <div className="w-full lg:w-1/2">
-              <RevealText text={`0${idx + 1}`} className="text-xs tracking-[0.3em] uppercase text-zinc-400 font-semibold mb-6" />
-              <RevealText text={service.title} className="text-4xl md:text-5xl font-light text-zinc-950 mb-6" />
-              <RevealText text={service.desc} className="text-xl text-zinc-500 font-light leading-relaxed mb-8" />
-              <ul className="space-y-4 border-t border-zinc-200 pt-8">
-                {service.features?.map((item, i) => (
-                   <li key={i} className="flex items-center text-zinc-600 font-light">
-                      <span className="w-1.5 h-1.5 bg-zinc-950 rounded-full mr-4"></span>
-                      <RevealText text={item} delay={i * 50} />
-                   </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div className="mt-40 border-t border-zinc-200 pt-32">
-        <RevealText text="THE PILLAR ADVANTAGE" className="text-xs tracking-[0.3em] uppercase text-zinc-400 font-semibold mb-16" />
-        <div className="grid md:grid-cols-2 gap-24">
-          <div>
-             <RevealText text="Why partner with us." className="text-4xl md:text-6xl font-light tracking-tight text-zinc-950 mb-8" />
-             <RevealText text="We eliminate the friction typically associated with property development. By consolidating design, consent, and construction under one roof, we drastically reduce timelines and mitigate financial risk." className="text-xl text-zinc-500 font-light leading-relaxed" delay={100} />
-          </div>
-          <div className="space-y-12">
-            {[
-              { label: 'Single Point of Contact', desc: 'No more juggling architects, engineers, and builders.' },
-              { label: 'Fixed Price Certainty', desc: 'Comprehensive scoping means no unexpected variations.' },
-              { label: 'Speed to Market', desc: 'Parallel processing of consents and procurement saves months.' }
-            ].map((adv, idx) => (
-              <div key={idx} className="border-b border-zinc-200 pb-8">
-                <RevealText text={adv.label} className="text-2xl font-light text-zinc-950 mb-2" delay={idx * 100} />
-                <RevealText text={adv.desc} className="text-zinc-500 font-light" delay={idx * 100 + 50} />
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* NEW: Featured Case Study */}
-      <div className="mt-40 border-t border-zinc-200 pt-32">
-        <RevealText text="CASE STUDY" className="text-xs tracking-[0.3em] uppercase text-zinc-400 font-semibold mb-16" />
-        <div className="bg-zinc-950 rounded-3xl overflow-hidden text-white flex flex-col md:flex-row shadow-xl">
-          <div className="w-full md:w-1/2 p-12 md:p-16 lg:p-24 flex flex-col justify-center">
-             <RevealText text="The Epsom Transformation" className="text-3xl md:text-5xl font-light tracking-tight mb-6" />
-             <RevealText text="How we took a subdivided 400sqm site and delivered a multi-award winning luxury family home within a strict 9-month timeframe, completely managing the resource consent process." className="text-zinc-400 font-light leading-relaxed mb-8" delay={100} />
-             <Interactive>
-               <button className="flex items-center gap-2 text-xs tracking-widest uppercase font-semibold hover:text-zinc-300 transition-colors">
-                 Read Full Study <ArrowRight className="w-4 h-4" />
-               </button>
-             </Interactive>
-          </div>
-          <div className="w-full md:w-1/2 h-[400px] md:h-auto relative group">
-             <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Case Study" className="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-[2s] ease-out" />
-          </div>
-        </div>
-      </div>
-    </Section>
-
-    <Section className="bg-zinc-50 border-t border-zinc-200 mt-32 md:mt-40 text-center">
-      <RevealText text="OUR PARTNERS" className="text-xs tracking-[0.3em] uppercase text-zinc-400 font-semibold mb-16 text-center" />
-      <div className="grid md:grid-cols-3 gap-12 text-center">
-        {[
-          { title: 'Private Homebuyers', desc: 'Families looking for bespoke, architectural standalone homes.' },
-          { title: 'Property Investors', desc: 'Individuals seeking high-yield, low-maintenance townhouses.' },
-          { title: 'Landowners', desc: 'Owners looking to unlock the equity in their land via subdivision.' }
-        ].map((type, idx) => (
-            <div key={idx}>
-              <RevealText text={type.title} className="text-2xl font-light text-zinc-950 mb-4" />
-              <RevealText text={type.desc} className="text-zinc-500 font-light leading-relaxed" />
-            </div>
-        ))}
-      </div>
-    </Section>
-  </div>
-);
-
-const ProjectsPage = () => (
-  <div className="animate-in fade-in duration-1000 bg-[#fafafa] min-h-screen pt-32 md:pt-48 pb-32">
-    <Section noVerticalPadding>
-      <RevealText text="PORTFOLIO" className="text-xs tracking-[0.3em] uppercase text-zinc-400 font-semibold mb-8" />
-      <RevealText text="Selected Works." className="text-5xl md:text-7xl font-light tracking-tight text-zinc-950 mb-24" />
-
-      <div className="grid md:grid-cols-2 gap-x-12 gap-y-24">
-        {projectsData.map((project, idx) => (
-          <Interactive key={project.id} className="group cursor-pointer">
-            <div className={`w-full ${idx % 2 === 1 ? 'md:mt-32' : ''}`}>
-              <UnveilImage src={project.image} alt={project.title} className="w-full aspect-[4/5] md:aspect-[3/4] mb-8 rounded-3xl shadow-sm" />
-              <div className="flex justify-between items-start border-t border-zinc-200 pt-6">
-                <div>
-                  <h3 className="text-2xl font-light text-zinc-950 mb-2">{project.title}</h3>
-                  <p className="text-zinc-500 text-sm">{project.location}</p>
-                </div>
-                <span className="text-xs tracking-widest uppercase text-zinc-400 font-semibold">{project.status}</span>
-              </div>
-            </div>
-          </Interactive>
-        ))}
-      </div>
-
-      <div className="mt-40 pt-32 border-t border-zinc-200">
-        <RevealText text="ON THE HORIZON" className="text-xs tracking-[0.3em] uppercase text-zinc-400 font-semibold mb-16" />
-        <RevealText text="Future Developments." className="text-4xl md:text-6xl font-light tracking-tight text-zinc-950 mb-16" />
-        
-        <div className="flex flex-col">
-          {futureProjectsData.map((proj, idx) => (
-            <div key={idx} className="group flex flex-col md:flex-row justify-between items-start md:items-center py-8 border-b border-zinc-200 hover:bg-zinc-50 transition-colors px-4 -mx-4 cursor-default">
-              <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-12 w-full">
-                <RevealText text={proj.title} delay={idx * 50} className="text-2xl md:text-3xl font-light text-zinc-950" />
-                <RevealText text={proj.location} delay={idx * 50 + 50} className="text-sm tracking-widest uppercase text-zinc-500 font-semibold" />
-              </div>
-              <div className="mt-4 md:mt-0 flex-shrink-0">
-                <RevealText text={`Expected ${proj.expected}`} delay={idx * 50 + 100} className="text-xs tracking-[0.2em] uppercase text-zinc-400 font-semibold bg-white border border-zinc-200 px-4 py-2 rounded-full" />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* NEW: Project Statistics / Impact */}
-      <div className="mt-40 pt-32 border-t border-zinc-200">
-         <RevealText text="OUR IMPACT" className="text-xs tracking-[0.3em] uppercase text-zinc-400 font-semibold mb-16" />
-         <div className="grid md:grid-cols-4 gap-12 bg-zinc-950 rounded-3xl p-12 lg:p-16 text-white shadow-xl">
-            {[
-              { val: '$200M+', label: 'Gross Development Value' },
-              { val: '600+', label: 'Dwellings Completed' },
-              { val: '12', label: 'Suburbs Transformed' },
-              { val: '100%', label: 'Delivery Rate' }
-            ].map((stat, idx) => (
-              <div key={idx} className="flex flex-col">
-                <RevealText text={stat.val} delay={idx * 100} className="text-4xl md:text-5xl lg:text-6xl font-light text-zinc-200 mb-4" />
-                <RevealText text={stat.label} delay={idx * 100 + 50} className="text-[10px] md:text-xs tracking-[0.2em] uppercase text-zinc-500 font-semibold" />
-              </div>
-            ))}
-         </div>
-      </div>
-    </Section>
-  </div>
-);
-
-const GalleryPage = () => (
-  <div className="animate-in fade-in duration-1000 bg-[#fafafa] min-h-screen pt-32 md:pt-48 pb-32">
-    <Section noVerticalPadding>
-      <RevealText text="GALLERY" className="text-xs tracking-[0.3em] uppercase text-zinc-400 font-semibold mb-8" />
-      <RevealText text="Visual Archive." className="text-5xl md:text-7xl font-light tracking-tight text-zinc-950 mb-24" />
-
-      <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
-        {galleryData.map((src, idx) => (
-          <Interactive key={idx} className="break-inside-avoid relative group overflow-hidden block rounded-2xl md:rounded-3xl bg-zinc-200 shadow-sm">
-            <UnveilImage src={src} alt={`Gallery Image ${idx + 1}`} className="w-full h-auto object-cover transition-transform duration-[2.5s] group-hover:scale-105 ease-[cubic-bezier(0.16,1,0.3,1)]" />
-            <div className="absolute inset-0 bg-zinc-950/0 group-hover:bg-zinc-950/30 transition-colors duration-500 flex items-center justify-center">
-              <Plus className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-all duration-500 transform scale-50 group-hover:scale-100" strokeWidth={1} />
-            </div>
-          </Interactive>
-        ))}
-      </div>
-
-      {/* NEW: Motion / Cinematic */}
-      <div className="mt-40 pt-32 border-t border-zinc-200">
-        <RevealText text="IN MOTION" className="text-xs tracking-[0.3em] uppercase text-zinc-400 font-semibold mb-16" />
-        <div className="w-full aspect-video md:h-[700px] rounded-3xl overflow-hidden relative group bg-zinc-950 shadow-sm">
-           <UnveilVideo 
-             src="https://cdn.coverr.co/videos/coverr-walking-through-a-modern-house-2525/1080p.mp4" 
-             className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-1000"
-           />
-           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="w-20 h-20 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center border border-white/20 transition-transform duration-500 group-hover:scale-110">
-                 <Play className="w-8 h-8 text-white ml-1" fill="currentColor" />
-              </div>
-           </div>
-        </div>
-      </div>
-    </Section>
-  </div>
-);
-  
-const ContactPage = () => {
-  // AI State
-  const [aiInput, setAiInput] = useState('');
-  const [aiOutput, setAiOutput] = useState('');
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [enquiryMessage, setEnquiryMessage] = useState('');
-  const [activeTab, setActiveTab] = useState('direct');
-
-  const handleGenerate = async () => {
-    if (!aiInput.trim()) return;
-    setIsGenerating(true);
-    setAiOutput('');
-    const result = await generateAIBrief(aiInput);
-    setAiOutput(result);
-    setIsGenerating(false);
-  };
-
-  const attachToEnquiry = () => {
-    setEnquiryMessage(`AI GENERATED BRIEF:\n${aiOutput}\n\nADDITIONAL NOTES:\n`);
-    setActiveTab('direct');
+  const handleMouseMove = (e) => {
+    if (!ref.current) return;
+    const rect = ref.current.getBoundingClientRect();
+    setPos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
   };
 
   return (
-    <div className="animate-in fade-in duration-1000 bg-white min-h-screen pt-32 md:pt-48 pb-32">
-      <Section noVerticalPadding>
-        <div className="grid lg:grid-cols-2 gap-24">
-          
-          {/* Left Column: Info & Tab Toggles */}
-          <div>
-            <RevealText text="CONTACT" className="text-xs tracking-[0.3em] uppercase text-zinc-400 font-semibold mb-8" />
-            <RevealText text="Start the" className="text-5xl md:text-7xl font-light tracking-tight text-zinc-950" />
-            <RevealText text="conversation." className="text-5xl md:text-7xl font-light tracking-tight text-zinc-950 mb-16" delay={100} />
-            
-            <div className="flex gap-8 border-b border-zinc-200 mb-12">
-              <Interactive>
-                <button 
-                  onClick={() => setActiveTab('direct')}
-                  className={`pb-4 text-xs tracking-[0.2em] uppercase font-semibold transition-colors relative ${activeTab === 'direct' ? 'text-zinc-950' : 'text-zinc-400 hover:text-zinc-600'}`}
-                >
-                  Direct Enquiry
-                  {activeTab === 'direct' && <span className="absolute bottom-0 left-0 w-full h-[1px] bg-zinc-950"></span>}
-                </button>
-              </Interactive>
-              <Interactive>
-                <button 
-                  onClick={() => setActiveTab('ai')}
-                  className={`pb-4 text-xs tracking-[0.2em] uppercase font-semibold transition-colors relative flex items-center gap-2 ${activeTab === 'ai' ? 'text-zinc-950' : 'text-zinc-400 hover:text-zinc-600'}`}
-                >
-                  ✨ AI Architect
-                  {activeTab === 'ai' && <span className="absolute bottom-0 left-0 w-full h-[1px] bg-zinc-950"></span>}
-                </button>
-              </Interactive>
-            </div>
-
-            <div className="space-y-12">
-              {[
-                { label: 'Visit', val: '123 Architecture Way\nAuckland CBD 1010' },
-                { label: 'Call', val: '+64 9 123 4567' },
-                { label: 'Email', val: 'info@pillarproperties.co.nz' }
-              ].map((item, idx) => (
-                <div key={idx} className="border-t border-zinc-200 pt-6">
-                  <RevealText text={item.label} className="text-xs tracking-[0.2em] uppercase text-zinc-400 font-semibold mb-4" />
-                  <RevealText text={item.val} className="text-xl md:text-2xl font-light text-zinc-950 whitespace-pre-line" delay={100} />
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Right Column: Dynamic Form / AI Interface */}
-          <div className="lg:mt-32 bg-[#fafafa] p-8 md:p-16 border border-zinc-100 min-h-[600px] flex flex-col rounded-3xl shadow-sm">
-            {activeTab === 'direct' ? (
-              <form className="space-y-12 animate-in fade-in duration-500" onSubmit={(e) => e.preventDefault()}>
-                <div className="relative">
-                  <input type="text" placeholder="Name" required className="w-full bg-transparent border-b border-zinc-300 py-4 text-xl font-light text-zinc-950 placeholder-zinc-400 focus:outline-none focus:border-zinc-950 transition-colors" />
-                </div>
-                <div className="relative">
-                  <input type="email" placeholder="Email Address" required className="w-full bg-transparent border-b border-zinc-300 py-4 text-xl font-light text-zinc-950 placeholder-zinc-400 focus:outline-none focus:border-zinc-950 transition-colors" />
-                </div>
-                <div className="relative">
-                  <select defaultValue="" className="w-full bg-transparent border-b border-zinc-300 py-4 text-xl font-light text-zinc-400 focus:outline-none focus:border-zinc-950 focus:text-zinc-950 transition-colors appearance-none cursor-pointer">
-                    <option value="" disabled>Nature of Enquiry</option>
-                    <option value="buy">Buying a Home</option>
-                    <option value="dev">Development Partnership</option>
-                    <option value="other">Other</option>
-                  </select>
-                </div>
-                <div className="relative">
-                  <textarea 
-                    value={enquiryMessage}
-                    onChange={(e) => setEnquiryMessage(e.target.value)}
-                    placeholder="Project Details" 
-                    rows={4} 
-                    required 
-                    className="w-full bg-transparent border-b border-zinc-300 py-4 text-xl font-light text-zinc-950 placeholder-zinc-400 focus:outline-none focus:border-zinc-950 transition-colors resize-none"
-                  ></textarea>
-                </div>
-                <Interactive>
-                  <button type="submit" className="w-full bg-zinc-950 text-white py-6 text-sm tracking-[0.2em] uppercase font-semibold hover:bg-zinc-800 transition-colors rounded-2xl">
-                    Submit Enquiry
-                  </button>
-                </Interactive>
-              </form>
-            ) : (
-              <div className="flex flex-col h-full animate-in fade-in slide-in-from-right-8 duration-500">
-                <h3 className="text-2xl font-light text-zinc-950 mb-4">Vision to Reality.</h3>
-                <p className="text-zinc-500 font-light mb-8">Describe your ideal property, lifestyle requirements, or investment goals. Our AI Architect will instantly draft a preliminary project brief tailored to Auckland.</p>
-                
-                <textarea 
-                  value={aiInput}
-                  onChange={(e) => setAiInput(e.target.value)}
-                  placeholder="e.g. A 4-bedroom minimalist home in Epsom with a pool, focusing on natural light and concrete materials..." 
-                  rows={4} 
-                  className="w-full bg-transparent border-b border-zinc-300 py-4 text-xl font-light text-zinc-950 placeholder-zinc-400 focus:outline-none focus:border-zinc-950 transition-colors resize-none mb-8"
-                ></textarea>
-                
-                {!aiOutput && !isGenerating && (
-                  <Interactive>
-                    <button 
-                      onClick={handleGenerate}
-                      className="w-full bg-zinc-100 text-zinc-950 border border-zinc-200 py-6 text-sm tracking-[0.2em] uppercase font-semibold hover:bg-zinc-200 transition-colors flex justify-center items-center gap-2 rounded-2xl"
-                    >
-                      ✨ Generate Brief
-                    </button>
-                  </Interactive>
-                )}
-
-                {isGenerating && (
-                  <div className="flex justify-center items-center py-12">
-                    <div className="w-6 h-6 border-2 border-zinc-300 border-t-zinc-950 rounded-full animate-spin"></div>
-                    <span className="ml-4 text-xs tracking-widest uppercase text-zinc-400 font-semibold animate-pulse">Consulting Architect...</span>
-                  </div>
-                )}
-
-                {aiOutput && !isGenerating && (
-                  <div className="flex-1 flex flex-col animate-in fade-in duration-700">
-                    <div className="flex-1 bg-white p-6 border border-zinc-200 overflow-y-auto mb-8 rounded-2xl">
-                      <pre className="whitespace-pre-wrap font-sans text-sm text-zinc-600 leading-relaxed">
-                        {aiOutput}
-                      </pre>
-                    </div>
-                    <Interactive>
-                      <button 
-                        onClick={attachToEnquiry}
-                        className="w-full bg-zinc-950 text-white py-6 text-sm tracking-[0.2em] uppercase font-semibold hover:bg-zinc-800 transition-colors flex justify-center items-center gap-2 rounded-2xl"
-                      >
-                        Attach to Enquiry <ArrowRight className="w-4 h-4" />
-                      </button>
-                    </Interactive>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
-      </Section>
-
-      {/* Map & Locations Section */}
-      <Section className="bg-white border-t border-zinc-200 mt-16 md:mt-32" noVerticalPadding>
-        <div className="py-24 md:py-32 grid lg:grid-cols-3 gap-16 items-start">
-          <div className="lg:col-span-1">
-            <RevealText text="OUR LOCATIONS" className="text-xs tracking-[0.3em] uppercase text-zinc-400 font-semibold mb-8" />
-            <RevealText text="Find us across Auckland." className="text-4xl md:text-5xl font-light tracking-tight text-zinc-950 mb-12" />
-            
-            <div className="space-y-8">
-              <div>
-                <h4 className="text-lg font-medium text-zinc-950 mb-2">Head Office</h4>
-                <p className="text-sm text-zinc-500 font-light">123 Architecture Way<br/>Auckland CBD 1010</p>
-              </div>
-              <div className="border-t border-zinc-200 pt-8">
-                <h4 className="text-lg font-medium text-zinc-950 mb-4">Active Development Sites</h4>
-                <ul className="space-y-4">
-                  <li className="flex items-start gap-3 text-sm text-zinc-500 font-light">
-                    <MapPin className="w-4 h-4 mt-0.5 text-zinc-400 shrink-0" />
-                    Parnell Ascend, Parnell
-                  </li>
-                  <li className="flex items-start gap-3 text-sm text-zinc-500 font-light">
-                    <MapPin className="w-4 h-4 mt-0.5 text-zinc-400 shrink-0" />
-                    Orakei Basin Villas, Orakei
-                  </li>
-                  <li className="flex items-start gap-3 text-sm text-zinc-500 font-light">
-                    <MapPin className="w-4 h-4 mt-0.5 text-zinc-400 shrink-0" />
-                    Grey Lynn Urban, Grey Lynn
-                  </li>
-                  <li className="flex items-start gap-3 text-sm text-zinc-500 font-light">
-                    <MapPin className="w-4 h-4 mt-0.5 text-zinc-400 shrink-0" />
-                    Peninsula Terraces, Te Atatu
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-          
-          <div className="lg:col-span-2 h-[400px] md:h-[600px] bg-zinc-100 rounded-3xl overflow-hidden shadow-sm relative grayscale-[50%] hover:grayscale-0 transition-all duration-700">
-            <iframe 
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d102148.9740618037!2d174.68652391054366!3d-36.86214309320956!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6d0d47e6736a4ceb%3A0x500ef6143a29917!2sAuckland%2C%20New%20Zealand!5e0!3m2!1sen!2sus!4v1709214000000!5m2!1sen!2sus" 
-              width="100%" 
-              height="100%" 
-              style={{ border: 0 }} 
-              allowFullScreen="" 
-              loading="lazy" 
-              referrerPolicy="no-referrer-when-downgrade"
-              className="absolute inset-0 w-full h-full object-cover"
-              title="Auckland Map"
-            ></iframe>
-          </div>
-        </div>
-      </Section>
-
-      {/* NEW: Newsletter / Stay Connected */}
-      <Section className="bg-zinc-950 text-white border-t border-zinc-800 text-center" innerClassName="py-24 md:py-32 flex flex-col items-center">
-         <RevealText text="STAY UPDATED" className="text-xs tracking-[0.3em] uppercase text-zinc-500 font-semibold mb-8" />
-         <RevealText text="Subscribe to our journal." className="text-4xl md:text-5xl font-light tracking-tight text-white mb-8" />
-         <RevealText text="Get the latest insights on Auckland's property market, architectural trends, and exclusive early access to upcoming developments." className="text-zinc-400 font-light max-w-xl leading-relaxed mb-12" delay={100} />
-         
-         <form className="w-full max-w-md flex relative" onSubmit={(e) => e.preventDefault()}>
-           <input type="email" placeholder="Enter your email" className="w-full bg-transparent border-b border-zinc-700 py-4 text-white placeholder-zinc-500 focus:outline-none focus:border-white transition-colors pr-12" required />
-           <button type="submit" className="absolute right-0 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white transition-colors p-2">
-             <ArrowRight className="w-5 h-5" />
-           </button>
-         </form>
-      </Section>
-
-      {/* What Happens Next Section */}
-      <Section className="border-t border-zinc-200 bg-zinc-50 text-center">
-        <div className="max-w-5xl mx-auto">
-          <RevealText text="THE PROCESS" className="text-xs tracking-[0.3em] uppercase text-zinc-400 font-semibold mb-16 text-center" />
-          <RevealText text="What happens next?" className="text-4xl md:text-5xl font-light tracking-tight text-zinc-950 mb-20 text-center" />
-          
-          <div className="grid md:grid-cols-3 gap-12 relative">
-            {/* Desktop connecting line */}
-            <div className="hidden md:block absolute top-6 left-[15%] right-[15%] h-[1px] bg-zinc-200 -z-10"></div>
-            
-            {[
-              { step: '01', title: 'Review', desc: 'Our architecture and development team reviews your enquiry and initial requirements within 24 hours.' },
-              { step: '02', title: 'Consultation', desc: 'We schedule a complimentary 45-minute discovery call to discuss site feasibility and your architectural vision.' },
-              { step: '03', title: 'Proposal', desc: 'We present a high-level conceptual brief, projected timelines, and a structural fee estimate.' }
-            ].map((item, idx) => (
-              <div key={idx} className="relative flex flex-col items-center text-center px-6">
-                <div className="w-12 h-12 bg-white border border-zinc-200 rounded-full flex items-center justify-center text-xs tracking-widest font-semibold text-zinc-950 mb-8">
-                  <RevealText text={item.step} delay={idx * 100} />
-                </div>
-                <RevealText text={item.title} className="text-2xl font-light text-zinc-950 mb-4" delay={idx * 100 + 50} />
-                <RevealText text={item.desc} className="text-sm text-zinc-500 font-light leading-relaxed" delay={idx * 100 + 100} />
-              </div>
-            ))}
-          </div>
-        </div>
-      </Section>
+    <div
+      ref={ref}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => setOpacity(1)}
+      onMouseLeave={() => setOpacity(0)}
+      className={`relative overflow-hidden rounded-[6px] ${className}`}
+    >
+      <div
+        className="pointer-events-none absolute -inset-px opacity-0 transition-opacity duration-300 z-0"
+        style={{
+          opacity,
+          background: `radial-gradient(600px circle at ${pos.x}px ${pos.y}px, rgba(255,255,255,0.04), transparent 40%)`,
+        }}
+      />
+      <div className="relative z-10 w-full h-full">
+        {children}
+      </div>
     </div>
   );
 };
 
-
-// --- MAIN APP COMPONENT ---
-
-export default function App() {
-  const [currentPage, setCurrentPage] = useState('home');
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+const CustomCursor = () => {
+  const [pos, setPos] = useState({ x: -100, y: -100 });
   const [isHovering, setIsHovering] = useState(false);
 
   useEffect(() => {
-    const styleSheet = document.createElement("style");
-    styleSheet.type = "text/css";
-    styleSheet.innerText = ultraModernStyles;
-    document.head.appendChild(styleSheet);
-    
-    const handleScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    
-    return () => {
-      document.head.removeChild(styleSheet);
-      window.removeEventListener('scroll', handleScroll);
+    const move = (e) => {
+      setPos({ x: e.clientX, y: e.clientY });
+      const target = e.target;
+      if (target.tagName.toLowerCase() === 'button' || target.closest('button') || target.closest('.interactive-hover') || target.tagName.toLowerCase() === 'a') {
+        setIsHovering(true);
+      } else {
+        setIsHovering(false);
+      }
     };
+    window.addEventListener('mousemove', move);
+    return () => window.removeEventListener('mousemove', move);
+  }, []);
+
+  return (
+    <div className="pointer-events-none fixed inset-0 z-[9999] overflow-hidden hidden md:block">
+      <div className="absolute w-1 h-1 bg-white rounded-full transition-transform duration-75" style={{ transform: `translate(${pos.x - 2}px, ${pos.y - 2}px)` }} />
+      <div 
+        className={`absolute w-8 h-8 border border-white/20 rounded-full flex items-center justify-center transition-all duration-300 ease-out ${isHovering ? 'scale-150 border-white/50 bg-white/5' : 'scale-100'}`} 
+        style={{ transform: `translate(${pos.x - 16}px, ${pos.y - 16}px)` }}
+      >
+        <div className="w-[1px] h-1 absolute top-[-1px] bg-white/50"></div>
+        <div className="w-[1px] h-1 absolute bottom-[-1px] bg-white/50"></div>
+        <div className="h-[1px] w-1 absolute left-[-1px] bg-white/50"></div>
+        <div className="h-[1px] w-1 absolute right-[-1px] bg-white/50"></div>
+      </div>
+    </div>
+  );
+};
+
+const MetricsTicker = () => {
+  return (
+    <div className="relative z-20 w-full border-y thin-border bg-[#050505] overflow-hidden flex py-4 opacity-90">
+      <div className="animate-ticker flex whitespace-nowrap items-center text-[10px] font-mono text-neutral-500 uppercase tracking-widest">
+        {[...Array(3)].map((_, i) => (
+          <React.Fragment key={i}>
+            <span className="mx-8 text-white/80">14+ Architectures Deployed</span> <span className="text-white/20">///</span>
+            <span className="mx-8 text-white/80">$1.2B+ Revenue Routed</span> <span className="text-white/20">///</span>
+            <span className="mx-8 text-white/80">100k+ Human Hours Reclaimed</span> <span className="text-white/20">///</span>
+            <span className="mx-8 text-white/80">Zero Failed Deployments</span> <span className="text-white/20">///</span>
+            <span className="mx-8 text-white/80">Global Operations</span> <span className="text-white/20">///</span>
+          </React.Fragment>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+const HeroSystemAnimation = () => {
+  return (
+    <div className="relative w-[300px] h-[300px] sm:w-[400px] sm:h-[400px] flex items-center justify-center opacity-80 mix-blend-screen pointer-events-none">
+      <div className="absolute w-[200px] h-[200px] bg-white/[0.03] blur-[60px] rounded-full animate-pulse-slow"></div>
+      <div className="absolute inset-0 rounded-full border border-white/[0.04] border-dashed animate-[spin_40s_linear_infinite]"></div>
+      <div className="absolute inset-10 rounded-full border border-white/[0.02] animate-[spin_30s_linear_infinite_reverse]"></div>
+      <div className="absolute inset-20 rounded-full border border-white/[0.06] border-dashed animate-[spin_20s_linear_infinite]"></div>
+      <div className="w-16 h-16 bg-[#0a0a0a] border border-white/10 rounded-[6px] flex items-center justify-center rotate-45 relative z-10 shadow-[0_0_40px_rgba(255,255,255,0.05)]">
+        <div className="w-6 h-6 border border-white/20 rounded-sm -rotate-45 animate-pulse flex items-center justify-center">
+          <div className="w-1.5 h-1.5 bg-white/60 rounded-full"></div>
+        </div>
+      </div>
+      <div className="absolute inset-0 animate-[spin_20s_linear_infinite]">
+         <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-white/50 rounded-full shadow-[0_0_10px_rgba(255,255,255,0.8)]"></div>
+      </div>
+      <div className="absolute inset-10 animate-[spin_15s_linear_infinite_reverse]">
+         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-1 h-1 bg-neutral-400 rounded-full"></div>
+         <div className="absolute top-1/2 right-0 translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-white/30 rounded-full"></div>
+      </div>
+      <svg className="absolute inset-0 w-full h-full opacity-40" viewBox="0 0 400 400">
+         <path d="M200 200 L100 100 L100 20" fill="none" stroke="#fff" strokeWidth="0.5" className="animate-data-stream" strokeDasharray="15 400" strokeLinecap="round" />
+         <path d="M200 200 L300 300 L380 300" fill="none" stroke="#fff" strokeWidth="0.5" className="animate-data-stream-reverse" strokeDasharray="15 400" strokeLinecap="round" />
+         <path d="M200 200 L200 350 L120 350" fill="none" stroke="#fff" strokeWidth="0.5" className="animate-data-stream" strokeDasharray="15 400" strokeLinecap="round" />
+         <path d="M200 200 L300 100 L350 100" fill="none" stroke="#fff" strokeWidth="0.5" className="animate-data-stream-reverse" strokeDasharray="15 400" strokeLinecap="round" />
+      </svg>
+    </div>
+  );
+};
+
+const AuditJourney = ({ isOpen, onClose }) => {
+  const [step, setStep] = useState(0);
+  const [answers, setAnswers] = useState({});
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisLogs, setAnalysisLogs] = useState([]);
+  const [report, setReport] = useState(null);
+
+  const questions = [
+    {
+      id: 'data', metric: "DATA_STORAGE",
+      question: "Where does your company's operational data live right now?",
+      options: [
+        { label: "Spreadsheets, WhatsApp, and human memory.", score: 95 },
+        { label: "Multiple disconnected SaaS tools.", score: 80 },
+        { label: "A rigid, legacy ERP system.", score: 65 },
+        { label: "A fully integrated, real-time database.", score: 10 }
+      ]
+    },
+    {
+      id: 'vacation', metric: "SYSTEM_DEPENDENCY",
+      question: "What happens if your core operations team goes offline for two weeks?",
+      options: [
+        { label: "Total collapse. We are completely human-dependent.", score: 100 },
+        { label: "Major delays and dropped follow-ups.", score: 85 },
+        { label: "We survive, but decision-making halts.", score: 60 },
+        { label: "Nothing. The system routes work automatically.", score: 10 }
+      ]
+    },
+    {
+      id: 'robotic', metric: "BANDWIDTH_WASTE",
+      question: "How much of your team's day is spent doing robotic work (moving data, formatting)?",
+      options: [
+        { label: "Most of it. My team acts like human APIs.", score: 95 },
+        { label: "About half. Noticeable operational drag.", score: 75 },
+        { label: "A small amount. Standard friction.", score: 40 },
+        { label: "Zero. Machines talk to machines.", score: 5 }
+      ]
+    },
+    {
+      id: 'speed', metric: "VELOCITY",
+      question: "How fast can you pull an accurate, 100% up-to-date executive report?",
+      options: [
+        { label: "It takes days of manual compilation.", score: 95 },
+        { label: "A few hours, after pinging the team.", score: 70 },
+        { label: "Within the hour.", score: 40 },
+        { label: "Instantaneous. I have a live dashboard.", score: 5 }
+      ]
+    },
+    {
+      id: 'fragmentation', metric: "SYSTEM_FRAGMENTATION",
+      question: "How many different software tools does an employee open to complete a single core workflow?",
+      options: [
+        { label: "5+. It's a constant alt-tab nightmare.", score: 90 },
+        { label: "3 to 4. We use Zapier to tape some of it together.", score: 70 },
+        { label: "1 to 2. Mostly centralized.", score: 30 },
+        { label: "One unified interface. Everything connects.", score: 5 }
+      ]
+    },
+    {
+      id: 'exceptions', metric: "EXCEPTION_ROUTING",
+      question: "When a critical error or edge-case occurs, how is it resolved?",
+      options: [
+        { label: "A chaotic WhatsApp thread tagging the founders.", score: 100 },
+        { label: "A manual email chain that takes days to untangle.", score: 80 },
+        { label: "It goes to a dedicated support team queue.", score: 40 },
+        { label: "AI flags it, suggests a fix, and routes to the right owner.", score: 5 }
+      ]
+    },
+    {
+      id: 'scale', metric: "SCALE_THRESHOLD",
+      question: "If your inbound volume suddenly 10x'd tomorrow, what would break first?",
+      options: [
+        { label: "Everything. We would immediately drown.", score: 95 },
+        { label: "Our team capacity. We'd have to mass-hire immediately.", score: 80 },
+        { label: "Some edge cases, but the core system would hold.", score: 30 },
+        { label: "Nothing. Our system scales infinitely without headcount.", score: 5 }
+      ]
+    }
+  ];
+
+  const currentValues = Object.values(answers);
+  const liveProbability = currentValues.length > 0 
+    ? Math.round(currentValues.reduce((acc, curr) => acc + curr.score, 0) / currentValues.length)
+    : 0;
+
+  const progressPercent = ((step) / questions.length) * 100;
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+      setStep(0);
+      setAnswers({});
+      setReport(null);
+      setIsAnalyzing(false);
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+    return () => document.body.style.overflow = 'auto';
+  }, [isOpen]);
+
+  const handleSelect = (option) => {
+    const newAnswers = { ...answers, [questions[step].id]: { ...option, question: questions[step].question } };
+    setAnswers(newAnswers);
+    if (step < questions.length - 1) {
+      setStep(step + 1);
+    } else {
+      runAnalysis(newAnswers);
+    }
+  };
+
+  const runAnalysis = (finalAnswers) => {
+    setIsAnalyzing(true);
+    const logs = [
+      "> INITIATING DIAGNOSTIC PROTOCOL...",
+      "> ANALYZING DATA VELOCITY RESPONSES...",
+      "> DETECTING 'HUMAN API' BOTTLENECKS...",
+      "> CALCULATING OPERATIONAL DEBT...",
+      "> SIMULATING AI-OS INTEGRATION...",
+      "> FINALIZING AUTOMATION PROBABILITY INDEX..."
+    ];
+    let currentLog = 0;
+    setAnalysisLogs([]);
+    const logInterval = setInterval(() => {
+      if (currentLog < logs.length) {
+        setAnalysisLogs(prev => [...prev, logs[currentLog]]);
+        currentLog++;
+      } else {
+        clearInterval(logInterval);
+        setTimeout(() => {
+          generateReport(finalAnswers);
+          setIsAnalyzing(false);
+        }, 800); 
+      }
+    }, 400); 
+  };
+
+  const generateReport = (finalAnswers) => {
+    const values = Object.values(finalAnswers);
+    const avgScore = Math.round(values.reduce((acc, curr) => acc + curr.score, 0) / values.length);
+    let summary = "";
+    if (avgScore > 80) {
+      summary = "CRITICAL: Your business is surviving on human effort, not systems. You are acting as the router for your own company. An AI-OS deployment will immediately reclaim 40%+ of your operational bandwidth and remove you from the day-to-day.";
+    } else if (avgScore > 50) {
+      summary = "WARNING: Moderate operational drag. Your systems are fragmented. AI integration is required to connect your data silos and automate predictive decision-making before you scale further.";
+    } else {
+      summary = "OPTIMAL: High system maturity detected. You have strong automation primitives in place. Further architecture is only required for complex predictive AI layering.";
+    }
+    setReport({ potential: avgScore, summary, rawAnswers: finalAnswers });
+  };
+
+  const handleDispatch = () => {
+    if (!report) return;
+    let reportText = `=== AI SYSTEMS ARCHITECT : DIAGNOSTIC REPORT ===\n\n`;
+    reportText += `AUTOMATION PROBABILITY INDEX: ${report.potential}%\n`;
+    reportText += `VERDICT: ${report.summary}\n\n`;
+    reportText += `--- RAW TELEMETRY ---\n`;
+    Object.values(report.rawAnswers).forEach((ans, i) => {
+      reportText += `Q${i+1}: ${ans.question}\n`;
+      reportText += `A: ${ans.label} (Risk Score: ${ans.score})\n\n`;
+    });
+    reportText += `================================================`;
+
+    const blob = new Blob([reportText], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `System_Diagnostic_Report.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    const subject = encodeURIComponent(`Audit Request: ${report.potential}% Automation Potential Detected`);
+    const body = encodeURIComponent(`Hi Anant,\n\nI just completed the system diagnostic. My operations have an Automation Probability Index of ${report.potential}%.\n\nI have attached my diagnostic report to this email (or pasted below if attachment failed).\n\nLet's discuss rebuilding my system.\n\n---\nReport Summary:\n${report.summary}`);
+    window.location.href = `mailto:complete.anant@gmail.com?subject=${subject}&body=${body}`;
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-[100] flex flex-col justify-center bg-[#050505] animate-in fade-in duration-300 overflow-y-auto">
+      <NoiseBackground />
+      <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-white/[0.015] blur-[120px] rounded-full pointer-events-none"></div>
+      <div className="absolute top-0 left-0 w-full h-[2px] bg-white/5 z-30">
+        <div 
+          className="h-full bg-white transition-all duration-500 ease-out"
+          style={{ width: `${isAnalyzing || report ? 100 : progressPercent}%` }}
+        ></div>
+      </div>
+      <div className="absolute top-0 left-0 w-full p-8 md:p-12 flex justify-between items-center z-20 mt-2">
+        <div className="text-[10px] font-mono text-neutral-500 tracking-widest uppercase flex items-center gap-3">
+           <div className="w-2 h-2 rounded-full bg-red-500/80 animate-pulse"></div>
+           SYS.DIAGNOSTIC // ROOT_ACCESS
+        </div>
+        <button 
+          onClick={onClose}
+          className="text-[10px] text-white uppercase tracking-[0.2em] font-medium hover:text-red-400 transition-colors interactive-hover"
+        >
+          [ ABORT SEQUENCE ]
+        </button>
+      </div>
+
+      <div className="relative z-10 w-full max-w-[1200px] mx-auto px-8 md:px-12 flex flex-col items-start py-24 mt-12 md:mt-0">
+        {!isAnalyzing && !report && (
+          <FadeIn direction="up" duration={500}>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8 mb-12">
+              <div className="text-[10px] font-mono text-neutral-600 tracking-[0.3em] uppercase border border-white/10 px-3 py-1 bg-white/[0.02]">
+                <DecodeText text={`METRIC_PROBE: ${questions[step].metric}`} />
+              </div>
+              <div className="text-[10px] font-mono tracking-[0.2em] uppercase flex items-center gap-3 text-neutral-400">
+                <span className="w-1.5 h-1.5 rounded-full bg-white/20"></span>
+                AUTOMATION_PROBABILITY_INDEX: <span className="text-white ml-1">{liveProbability}%</span>
+              </div>
+            </div>
+          </FadeIn>
+        )}
+
+        {!isAnalyzing && !report && (
+          <div className="w-full max-w-3xl flex flex-col items-start text-left">
+            <FadeIn key={`q-${step}`} direction="left" duration={300}>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-light text-white leading-tight tracking-tight mb-12">
+                {questions[step].question}
+              </h2>
+            </FadeIn>
+
+            <div className="w-full space-y-3">
+              {questions[step].options.map((opt, i) => (
+                <FadeIn key={`opt-${step}-${i}`} delay={i * 50} direction="up" duration={300}>
+                  <button 
+                    onClick={() => handleSelect(opt)}
+                    className="w-full group flex items-center gap-6 p-5 sm:p-6 border thin-border bg-white/[0.01] hover:bg-white/[0.05] transition-all duration-200 text-left interactive-hover overflow-hidden relative rounded-[6px]"
+                  >
+                    <div className="absolute left-0 top-0 h-full w-[3px] bg-white transform scale-y-0 group-hover:scale-y-100 transition-transform origin-bottom duration-200"></div>
+                    <span className="text-[10px] font-mono text-neutral-600 group-hover:text-white transition-colors shrink-0">
+                      [0x{Math.floor(Math.random() * 1000).toString(16).toUpperCase().padStart(3, '0')}]
+                    </span>
+                    <span className="text-sm sm:text-base font-light text-neutral-400 group-hover:text-white transition-colors">{opt.label}</span>
+                  </button>
+                </FadeIn>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {isAnalyzing && (
+          <div className="w-full max-w-2xl flex flex-col items-start text-left">
+             <div className="text-white text-3xl font-light tracking-tight mb-16 flex items-center gap-6">
+               <div className="relative w-8 h-8 flex items-center justify-center">
+                 <div className="absolute inset-0 border border-t-transparent border-white/80 rounded-full animate-spin"></div>
+                 <div className="absolute inset-2 border border-b-transparent border-neutral-500 rounded-full animate-[spin_0.5s_linear_infinite_reverse]"></div>
+               </div>
+               <DecodeText text="Compiling Telemetry..." />
+             </div>
+             
+             <div className="space-y-4 font-mono text-xs sm:text-sm text-neutral-500 uppercase tracking-widest w-full">
+               {analysisLogs.map((log, i) => (
+                 <div key={i} className="flex items-center gap-4 animate-in slide-in-from-left-4 fade-in duration-200">
+                   <span className="text-[10px] text-cyan-800/50">{(Math.random() * 100000).toFixed(0)}</span>
+                   <span className="text-white">{log}</span>
+                 </div>
+               ))}
+               <div className="animate-pulse flex items-center gap-4 mt-4">
+                 <span className="text-[10px] text-cyan-800/50">WAIT</span>
+                 <span>_</span>
+               </div>
+             </div>
+          </div>
+        )}
+
+        {report && (
+          <div className="w-full max-w-3xl flex flex-col items-start text-left animate-in fade-in slide-in-from-bottom-8 duration-700">
+            <div className="text-[10px] font-mono text-neutral-500 tracking-[0.3em] uppercase mb-8 border border-white/10 px-3 py-1 bg-white/[0.02] flex items-center gap-3">
+              <span className="w-1.5 h-1.5 bg-white rounded-full"></span>
+              Diagnostic Complete
+            </div>
+            
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-light text-white tracking-tight mb-4">
+              Automation Probability Index: <span className="text-white font-medium">{report.potential}%</span>
+            </h2>
+            
+            <div className="w-full h-[2px] bg-white/10 mb-10 relative overflow-hidden mt-6">
+               <div 
+                 className="absolute top-0 left-0 h-full bg-white transition-all duration-1500 ease-out"
+                 style={{ width: `${report.potential}%` }}
+               ></div>
+            </div>
+            
+            <div className="text-[10px] font-mono text-neutral-600 tracking-[0.2em] uppercase mb-4">
+              System Architect Output
+            </div>
+            <p className="text-base sm:text-lg text-neutral-300 font-light leading-relaxed mb-16 max-w-2xl border-l border-white/10 pl-6">
+              {report.summary}
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-6 w-full sm:w-auto">
+              <button 
+                onClick={handleDispatch}
+                className="group relative flex items-center justify-between gap-8 text-[10px] sm:text-xs text-black bg-white px-8 py-4 uppercase tracking-[0.2em] font-medium hover:bg-neutral-200 transition-colors interactive-hover rounded-[6px]"
+              >
+                <DecodeText text="Dispatch Report" />
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </button>
+              <button onClick={onClose} className="text-[10px] sm:text-xs text-neutral-400 border thin-border px-8 py-4 uppercase tracking-[0.2em] font-medium hover:text-white hover:bg-white/[0.05] transition-colors interactive-hover rounded-[6px]">
+                <DecodeText text="Close Diagnostics" />
+              </button>
+            </div>
+            <div className="mt-6 text-[9px] font-mono text-neutral-600 tracking-wider">
+               *Clicking dispatch will securely download your diagnostic log and queue a transmission.
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// --- BACKGROUND COMPONENTS ---
+
+const NoiseBackground = () => (
+  <div className="absolute inset-0 z-0 pointer-events-none opacity-[0.03] mix-blend-overlay">
+    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" className="w-full h-full preserve-3d">
+      <filter id="noiseFilter">
+        <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" stitchTiles="stitch"/>
+      </filter>
+      <rect width="100%" height="100%" filter="url(#noiseFilter)"/>
+    </svg>
+  </div>
+);
+
+const HeroBackground = () => (
+  <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden bg-[#050505]">
+    <div className="absolute inset-0 opacity-[0.25]" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='100' viewBox='0 0 60 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cpath d='M30 100V50L0 33.5v-17L30 33.5v-17L60 0v17L30 33.5V50l30 17v17L30 67.5V100zM0 83.5V67l30-17v17L0 83.5zM60 83.5V67L30 50v17l30 17z' stroke='%23ffffff' stroke-width='1' stroke-opacity='0.07'/%3E%3C/g%3E%3C/svg%3E")` }}></div>
+    <div className="absolute inset-0 bg-gradient-to-r from-[#050505] via-transparent to-[#050505]"></div>
+    <div className="absolute inset-0 bg-gradient-to-b from-[#050505] via-transparent to-[#050505]"></div>
+    <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent h-1/2 bottom-0"></div>
+    <NoiseBackground />
+  </div>
+);
+
+const GradientMeshBackground = () => (
+  <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden bg-[#030303]">
+    <div className="absolute top-0 right-[-10%] w-[60%] h-[100%] bg-gradient-to-bl from-white/[0.03] to-transparent blur-[100px] animate-mesh-pan"></div>
+    <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[80%] bg-gradient-to-tr from-white/[0.02] to-transparent blur-[80px] animate-mesh-pan-reverse"></div>
+  </div>
+);
+
+const StripedBackground = () => (
+  <div className="absolute inset-0 z-0 pointer-events-none opacity-20">
+    <div className="h-full w-full" style={{ backgroundImage: 'linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px)', backgroundSize: '100px 100%' }}></div>
+  </div>
+);
+
+// --- NEW COMPONENT: GLOBAL NETWORK MAP ---
+const GlobalNetworkMap = () => {
+  const nodes = [
+    { label: "US East", top: "35%", left: "25%" },
+    { label: "Dubai", top: "45%", left: "62%" },
+    { label: "Riyadh", top: "48%", left: "60%" },
+    { label: "Pune", top: "52%", left: "70%" },
+  ];
+
+  return (
+    <div className="relative w-full max-w-4xl mx-auto h-[300px] sm:h-[400px] border thin-border bg-[#030303] rounded-[6px] overflow-hidden mt-16">
+       {/* CSS Grid World Abstraction */}
+       <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTAgMGg0MHY0MEgwem0yMCAyMGgyMHYyMEgyMHoiIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMiIgZmlsbC1ydWxlPSJldmVub2RkIi8+PC9zdmc+')] [mask-image:radial-gradient(ellipse_at_center,black_40%,transparent_100%)]"></div>
+       <div className="absolute top-1/2 left-0 w-full h-[1px] bg-white/[0.02]"></div>
+       <div className="absolute top-0 left-1/2 w-[1px] h-full bg-white/[0.02]"></div>
+       
+       {nodes.map((node, i) => (
+         <div key={i} className="absolute flex flex-col items-center" style={{ top: node.top, left: node.left, transform: 'translate(-50%, -50%)' }}>
+            <div className="relative flex items-center justify-center w-8 h-8">
+              <div className="absolute w-full h-full bg-cyan-500/20 rounded-full animate-ping"></div>
+              <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full"></div>
+            </div>
+            <div className="mt-1 text-[8px] font-mono tracking-widest text-neutral-500 uppercase">{node.label}</div>
+         </div>
+       ))}
+       
+       {/* Scanning line over map */}
+       <div className="absolute top-0 left-0 w-full h-[1px] bg-white/10 animate-scanline shadow-[0_0_15px_rgba(255,255,255,0.5)]"></div>
+    </div>
+  );
+};
+
+// --- ABOUT PAGE COMPONENT ---
+const AboutPage = ({ onOpenAudit }) => {
+  return (
+    <div className="w-full flex flex-col items-center animate-in fade-in duration-1000">
+      <section className="relative min-h-[70vh] flex items-center justify-center pt-32 pb-12 w-full">
+        <HeroBackground />
+        <div className="relative z-10 w-full max-w-[1400px] px-8 md:px-12 flex flex-col items-start mt-[-5vh]">
+          <FadeIn direction="up">
+            <div className="flex items-center gap-3 mb-10 border border-white/5 rounded-[6px] px-3 py-1 bg-[#111111] w-fit interactive-hover">
+              <span className="w-1 h-1 rounded-full bg-neutral-500"></span>
+              <span className="text-[8px] font-mono text-neutral-400 uppercase tracking-[0.3em] pt-[1px] cursor-default">
+                <DecodeText text="Identity & Manifesto" />
+              </span>
+            </div>
+          </FadeIn>
+
+          <FadeIn delay={150} direction="up" duration={1200}>
+            <h1 className="text-5xl sm:text-6xl md:text-[5.5rem] font-light leading-[1.05] tracking-tight mb-8">
+              <ScrollRevealText>I don't run an agency.</ScrollRevealText><br />
+              <ScrollRevealText revealColor="#777777">I engineer leverage.</ScrollRevealText>
+            </h1>
+          </FadeIn>
+        </div>
+      </section>
+
+      <section className="relative w-full py-32 px-6 bg-[#020202]">
+        <RevealLine orientation="horizontal" className="absolute top-0 left-0" />
+        <NoiseBackground />
+        <div className="relative z-10 w-full max-w-[1400px] mx-auto px-8 md:px-12">
+          <FadeIn className="max-w-4xl mb-32">
+            <h2 className="text-2xl sm:text-4xl font-light leading-snug tracking-tight">
+              <ScrollRevealText>
+                I spent years inside scaling startups and legacy enterprises. What I saw was universally terrifying: million-dollar operations held together by WhatsApp groups, nested Excel sheets, and sheer human anxiety.
+              </ScrollRevealText>
+            </h2>
+          </FadeIn>
+
+          <div className="grid lg:grid-cols-2 gap-24">
+             <div>
+               <FadeIn>
+                 <span className="text-[10px] font-mono text-neutral-600 uppercase tracking-[0.2em] mb-6 block">The Catalyst</span>
+                 <h3 className="text-2xl font-light text-white mb-6">Founders were breaking under their own success.</h3>
+                 <p className="text-sm sm:text-base text-neutral-400 font-light leading-relaxed mb-6">
+                   I realized the industry didn't need more "consultants" offering advice, or "agencies" selling monthly retainers to do manual work. It needed an architect. Someone who could tear down bloated processes and hardcode operational truth into a unified system.
+                 </p>
+                 <p className="text-sm sm:text-base text-neutral-400 font-light leading-relaxed">
+                   So I stopped giving advice and started building the infrastructure. I replace human routers with AI decision engines. I turn chaotic, fragile growth into inevitable, systematic scale.
+                 </p>
+               </FadeIn>
+             </div>
+             
+             <div>
+               <FadeIn delay={200}>
+                 <span className="text-[10px] font-mono text-neutral-600 uppercase tracking-[0.2em] mb-6 block">Rules of Engagement</span>
+                 <div className="space-y-8">
+                   {[
+                     { title: "No Retainers", desc: "I build the system, train your team, and exit. You own your infrastructure forever." },
+                     { title: "No Fluff", desc: "I don't do 'strategy mapping sessions'. I do deep system audits and rapid deployment." },
+                     { title: "Zero Delegation", desc: "When you hire me, you get me. Not a junior developer or a generic account manager." }
+                   ].map((rule, i) => (
+                     <div key={i} className="border-l border-white/10 pl-6 group">
+                        <h4 className="text-white font-medium text-sm mb-2 group-hover:text-white transition-colors">{rule.title}</h4>
+                        <p className="text-neutral-500 font-light text-sm leading-relaxed">{rule.desc}</p>
+                     </div>
+                   ))}
+                 </div>
+               </FadeIn>
+             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Deployment Methodology */}
+      <section className="relative w-full py-40 px-6 bg-[#030303]">
+        <RevealLine orientation="horizontal" className="absolute top-0 left-0" />
+        <div className="relative z-10 w-full max-w-[1400px] mx-auto px-8 md:px-12">
+           <FadeIn className="mb-24">
+             <span className="text-[10px] font-mono text-neutral-600 uppercase tracking-[0.2em] mb-6 block">Modus Operandi</span>
+             <h2 className="text-3xl sm:text-5xl font-light tracking-tight">
+               <ScrollRevealText>The Engagement Protocol</ScrollRevealText>
+             </h2>
+           </FadeIn>
+           <div className="grid md:grid-cols-4 gap-8">
+              {[
+                { phase: "Phase 1", title: "Diagnostic", desc: "A ruthless audit of your current operational debt. We map every data flow and identify the human bottlenecks." },
+                { phase: "Phase 2", title: "War Room", desc: "We design the new architecture. Wireframes, database schemas, and AI routing logic are established." },
+                { phase: "Phase 3", title: "Hardcoding", desc: "Development begins. We build the central database, write the middleware, and deploy the AI agents." },
+                { phase: "Phase 4", title: "Handover", desc: "System goes live. Your team is trained. Operational bandwidth is immediately reclaimed. I exit." }
+              ].map((phase, i) => (
+                <FadeIn key={i} delay={i * 100} direction="up">
+                  <div className="border-t border-white/10 pt-6">
+                    <div className="text-[10px] font-mono text-neutral-500 mb-4">{phase.phase}</div>
+                    <h3 className="text-lg text-white font-light mb-4">{phase.title}</h3>
+                    <p className="text-sm text-neutral-400 font-light leading-relaxed">{phase.desc}</p>
+                  </div>
+                </FadeIn>
+              ))}
+           </div>
+        </div>
+      </section>
+
+      <section className="relative w-full py-40 px-6 bg-[#040404]">
+         <RevealLine orientation="horizontal" className="absolute top-0 left-0" />
+         <div className="relative z-10 w-full max-w-[1400px] mx-auto px-8 md:px-12">
+            <FadeIn className="mb-24 interactive-hover">
+              <span className="text-[10px] font-mono text-neutral-600 uppercase tracking-[0.2em] mb-6 block">
+                <DecodeText text="The Stack" />
+              </span>
+              <h2 className="text-3xl sm:text-5xl font-light tracking-tight">
+                <ScrollRevealText>My Technical Arsenal</ScrollRevealText>
+              </h2>
+            </FadeIn>
+            
+            <div className="grid md:grid-cols-3 gap-8 sm:gap-12">
+               {[
+                 { cat: "AI & Logic", tools: ["OpenAI / Anthropic APIs", "LangChain / LlamaIndex", "Custom RAG Pipelines", "Predictive Decision Trees"] },
+                 { cat: "Infrastructure", tools: ["Supabase / PostgreSQL", "AWS / Vercel", "Webhooks & REST APIs", "Vector Databases (Pinecone)"] },
+                 { cat: "Workflow & UI", tools: ["React / Next.js", "Make.com / n8n", "Retool (Internal Tools)", "Tailwind / Framer Motion"] }
+               ].map((stack, i) => (
+                 <FadeIn key={i} delay={i*150}>
+                   <GlowCard className="border thin-border bg-white/[0.01] p-8 h-full hover:bg-white/[0.02] transition-colors interactive-hover">
+                      <h4 className="text-white font-mono text-[11px] uppercase tracking-widest mb-8 pb-4 border-b border-white/5">{stack.cat}</h4>
+                      <ul className="space-y-5">
+                        {stack.tools.map((tool, j) => (
+                          <li key={j} className="text-neutral-400 font-light text-sm flex items-center gap-4">
+                             <span className="w-1.5 h-1.5 border border-neutral-700 rounded-sm"></span>
+                             {tool}
+                          </li>
+                        ))}
+                      </ul>
+                   </GlowCard>
+                 </FadeIn>
+               ))}
+            </div>
+         </div>
+      </section>
+    </div>
+  );
+};
+
+// --- DEPLOYMENTS (CASE STUDIES) PAGE COMPONENT ---
+const DeploymentsPage = ({ onOpenAudit }) => {
+  return (
+    <div className="w-full flex flex-col items-center animate-in fade-in duration-1000">
+      
+      <section className="relative min-h-[60vh] flex items-center justify-center pt-32 pb-12 w-full">
+        <HeroBackground />
+        <div className="relative z-10 w-full max-w-[1400px] px-8 md:px-12 flex flex-col items-start mt-[-5vh]">
+          <FadeIn direction="up">
+            <div className="flex items-center gap-3 mb-10 border border-white/5 rounded-[6px] px-3 py-1 bg-[#111111] w-fit interactive-hover">
+              <span className="w-1 h-1 rounded-full bg-cyan-500"></span>
+              <span className="text-[8px] font-mono text-neutral-400 uppercase tracking-[0.3em] pt-[1px] cursor-default">
+                <DecodeText text="System Logs" />
+              </span>
+            </div>
+          </FadeIn>
+
+          <FadeIn delay={150} direction="up" duration={1200}>
+            <h1 className="text-5xl sm:text-6xl md:text-[5.5rem] font-light leading-[1.05] tracking-tight mb-8">
+              <ScrollRevealText>Architectural</ScrollRevealText><br />
+              <ScrollRevealText revealColor="#777777">Deployments.</ScrollRevealText>
+            </h1>
+          </FadeIn>
+          
+          <FadeIn delay={300} direction="up" className="max-w-xl w-full">
+            <ScrollRevealText as="p" className="text-sm sm:text-[15px] leading-relaxed font-light mb-14" baseColor="#333333" revealColor="#aaaaaa">
+              A public record of operational transformations deployed across the globe. Proof that engineered leverage outperforms human effort.
+            </ScrollRevealText>
+            <GlobalNetworkMap />
+          </FadeIn>
+        </div>
+      </section>
+      
+      <MetricsTicker />
+
+      {/* Deep Dives with Quotes */}
+      <section className="relative w-full py-20 px-6 bg-[#020202]">
+        <RevealLine orientation="horizontal" className="absolute top-0 left-0" />
+        <NoiseBackground />
+        <div className="relative z-10 w-full max-w-[1400px] mx-auto px-8 md:px-12 space-y-40">
+          
+          {[
+            {
+              id: "SYS-089",
+              client: "National Agri-Distribution Network",
+              metrics: ["-80% Manual Tracking", "7 Days to Real-time Reporting", "Zero Lost Inventory"],
+              before: "Operations were spread across 40+ WhatsApp groups and 12 distinct Excel sheets maintained by 8 different regional managers. Executive reporting took 7 days to compile, meaning leadership was always making decisions based on week-old ghost data.",
+              after: "Deployed a centralized, AI-driven ingestion engine. Regional managers now send plain-text WhatsApp messages. The AI instantly parses the NLP, updates the central PostgreSQL database, and reflects live on a custom Next.js executive dashboard.",
+              quote: "For the first time in three years, I know exactly what is in my warehouses right now without having to call seven different people. The system just handles it."
+            },
+            {
+              id: "SYS-104",
+              client: "B2B Logistics & Freight Co.",
+              metrics: ["100% Automated Dispatch", "Founders removed from triage", "42 Days to Deploy"],
+              before: "Founders were acting as high-paid dispatchers. Every exception, delay, or client query had to be manually routed through them because the data lived in a closed legacy ERP system.",
+              after: "Architected a custom middleware layer sitting on top of the legacy ERP. Built a Slack-integrated internal AI Copilot. When ground teams face a delay, they ping the Copilot. It checks the database, autonomously notifies the client via webhook, and updates the ERP.",
+              quote: "We were about to hire 4 more operations managers just to handle email traffic. The AI architecture eliminated that entire hiring requirement in 6 weeks."
+            },
+            {
+              id: "SYS-112",
+              client: "Global E-Commerce Aggregator",
+              metrics: ["Zero Stockouts", "Dynamic Price Routing", "-90% Data Entry"],
+              before: "Inventory matching across 14 different international marketplaces required a team of 6 doing daily manual CSV uploads. Price changes took 48 hours to propagate, leading to massive arbitrage losses.",
+              after: "Built a central node via Supabase and Make.com. AI vision models now scan incoming supplier invoices instantly, updating central inventory. A custom logic engine pushes price syncs to all 14 APIs simultaneously.",
+              quote: "The speed at which we can adjust pricing globally is now our biggest competitive advantage. We literally operate faster than our competitors can refresh their sheets."
+            }
+          ].map((log, i) => (
+            <div key={i} className="grid lg:grid-cols-12 gap-16 relative group">
+              <RevealLine delay={100} className="absolute -top-16 left-0" />
+              
+              <div className="lg:col-span-4 flex flex-col items-start">
+                <FadeIn>
+                  <div className="text-[10px] font-mono text-neutral-600 uppercase tracking-[0.2em] mb-4">Log Ref: {log.id}</div>
+                  <h3 className="text-2xl font-light text-white mb-8 pr-8">{log.client}</h3>
+                  <div className="space-y-4 w-full mb-10">
+                    <div className="text-[9px] font-mono text-neutral-600 uppercase tracking-[0.2em] mb-2">Outcomes</div>
+                    {log.metrics.map((metric, j) => (
+                       <div key={j} className="flex items-center gap-3 border-b border-white/[0.02] pb-3 last:border-0">
+                         <div className="w-1.5 h-1.5 bg-white/20 rounded-full"></div>
+                         <span className="text-xs text-neutral-400 font-light tracking-wide">{metric}</span>
+                       </div>
+                    ))}
+                  </div>
+                  
+                  {/* Founder's Signal (Quote) */}
+                  <div className="border-l-2 border-cyan-500/50 pl-4 py-1">
+                     <div className="text-[9px] font-mono text-cyan-500/80 uppercase tracking-[0.2em] mb-3">Founder's Signal</div>
+                     <p className="text-sm font-light text-neutral-300 italic leading-relaxed">"{log.quote}"</p>
+                  </div>
+                </FadeIn>
+              </div>
+
+              <div className="lg:col-span-8 grid sm:grid-cols-2 gap-12 bg-white/[0.01] border thin-border p-8 md:p-12 hover:bg-white/[0.02] transition-colors interactive-hover rounded-[6px]">
+                <FadeIn delay={150}>
+                  <div className="text-[10px] font-mono text-neutral-600 uppercase tracking-[0.2em] mb-6 flex items-center gap-3">
+                    <span className="text-red-500/80">■</span> Previous Architecture
+                  </div>
+                  <ScrollRevealText as="p" className="text-sm font-light leading-relaxed text-neutral-400" revealColor="#aaaaaa">
+                    {log.before}
+                  </ScrollRevealText>
+                </FadeIn>
+                <FadeIn delay={250}>
+                  <div className="text-[10px] font-mono text-neutral-600 uppercase tracking-[0.2em] mb-6 flex items-center gap-3">
+                    <span className="text-white/80">■</span> Deployed System
+                  </div>
+                  <ScrollRevealText as="p" className="text-sm font-light leading-relaxed text-white" revealColor="#ffffff">
+                    {log.after}
+                  </ScrollRevealText>
+                </FadeIn>
+              </div>
+            </div>
+          ))}
+
+        </div>
+      </section>
+
+      {/* The Graveyard */}
+      <section className="relative w-full py-40 px-6 bg-[#030303]">
+        <RevealLine orientation="horizontal" className="absolute top-0 left-0" />
+        <div className="relative z-10 w-full max-w-[1400px] mx-auto px-8 md:px-12 grid lg:grid-cols-2 gap-24 items-center">
+           <div>
+             <FadeIn>
+               <span className="text-[10px] font-mono text-neutral-600 uppercase tracking-[0.2em] mb-6 block">Decommissioned</span>
+               <h2 className="text-3xl sm:text-5xl font-light tracking-tight mb-8">
+                 <ScrollRevealText>The Graveyard of</ScrollRevealText><br/>
+                 <ScrollRevealText revealColor="#777777">Bad Systems.</ScrollRevealText>
+               </h2>
+               <p className="text-sm text-neutral-400 font-light leading-relaxed">
+                 A system is only as strong as its weakest link. Over the years, I have systematically ripped out, bypassed, or completely replaced these operational hazards. If your company relies on these for core data truth, you are bleeding bandwidth.
+               </p>
+             </FadeIn>
+           </div>
+           <div className="grid grid-cols-2 gap-4">
+              {['VBA Macros', 'Endless Zapier Chains', 'WhatsApp "Official" Groups', 'Paper Invoices', 'Nested Excel Files', 'Legacy On-Prem ERPs'].map((item, i) => (
+                <FadeIn key={i} delay={i * 100} className="border thin-border p-4 bg-white/[0.01] flex items-center gap-3 rounded-[6px]">
+                  <div className="w-1.5 h-1.5 bg-red-500/50 rounded-full"></div>
+                  <span className="text-xs font-mono text-neutral-500 line-through decoration-red-500/50">{item}</span>
+                </FadeIn>
+              ))}
+           </div>
+        </div>
+      </section>
+    </div>
+  );
+};
+
+// --- SIGNAL (INSIGHTS) PAGE COMPONENT ---
+const SignalPage = ({ onOpenAudit }) => {
+  return (
+    <div className="w-full flex flex-col items-center animate-in fade-in duration-1000">
+      <section className="relative min-h-[60vh] flex items-center justify-center pt-32 pb-12 w-full">
+        <HeroBackground />
+        <div className="relative z-10 w-full max-w-[1400px] px-8 md:px-12 flex flex-col items-start mt-[-5vh]">
+          <FadeIn direction="up">
+            <div className="flex items-center gap-3 mb-10 border border-white/5 rounded-[6px] px-3 py-1 bg-[#111111] w-fit interactive-hover">
+              <span className="w-1 h-1 rounded-full bg-neutral-300 animate-pulse"></span>
+              <span className="text-[8px] font-mono text-neutral-400 uppercase tracking-[0.3em] pt-[1px] cursor-default">
+                <DecodeText text="Transmissions" />
+              </span>
+            </div>
+          </FadeIn>
+
+          <FadeIn delay={150} direction="up" duration={1200}>
+            <h1 className="text-5xl sm:text-6xl md:text-[5.5rem] font-light leading-[1.05] tracking-tight mb-8">
+              <ScrollRevealText>Signal.</ScrollRevealText><br />
+              <ScrollRevealText revealColor="#777777">No noise.</ScrollRevealText>
+            </h1>
+          </FadeIn>
+          
+          <FadeIn delay={300} direction="up" className="max-w-xl">
+            <ScrollRevealText as="p" className="text-sm sm:text-[15px] leading-relaxed font-light mb-14" baseColor="#333333" revealColor="#aaaaaa">
+              Hard truths on operational debt, system architecture, and why human effort is the most expensive commodity in business.
+            </ScrollRevealText>
+          </FadeIn>
+        </div>
+      </section>
+
+      {/* Insights Grid */}
+      <section className="relative w-full py-20 px-6 bg-[#040404]">
+        <RevealLine orientation="horizontal" className="absolute top-0 left-0" />
+        <div className="relative z-10 w-full max-w-[1400px] mx-auto px-8 md:px-12">
+          
+          <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
+            {[
+              { date: "SYS_LOG // 001", title: "Why Your New SaaS Subscription Won't Save You.", snippet: "Founders buy software hoping it buys them systems. But software without logic mapping just creates faster chaos. Here is why you must map your business reality before buying another tool." },
+              { date: "SYS_LOG // 002", title: "The Math Behind Human APIs.", snippet: "If a human's job is to read an email, extract a PDF, and type the data into a CRM, they are a Human API. It is the most expensive, error-prone bandwidth leak in scaling companies." },
+              { date: "SYS_LOG // 003", title: "Founders as Routers: The Ultimate Bottleneck.", snippet: "When every critical decision must pass through the founder's WhatsApp, the company's growth ceiling is the founder's sleep schedule. Systematizing exception handling is the only way out." },
+              { date: "SYS_LOG // 004", title: "Data Velocity > Data Quality.", snippet: "A perfectly accurate report delivered 7 days late is ghost data. Operations require telemetry. Here is how to architect instantaneous feedback loops." },
+              { date: "SYS_LOG // 005", title: "The End of the 'Data Entry' Job.", snippet: "With LLMs acting as parsing layers, hiring entry-level staff purely for data formatting is mathematically obsolete. Why routing logic replaces manual input." },
+              { date: "SYS_LOG // 006", title: "Building Defensibility Through Architecture.", snippet: "Your moat isn't your brand; it's your execution speed. Companies with automated operational backends can iterate, ship, and deliver 10x faster than manually heavy competitors." }
+            ].map((post, i) => (
+              <FadeIn key={i} delay={i * 100} direction="up">
+                <GlowCard className="group h-full flex flex-col items-start p-10 border thin-border bg-white/[0.01] hover:bg-white/[0.03] transition-colors interactive-hover cursor-pointer">
+                  <div className="text-[9px] font-mono text-neutral-600 uppercase tracking-[0.2em] mb-6 transition-colors group-hover:text-neutral-400">
+                    <DecodeText text={post.date} />
+                  </div>
+                  <h3 className="text-xl sm:text-2xl font-light text-white mb-6 group-hover:translate-x-2 transition-transform duration-500">
+                    {post.title}
+                  </h3>
+                  <p className="text-sm text-neutral-500 font-light leading-relaxed mb-10 group-hover:text-neutral-400 transition-colors">
+                    {post.snippet}
+                  </p>
+                  <div className="mt-auto flex items-center gap-3 text-[10px] uppercase font-mono tracking-widest text-neutral-600 group-hover:text-white transition-colors">
+                    Access Transmission <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </GlowCard>
+              </FadeIn>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* NEW: Encrypted Subscription Terminal */}
+      <section className="relative w-full py-40 px-6 bg-[#020202]">
+        <RevealLine orientation="horizontal" className="absolute top-0 left-0" />
+        <div className="relative z-10 w-full max-w-[1000px] mx-auto px-8 md:px-12 flex flex-col items-center text-center">
+           <FadeIn>
+             <h2 className="text-3xl font-light tracking-tight mb-8">
+               <ScrollRevealText>Establish a direct line.</ScrollRevealText>
+             </h2>
+             <p className="text-sm text-neutral-400 font-light max-w-lg mb-12">
+               No spam. Just highly tactical system architecture blueprints and essays sent directly to your comm channel once a month.
+             </p>
+             <div className="w-full max-w-md border thin-border bg-[#050505] flex p-2 pl-6 items-center rounded-[6px]">
+                <span className="text-cyan-500 font-mono text-xs mr-4">{">"}</span>
+                <input 
+                  type="email" 
+                  placeholder="enter_email_address..." 
+                  className="bg-transparent border-none outline-none w-full text-white font-mono text-xs placeholder:text-neutral-600"
+                />
+                <button className="bg-white text-black px-6 py-3 text-[10px] font-mono tracking-widest uppercase hover:bg-neutral-200 transition-colors interactive-hover rounded-[6px]">
+                  Establish
+                </button>
+             </div>
+           </FadeIn>
+        </div>
+      </section>
+    </div>
+  );
+};
+
+
+// --- MAIN APPLICATION ---
+
+export default function App() {
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [currentPage, setCurrentPage] = useState('home');
+  const [isAuditOpen, setIsAuditOpen] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'auto' });
-    setIsMenuOpen(false);
+    window.scrollTo(0, 0);
   }, [currentPage]);
 
-  const navLinks = ['home', 'about', 'services', 'projects', 'gallery', 'contact'];
-
   return (
-    <CursorContext.Provider value={{ isHovering, setIsHovering }}>
-      <div className="min-h-screen flex flex-col font-sans text-zinc-950 selection:bg-zinc-950 selection:text-white bg-[#fafafa] overflow-x-hidden relative">
+    <div className="min-h-screen bg-[#050505] text-neutral-400 font-sans selection:bg-neutral-800 selection:text-white overflow-x-hidden antialiased">
+      <StructuredData />
+      <CustomCursor />
+      <AuditJourney isOpen={isAuditOpen} onClose={() => setIsAuditOpen(false)} />
+      <style dangerouslySetInnerHTML={{__html: `
+        :root { color-scheme: dark; }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; letter-spacing: -0.01em; cursor: none !important; }
+        a, button, [role="button"] { cursor: none !important; }
+        h1, h2, h3, h4, h5, h6 { letter-spacing: -0.04em; font-weight: 300; }
+        .thin-border { border-color: rgba(255, 255, 255, 0.04); }
         
-        <CustomCursor />
+        @keyframes data-stream { 0% { stroke-dashoffset: 400; } 100% { stroke-dashoffset: 0; } }
+        @keyframes data-stream-reverse { 0% { stroke-dashoffset: -400; } 100% { stroke-dashoffset: 0; } }
+        .animate-data-stream { animation: data-stream 3s linear infinite; }
+        .animate-data-stream-reverse { animation: data-stream-reverse 4s linear infinite; }
 
-        {/* Minimal Header with Uniform Padding Container */}
-        <header className={`fixed w-full z-50 transition-all duration-700 ease-out px-[3%] ${scrolled ? 'py-2 md:py-4 bg-white/95 backdrop-blur-sm shadow-sm' : 'py-4 md:py-6'}`}>
-          <div className="w-full max-w-[1600px] mx-auto flex justify-between items-center">
-            
-            {/* Logo */}
-            <div className="flex items-center z-10">
-              <Interactive onClick={() => setCurrentPage('home')}>
-                <img 
-                  src="https://static.wixstatic.com/media/548938_1509800225e542a4a2d4144aa68163e9~mv2.png" 
-                  alt="Pillar Properties" 
-                  className={`w-auto cursor-pointer object-contain transition-all duration-700 ${scrolled ? 'h-6 md:h-7' : 'h-7 md:h-9'} ${!scrolled && currentPage === 'home' ? 'brightness-0 invert' : ''}`}
-                />
-              </Interactive>
-            </div>
+        @keyframes marquee { 0% { transform: translateX(0%); } 100% { transform: translateX(-50%); } }
+        .animate-marquee { animation: marquee 30s linear infinite; display: flex; width: max-content; }
+        
+        @keyframes ticker { 0% { transform: translateX(0%); } 100% { transform: translateX(-100%); } }
+        .animate-ticker { animation: ticker 40s linear infinite; }
+        
+        @keyframes scanline { 0% { transform: translateY(-100%); } 100% { transform: translateY(1000%); } }
+        .animate-scanline { animation: scanline 8s linear infinite; }
 
-            {/* Universal Menu Toggle (Hamburger) */}
-            <Interactive className={`z-10 transition-colors duration-500 flex items-center justify-end flex-1 ${!scrolled && currentPage === 'home' ? 'text-white' : 'text-zinc-950'}`}>
-              <button onClick={() => setIsMenuOpen(true)} className="flex items-center gap-3 p-2 -mr-2 group hover:opacity-70 transition-opacity">
-                <span className="text-[10px] md:text-xs tracking-widest uppercase font-medium hidden sm:block mt-0.5">Menu</span>
-                <Menu className="w-6 h-6 md:w-7 md:h-7" />
-              </button>
-            </Interactive>
-          </div>
-        </header>
+        @keyframes random-blink { 0%, 100% { opacity: 0.1; } 50% { opacity: 1; } }
 
-        {/* Menu Backdrop Overlay */}
-        <div 
-          className={`fixed inset-0 bg-zinc-950/30 backdrop-blur-sm z-[90] transition-opacity duration-700 ${isMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
-          onClick={() => setIsMenuOpen(false)}
-        />
+        @keyframes slow-drift { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(8%, 4%) scale(1.05); } }
+        .animate-slow-drift { animation: slow-drift 20s ease-in-out infinite; }
+        
+        @keyframes slow-drift-reverse { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(-8%, -4%) scale(0.95); } }
+        .animate-slow-drift-reverse { animation: slow-drift-reverse 25s ease-in-out infinite; }
 
-        {/* Right Side Slide-Out Menu Panel */}
-        <div className={`fixed top-0 right-0 h-full w-full sm:w-[400px] md:w-[450px] bg-zinc-950 z-[100] flex flex-col p-8 md:p-12 transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
-          <div className="flex justify-between items-center w-full">
-            <span className="text-[10px] tracking-[0.3em] uppercase text-zinc-500 font-semibold">Navigation</span>
-            <button onClick={() => setIsMenuOpen(false)} className="text-white hover:text-zinc-400 transition-colors p-2 -mr-2">
-              <X className="w-8 h-8" />
-            </button>
+        @keyframes mesh-pan { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(-5%, 5%) scale(1.1); } }
+        .animate-mesh-pan { animation: mesh-pan 15s ease-in-out infinite; }
+        
+        @keyframes mesh-pan-reverse { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(5%, -5%) scale(1.05); } }
+        .animate-mesh-pan-reverse { animation: mesh-pan-reverse 18s ease-in-out infinite; }
+        
+        @keyframes aurora-wave { 0%, 100% { transform: rotate(0deg) scale(1); opacity: 0.3; } 50% { transform: rotate(3deg) scale(1.2); opacity: 0.5; } }
+        .animate-aurora { animation: aurora-wave 12s ease-in-out infinite; transform-origin: center bottom; }
+      `}} />
+
+      {/* NAVBAR */}
+      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${isScrolled ? 'bg-[#050505]/80 backdrop-blur-2xl border-b thin-border' : 'bg-transparent border-b border-transparent'}`}>
+        <nav className={`max-w-[1400px] mx-auto px-8 md:px-12 flex items-center justify-between transition-all duration-700 ${isScrolled ? 'h-16' : 'h-24'}`}>
+          <div 
+            onClick={() => setCurrentPage('home')}
+            className="text-white text-[11px] font-medium tracking-[0.2em] uppercase flex items-center gap-3 group interactive-hover cursor-none"
+          >
+            <Command className="w-4 h-4 text-neutral-500 group-hover:rotate-90 transition-transform duration-500" />
+            <DecodeText text="SYSTEMS" />
+            <span className="text-neutral-600 font-light transition-colors group-hover:text-neutral-400">ARCHITECT</span>
           </div>
           
-          <div className="flex flex-col items-start justify-center gap-8 mt-12 mb-12 flex-1 w-full">
-            {navLinks.map((link, i) => (
-              <div 
-                key={link} 
-                onClick={() => setCurrentPage(link)} 
-                className={`text-4xl md:text-5xl font-light tracking-tight text-white uppercase cursor-pointer text-left transition-colors duration-500 hover:text-zinc-400 ${isMenuOpen ? 'translate-x-0 opacity-100' : 'translate-x-12 opacity-0'}`}
-                style={{ transitionDelay: `${100 + (i * 75)}ms`, transitionProperty: 'opacity, transform, color' }}
-              >
-                {link}
+          <div className="flex items-center gap-8">
+            <div className="hidden lg:flex items-center gap-8">
+               <button 
+                 onClick={() => setCurrentPage('home')} 
+                 className={`text-[9px] font-medium transition-colors tracking-[0.2em] uppercase interactive-hover ${currentPage === 'home' ? 'text-white' : 'text-neutral-600 hover:text-white'}`}
+               >
+                  <DecodeText text="Home" />
+               </button>
+               <button 
+                 onClick={() => setCurrentPage('deployments')} 
+                 className={`text-[9px] font-medium transition-colors tracking-[0.2em] uppercase interactive-hover ${currentPage === 'deployments' ? 'text-white' : 'text-neutral-600 hover:text-white'}`}
+               >
+                  <DecodeText text="Deployments" />
+               </button>
+               <button 
+                 onClick={() => setCurrentPage('signal')} 
+                 className={`text-[9px] font-medium transition-colors tracking-[0.2em] uppercase interactive-hover ${currentPage === 'signal' ? 'text-white' : 'text-neutral-600 hover:text-white'}`}
+               >
+                  <DecodeText text="Signal" />
+               </button>
+               <button 
+                 onClick={() => setCurrentPage('thearchitect')} 
+                 className={`text-[9px] font-medium transition-colors tracking-[0.2em] uppercase interactive-hover ${currentPage === 'thearchitect' ? 'text-white' : 'text-neutral-600 hover:text-white'}`}
+               >
+                  <DecodeText text="The Architect" />
+               </button>
+            </div>
+            <button 
+              onClick={() => setIsAuditOpen(true)}
+              className="text-[9px] font-medium text-white border border-white/10 px-5 py-2.5 rounded-[6px] hover:bg-white hover:text-black transition-all duration-500 tracking-[0.2em] uppercase interactive-hover"
+            >
+              <DecodeText text="Request Audit" />
+            </button>
+          </div>
+        </nav>
+      </header>
+
+      <main className="relative flex flex-col items-center w-full" itemScope itemType="https://schema.org/Service">
+        <meta itemProp="serviceType" content="AI Operations Consulting" />
+        
+        {/* HOMEPAGE ROUTE */}
+        {currentPage === 'home' && (
+          <>
+            {/* 1. HERO SECTION */}
+            <section className="relative min-h-screen flex items-center justify-center pt-32 pb-12 w-full">
+              <HeroBackground />
+              <div className="relative z-10 w-full max-w-[1400px] px-8 md:px-12 flex flex-col lg:flex-row items-center justify-between mt-[-5vh] gap-12">
+                <div className="max-w-3xl lg:w-3/5 flex flex-col items-start">
+                  <FadeIn direction="up">
+                    <div className="flex items-center gap-3 mb-10 border border-white/5 rounded-[6px] px-3 py-1 bg-[#111111] w-fit interactive-hover">
+                      <span className="w-1 h-1 rounded-full bg-white/80"></span>
+                      <span className="text-[8px] font-mono text-neutral-400 uppercase tracking-[0.3em] pt-[1px] cursor-default">
+                        <DecodeText text="Ready for Deployment" />
+                      </span>
+                    </div>
+                  </FadeIn>
+
+                  <FadeIn delay={150} direction="up" duration={1200}>
+                    <h1 className="text-5xl sm:text-6xl md:text-[5.5rem] font-light leading-[1.05] tracking-tight mb-8">
+                      <ScrollRevealText>
+                        Your business<br />
+                        is not broken.
+                      </ScrollRevealText>
+                      <br />
+                      <ScrollRevealText revealColor="#777777">Your system is.</ScrollRevealText>
+                    </h1>
+                  </FadeIn>
+
+                  <FadeIn delay={300} direction="up" className="max-w-xl">
+                    <ScrollRevealText as="p" className="text-sm sm:text-[15px] leading-relaxed font-light mb-14" baseColor="#333333" revealColor="#aaaaaa">
+                      <span itemProp="description">I rebuild operations into AI-powered systems that eliminate manual work, fix workflows, and scale execution — in 10 to 51 days.</span>
+                    </ScrollRevealText>
+                  </FadeIn>
+
+                  <FadeIn delay={450} direction="up" className="flex gap-8 items-center">
+                    <button 
+                      onClick={() => setIsAuditOpen(true)}
+                      className="text-[9px] text-white uppercase tracking-[0.3em] font-light hover:text-neutral-300 transition-colors interactive-hover"
+                    >
+                      Fix My System
+                    </button>
+                    <div className="w-10 h-[1px] bg-neutral-700"></div>
+                    <button 
+                      onClick={() => {
+                        const archSection = document.getElementById('architecture');
+                        if(archSection) archSection.scrollIntoView({ behavior: 'smooth' });
+                      }}
+                      className="text-[9px] text-[#555555] uppercase tracking-[0.3em] font-light hover:text-white transition-colors interactive-hover"
+                    >
+                      View Architecture
+                    </button>
+                  </FadeIn>
+                </div>
+
+                <FadeIn delay={600} direction="left" duration={1500} className="hidden lg:flex lg:w-2/5 justify-end">
+                  <HeroSystemAnimation />
+                </FadeIn>
               </div>
-            ))}
+            </section>
+            
+            <MetricsTicker />
+
+            {/* 2. THE PROBLEM */}
+            <section className="relative w-full py-40 px-6 bg-[#020202]">
+              <RevealLine orientation="horizontal" className="absolute top-0 left-0" />
+              <NoiseBackground />
+              <div className="relative z-10 max-w-4xl mx-auto">
+                <FadeIn>
+                  <h2 className="text-2xl sm:text-4xl font-light mb-32 leading-snug max-w-2xl tracking-tight">
+                    <ScrollRevealText>
+                      Most businesses don't fail because of lack of effort. They fail because of broken systems.
+                    </ScrollRevealText>
+                  </h2>
+                </FadeIn>
+
+                <div className="grid md:grid-cols-2 gap-x-20 gap-y-20">
+                  {[
+                    { title: "Scattered Data", desc: "Teams running on Excel, WhatsApp, and memory. Nothing connects. Truth is fragmented." },
+                    { title: "Blind Operations", desc: "No real-time visibility. Decisions are delayed because nothing is live." },
+                    { title: "Slipping Follow-ups", desc: "Leads, tasks, and operational criticals dropping through the cracks silently." },
+                    { title: "Manual Bottlenecks", desc: "Founders stuck playing routing switchboards instead of leading the company." }
+                  ].map((item, i) => (
+                    <div key={i} className="group relative">
+                      <RevealLine delay={i * 100} className="mb-8" />
+                      <FadeIn delay={i * 150} direction="up">
+                        <div className="flex flex-col gap-4">
+                          <h3 className="font-light text-base tracking-wide flex items-center gap-3">
+                            <span className="w-1.5 h-1.5 rounded-full bg-neutral-800 group-hover:bg-white transition-colors duration-500"></span>
+                            <ScrollRevealText revealColor="#ffffff">{item.title}</ScrollRevealText>
+                          </h3>
+                          <ScrollRevealText as="p" className="text-xs sm:text-sm leading-relaxed font-light pl-4.5" revealColor="#a3a3a3">
+                            {item.desc}
+                          </ScrollRevealText>
+                        </div>
+                      </FadeIn>
+                    </div>
+                  ))}
+                </div>
+                
+                <FadeIn delay={400} className="mt-40 border-l border-white/10 pl-6">
+                  <ScrollRevealText as="p" className="text-sm font-light tracking-wide" revealColor="#ffffff" baseColor="#333333">
+                    This is not a people problem.<br/>
+                    This is a system failure.
+                  </ScrollRevealText>
+                </FadeIn>
+              </div>
+            </section>
+
+            {/* COST OF INACTION */}
+            <section className="relative w-full py-40 px-6 bg-[#030303]">
+              <RevealLine orientation="horizontal" className="absolute top-0 left-0" />
+              <div className="relative z-10 w-full max-w-[1400px] mx-auto px-8 md:px-12 grid lg:grid-cols-2 gap-24 items-center">
+                 <div>
+                   <FadeIn>
+                     <span className="text-[10px] font-mono text-neutral-600 uppercase tracking-[0.2em] mb-6 block">The Cost of Human APIs</span>
+                     <h2 className="text-3xl sm:text-5xl font-light tracking-tight mb-8">
+                       <ScrollRevealText>Operations running on human bandwidth</ScrollRevealText><br/>
+                       <ScrollRevealText revealColor="#777777">will eventually collapse.</ScrollRevealText>
+                     </h2>
+                     <p className="text-sm text-neutral-400 font-light leading-relaxed">
+                       If your process requires a human to move data from Tool A to Tool B, you are paying a salary for an API call. Manual routing is the ultimate silent killer of margin. 
+                     </p>
+                   </FadeIn>
+                 </div>
+                 <div className="space-y-6">
+                    {[
+                      { stat: "30%", text: "of payroll in SMEs is spent on repetitive manual data entry and formatting." },
+                      { stat: "7 Days", text: "is the average delay for executive reporting in un-systematized companies." },
+                      { stat: "100%", text: "of manual follow-ups will eventually drop at scale. Human error is inevitable." }
+                    ].map((item, i) => (
+                      <FadeIn key={i} delay={i * 100} className="border thin-border p-6 bg-white/[0.01] flex items-center gap-6 rounded-[6px]">
+                        <div className="text-3xl font-light text-white w-24 shrink-0">{item.stat}</div>
+                        <div className="w-[1px] h-8 bg-neutral-800"></div>
+                        <span className="text-xs sm:text-sm text-neutral-400 font-light leading-relaxed">{item.text}</span>
+                      </FadeIn>
+                    ))}
+                 </div>
+              </div>
+            </section>
+
+            {/* 3. THE SHIFT */}
+            <section className="relative w-full py-40 px-6 overflow-hidden bg-[#020202]">
+              <RevealLine orientation="horizontal" className="absolute top-0 left-0" />
+              <GradientMeshBackground />
+              <div className="relative z-10 max-w-4xl mx-auto grid lg:grid-cols-2 gap-24 items-center">
+                <div>
+                  <FadeIn direction="left">
+                    <h2 className="text-3xl sm:text-4xl font-light mb-8 leading-snug tracking-tight">
+                      <ScrollRevealText>
+                        You don't need<br />more people.
+                      </ScrollRevealText>
+                      <br />
+                      <ScrollRevealText revealColor="#777777">You need a system<br />that thinks.</ScrollRevealText>
+                    </h2>
+                  </FadeIn>
+                </div>
+                
+                <div className="space-y-0 relative">
+                  <RevealLine orientation="vertical" className="absolute left-[-2rem] top-0 hidden lg:block" delay={300} />
+                  {[
+                    ["Manual workflows", "AI-driven flows"],
+                    ["Static reporting", "Live operational dashboards"],
+                    ["Dropped follow-ups", "Autonomous tracking"],
+                    ["Operational chaos", "Structured execution"]
+                  ].map((shift, i) => (
+                    <div key={i} className="relative group">
+                      <RevealLine delay={i * 100} className="absolute top-0 left-0" />
+                      <FadeIn delay={i * 150} direction="right" className="flex flex-col sm:flex-row sm:items-center justify-between py-8 transition-transform duration-500 hover:translate-x-2">
+                        <ScrollRevealText as="span" className="line-through decoration-neutral-800 text-sm font-light mb-2 sm:mb-0" revealColor="#777777" baseColor="#222222">{shift[0]}</ScrollRevealText>
+                        <ArrowRight className="w-3 h-3 text-neutral-800 hidden sm:block group-hover:text-white transition-colors duration-500" />
+                        <ScrollRevealText as="span" className="font-light text-sm" revealColor="#ffffff">{shift[1]}</ScrollRevealText>
+                      </FadeIn>
+                    </div>
+                  ))}
+                  <RevealLine className="absolute bottom-0 left-0" delay={400} />
+                </div>
+              </div>
+            </section>
+
+            {/* CLIENT SIGNAL (TESTIMONIALS) */}
+            <section className="relative w-full py-40 px-6 bg-[#040404]">
+              <RevealLine orientation="horizontal" className="absolute top-0 left-0" />
+              <div className="relative z-10 w-full max-w-[1400px] mx-auto px-8 md:px-12">
+                 <FadeIn className="mb-24 interactive-hover">
+                   <span className="text-[10px] font-mono text-neutral-600 uppercase tracking-[0.2em] mb-6 block">
+                     <DecodeText text="Client Telemetry" />
+                   </span>
+                   <h2 className="text-3xl sm:text-5xl font-light tracking-tight">
+                     <ScrollRevealText>Endorsements from the field.</ScrollRevealText>
+                   </h2>
+                 </FadeIn>
+
+                 <div className="grid md:grid-cols-3 gap-8">
+                    {[
+                      { quote: "We were about to hire 4 more operations managers just to handle email traffic. The AI architecture eliminated that entire hiring requirement in 6 weeks.", author: "CEO, Global Freight Co." },
+                      { quote: "For the first time in three years, I know exactly what is in my warehouses right now without having to call seven different people. The system just handles it.", author: "Founder, Agri-Distribution" },
+                      { quote: "The speed at which we can adjust pricing globally is now our biggest competitive advantage. We literally operate faster than our competitors can refresh their sheets.", author: "COO, E-Commerce Aggregator" }
+                    ].map((test, i) => (
+                      <FadeIn key={i} delay={i * 150}>
+                        <GlowCard className="h-full border thin-border p-10 bg-white/[0.01] hover:bg-white/[0.02] transition-colors flex flex-col justify-between interactive-hover">
+                           <div className="text-3xl text-neutral-700 font-serif mb-6 leading-none">"</div>
+                           <p className="text-neutral-400 font-light text-sm leading-relaxed mb-8">
+                             {test.quote}
+                           </p>
+                           <div className="flex items-center gap-3">
+                              <div className="w-1.5 h-1.5 bg-cyan-500/50 rounded-full"></div>
+                              <span className="text-[10px] font-mono text-white uppercase tracking-widest">{test.author}</span>
+                           </div>
+                        </GlowCard>
+                      </FadeIn>
+                    ))}
+                 </div>
+              </div>
+            </section>
+
+            {/* THE 4 LAYER ARCHITECTURE */}
+            <section id="architecture" className="relative w-full py-40 px-6 bg-[#030303]">
+               <RevealLine orientation="horizontal" className="absolute top-0 left-0" />
+               <div className="relative z-10 w-full max-w-[1400px] mx-auto px-8 md:px-12">
+                  <FadeIn className="mb-24">
+                    <span className="text-[10px] font-mono text-neutral-600 uppercase tracking-[0.2em] mb-6 block">Structural Integrity</span>
+                    <h2 className="text-3xl sm:text-5xl font-light tracking-tight">
+                      <ScrollRevealText>The 4-Layer Architecture</ScrollRevealText>
+                    </h2>
+                  </FadeIn>
+                  <div className="grid md:grid-cols-4 gap-4">
+                    {[
+                      { icon: Database, name: "Layer 1: Ingestion", desc: "We unify inputs. Forms, emails, legacy ERPs, and APIs push data into a single, centralized truth node." },
+                      { icon: Network, name: "Layer 2: Middleware", desc: "The logic core. Webhooks and automation scripts instantly route data without human touch." },
+                      { icon: Cpu, name: "Layer 3: AI Brain", desc: "Predictive decision making. LLMs analyze incoming strings, categorize intent, and trigger responses." },
+                      { icon: Activity, name: "Layer 4: Interface", desc: "Live dashboards for the executive team. Read-only, real-time, zero-latency visibility into operations." }
+                    ].map((layer, i) => (
+                      <FadeIn key={i} delay={i*100} className="border thin-border p-8 bg-white/[0.01] rounded-[6px]">
+                         <layer.icon className="w-6 h-6 text-neutral-500 mb-8" />
+                         <h3 className="text-white font-medium text-sm mb-4">{layer.name}</h3>
+                         <p className="text-neutral-500 font-light text-sm leading-relaxed">{layer.desc}</p>
+                      </FadeIn>
+                    ))}
+                  </div>
+               </div>
+            </section>
+
+            {/* 4. WHAT YOU ACTUALLY DO */}
+            <section className="relative w-full py-40 px-6 bg-[#020202]">
+              <div className="max-w-4xl mx-auto">
+                <FadeIn className="mb-24 interactive-hover">
+                  <span className="text-[10px] font-mono text-neutral-600 uppercase tracking-[0.2em] mb-6 block">
+                    <DecodeText text="Methodology" />
+                  </span>
+                  <h2 className="text-3xl sm:text-5xl font-light tracking-tight">
+                    <ScrollRevealText>I Build AI Operating Systems</ScrollRevealText>
+                  </h2>
+                </FadeIn>
+
+                <div className="flex flex-col w-full">
+                  {[
+                    { step: "01", title: "Workflow Reconstruction", desc: "We don't automate a broken process. We map everything from scratch, identify leaks, delays, and redundancies, and rebuild the logic." },
+                    { step: "02", title: "System Architecture", desc: "Designing your business like high-performance software. Structuring roles, permissions, data flows, and strict operational dependencies." },
+                    { step: "03", title: "AI Integration", desc: "Embedding AI decision layers. Creating internal copilots for your teams, enabling predictive analytics, and automating reactive tasks." },
+                    { step: "04", title: "Deployment", desc: "Going live in 10–51 days. We don't build useless prototypes. We deploy real, stress-tested systems that your team uses day one." }
+                  ].map((pillar, i) => (
+                    <GlowCard key={i} className="group border-t thin-border -mx-6 px-6 interactive-hover">
+                      <FadeIn delay={i * 150} direction="up" className="py-12 flex flex-col md:flex-row gap-6 md:gap-12">
+                        <div className="text-neutral-700 font-mono text-[10px] pt-1 w-8">{pillar.step}</div>
+                        <div className="md:w-1/3">
+                          <h3 className="text-lg font-light tracking-wide group-hover:translate-x-2 transition-transform duration-500">
+                            <ScrollRevealText revealColor="#ffffff">{pillar.title}</ScrollRevealText>
+                          </h3>
+                        </div>
+                        <div className="md:w-1/2 md:ml-auto">
+                          <ScrollRevealText as="p" className="font-light leading-relaxed text-xs sm:text-sm" revealColor="#a3a3a3">
+                            {pillar.desc}
+                          </ScrollRevealText>
+                        </div>
+                      </FadeIn>
+                    </GlowCard>
+                  ))}
+                  <RevealLine className="mt-0" />
+                </div>
+              </div>
+            </section>
+
+            {/* 5. TIMELINE */}
+            <section className="relative w-full py-40 px-6 overflow-hidden bg-[#030303]">
+              <StripedBackground />
+              <div className="relative z-10 max-w-4xl mx-auto flex flex-col lg:flex-row gap-24">
+                <FadeIn direction="right" className="lg:w-1/3">
+                  <h2 className="text-3xl sm:text-4xl font-light mb-8 leading-snug tracking-tight">
+                    <ScrollRevealText>10–51 Days.</ScrollRevealText><br />
+                    <ScrollRevealText revealColor="#777777">No Excuses.</ScrollRevealText>
+                  </h2>
+                  <ScrollRevealText as="p" className="font-light text-xs sm:text-sm leading-relaxed" revealColor="#a3a3a3">
+                    You don't wait 6 months to fix operations. Speed of execution is the ultimate differentiator.
+                  </ScrollRevealText>
+                </FadeIn>
+
+                <div className="lg:w-2/3 relative">
+                  <RevealLine orientation="vertical" delay={200} className="absolute left-[3px] top-2 bottom-2" />
+                  
+                  <div className="space-y-16">
+                    {[
+                      { day: "Day 0–3", title: "Chaos Audit", desc: "Deep dive system mapping. Finding exactly where you bleed time and money." },
+                      { day: "Day 4–15", title: "Architecture & Flows", desc: "Building the underlying database, logic, and rewriting operational rules." },
+                      { day: "Day 16–35", title: "Build & AI Layer", desc: "Connecting the tech stack, injecting AI decision models, building live dashboards." },
+                      { day: "Day 36–51", title: "Deployment", desc: "System goes live. Team training. Rapid optimization based on real usage." }
+                    ].map((phase, i) => (
+                      <FadeIn key={i} delay={i * 200 + 300} direction="left" className="relative pl-10 group">
+                        <div className="absolute left-[-1px] top-1.5 w-2 h-2 rounded-full bg-[#050505] border border-neutral-700 group-hover:border-white group-hover:scale-150 transition-all duration-500"></div>
+                        <div className="text-[10px] font-mono text-neutral-600 tracking-widest uppercase mb-3">{phase.day}</div>
+                        <h3 className="text-sm font-light tracking-wide mb-2">
+                          <ScrollRevealText revealColor="#ffffff">{phase.title}</ScrollRevealText>
+                        </h3>
+                        <ScrollRevealText as="p" className="font-light text-xs sm:text-sm leading-relaxed max-w-sm" revealColor="#a3a3a3">
+                          {phase.desc}
+                        </ScrollRevealText>
+                      </FadeIn>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </section>
+          </>
+        )}
+
+        {currentPage === 'thearchitect' && <AboutPage onOpenAudit={() => setIsAuditOpen(true)} />}
+        {currentPage === 'deployments' && <DeploymentsPage onOpenAudit={() => setIsAuditOpen(true)} />}
+        {currentPage === 'signal' && <SignalPage onOpenAudit={() => setIsAuditOpen(true)} />}
+        
+        <AnimatedFooter setCurrentPage={setCurrentPage} onOpenAudit={() => setIsAuditOpen(true)} />
+        
+      </main>
+    </div>
+  );
+}
+
+const AnimatedFooter = ({ setCurrentPage, onOpenAudit }) => {
+  const nodes = Array.from({ length: 40 }).map((_, i) => ({
+    id: i,
+    left: `${Math.random() * 100}%`,
+    top: `${Math.random() * 100}%`,
+    delay: `${Math.random() * 5}s`,
+    duration: `${2 + Math.random() * 4}s`
+  }));
+
+  return (
+    <footer className="relative w-full bg-[#020202] border-t thin-border overflow-hidden pt-32 pb-12 flex flex-col items-center z-10">
+      <div className="absolute inset-0 pointer-events-none z-0 opacity-40">
+        <div className="absolute top-0 left-0 w-full h-[2px] bg-cyan-500/50 shadow-[0_0_20px_rgba(6,182,212,0.8)] animate-scanline"></div>
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTAgMGg0MHY0MEgwem0yMCAyMGgyMHYyMEgyMHoiIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMSIgZmlsbC1ydWxlPSJldmVub2RkIi8+PC9zdmc+')] [mask-image:linear-gradient(to_bottom,black_10%,transparent_90%)]"></div>
+        {nodes.map(node => (
+          <div 
+            key={node.id}
+            className="absolute w-1 h-1 bg-white rounded-full"
+            style={{ 
+              left: node.left, 
+              top: node.top, 
+              animation: `random-blink ${node.duration} ease-in-out ${node.delay} infinite` 
+            }}
+          />
+        ))}
+        <div className="absolute top-[20%] left-0 w-full overflow-hidden opacity-[0.02] select-none flex">
+          <div className="animate-marquee whitespace-nowrap text-[15vw] font-black tracking-tighter text-transparent" style={{ WebkitTextStroke: '2px white' }}>
+            SYSTEMS ARCHITECT // ENGINEER LEVERAGE // SYSTEMS ARCHITECT // ENGINEER LEVERAGE // 
+          </div>
+        </div>
+      </div>
+
+      <div className="relative z-10 w-full max-w-[1400px] mx-auto px-8 md:px-12 flex flex-col items-start gap-32">
+        <div className="grid lg:grid-cols-12 gap-16 w-full">
+          <div className="lg:col-span-6 flex flex-col items-start">
+             <div className="flex items-center gap-3 mb-8 border border-white/5 rounded-[6px] px-3 py-1 bg-[#111111] w-fit">
+               <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+               <span className="text-[9px] font-mono text-neutral-400 uppercase tracking-[0.25em] pt-[1px]">Systems Online</span>
+             </div>
+             <h2 className="text-4xl sm:text-5xl font-light text-white tracking-tight mb-8">
+               <ScrollRevealText>Ready to fix</ScrollRevealText><br />
+               <ScrollRevealText revealColor="#777777">your operations?</ScrollRevealText>
+             </h2>
+             <button 
+                onClick={onOpenAudit}
+                className="group relative inline-flex items-center justify-start gap-6 text-xs text-white uppercase tracking-[0.2em] font-light transition-colors pb-2 overflow-hidden interactive-hover w-fit mt-4"
+              >
+                <span className="relative z-10 group-hover:text-neutral-300 transition-colors duration-500">Initialize Diagnostics</span>
+                <ArrowRight className="w-3 h-3 relative z-10 group-hover:translate-x-2 transition-transform duration-500" />
+                <div className="absolute bottom-0 left-0 w-full h-[1px] bg-white/20"></div>
+                <div className="absolute bottom-0 left-[-100%] w-full h-[1px] bg-white group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out"></div>
+              </button>
           </div>
 
-          <div className="flex flex-col items-start gap-4 mt-auto pt-12 border-t border-zinc-800 text-left w-full">
-             <span className="text-[10px] tracking-[0.3em] uppercase text-zinc-500 font-semibold mb-2">Get in touch</span>
-             <a href="mailto:info@pillarproperties.co.nz" className="text-white hover:text-zinc-400 transition-colors font-light text-lg">info@pillarproperties.co.nz</a>
-             <a href="tel:+6491234567" className="text-white hover:text-zinc-400 transition-colors font-light text-lg">+64 9 123 4567</a>
+          <div className="lg:col-span-6 grid sm:grid-cols-2 gap-12">
+            <div className="flex flex-col gap-6">
+              <div className="text-[10px] font-mono text-neutral-600 uppercase tracking-[0.2em]">Index</div>
+              <ul className="space-y-4">
+                {['Home', 'Deployments', 'Signal', 'The Architect'].map((link, i) => (
+                  <li key={i}>
+                    <button 
+                      onClick={() => setCurrentPage(link.toLowerCase().replace(' ', ''))}
+                      className="text-sm font-light text-neutral-400 hover:text-white transition-colors interactive-hover relative group overflow-hidden"
+                    >
+                      <DecodeText text={link} />
+                      <div className="absolute bottom-0 left-0 w-full h-[1px] bg-white translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-500"></div>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="flex flex-col gap-6" itemScope itemType="https://schema.org/DefinedTerm">
+              <div className="text-[10px] font-mono text-neutral-600 uppercase tracking-[0.2em]">Knowledge Base</div>
+              <div className="text-xs text-neutral-500 font-light leading-relaxed border border-white/[0.02] bg-white/[0.01] p-6 rounded-[6px] text-left">
+                <span itemProp="name" className="text-neutral-300 block mb-1">AI Operating System (AI-OS)</span>
+                <span itemProp="description">A centralized architectural framework replacing disjointed manual workflows with unified, AI-driven automation, enabling real-time visibility and structured scale.</span>
+              </div>
+              <div className="mt-4 pt-4 border-t border-white/[0.04]">
+                <div className="text-[9px] font-mono text-neutral-600 uppercase tracking-[0.2em] mb-2">Global Operations</div>
+                <div className="text-xs text-neutral-400 font-light">India // USA // UAE // KSA</div>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Persistent Floating CTA */}
-        {scrolled && currentPage !== 'contact' && (
-           <Interactive className="fixed bottom-8 right-6 md:right-12 lg:right-16 z-40 animate-in slide-in-from-bottom-10 fade-in duration-500 hidden md:block">
-              <button 
-                onClick={() => setCurrentPage('contact')} 
-                className="bg-zinc-950 text-white px-8 py-4 text-xs tracking-[0.2em] uppercase font-semibold rounded-full shadow-2xl hover:bg-zinc-800 transition-colors flex items-center gap-2"
-              >
-                Inquire Now <ArrowUpRight className="w-4 h-4" />
-              </button>
-           </Interactive>
-        )}
-
-        {/* Dynamic Page Rendering */}
-        <main className="flex-grow z-10 bg-[#fafafa]">
-          {currentPage === 'home' && <HomePage navigate={setCurrentPage} />}
-          {currentPage === 'about' && <AboutPage />}
-          {currentPage === 'services' && <ServicesPage />}
-          {currentPage === 'projects' && <ProjectsPage />}
-          {currentPage === 'gallery' && <GalleryPage />}
-          {currentPage === 'contact' && <ContactPage />}
-        </main>
-
-        {/* Architectural Footer */}
-        <footer className="bg-zinc-950 text-zinc-400 py-24 px-[3%] relative z-20">
-          <div className="max-w-[1600px] mx-auto w-full">
-            <div className="flex flex-col md:flex-row justify-between items-start border-b border-zinc-800 pb-20">
-              <div className="mb-12 md:mb-0">
-                <Interactive onClick={() => setCurrentPage('home')}>
-                  <img 
-                    src="https://static.wixstatic.com/media/548938_7808033ca9fd4a2c9b9240e3e3f945e2~mv2.png" 
-                    alt="Pillar Properties" 
-                    className="h-12 md:h-16 w-auto mb-6 cursor-pointer object-contain" 
-                  />
-                </Interactive>
-                <div className="flex gap-6 mt-12">
-                  <Interactive><Instagram className="w-5 h-5 text-zinc-500 hover:text-white transition-colors cursor-pointer" /></Interactive>
-                  <Interactive><Linkedin className="w-5 h-5 text-zinc-500 hover:text-white transition-colors cursor-pointer" /></Interactive>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-12 md:gap-32">
-                <div>
-                  <h4 className="text-[10px] md:text-xs tracking-[0.2em] uppercase font-semibold text-zinc-600 mb-8">Navigation</h4>
-                  <ul className="space-y-4 text-sm md:text-base">
-                    {navLinks.map(link => (
-                      <li key={link}>
-                        <Interactive onClick={() => setCurrentPage(link)}>
-                          <span className="hover:text-white transition-colors capitalize cursor-pointer font-light">{link}</span>
-                        </Interactive>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div>
-                  <h4 className="text-[10px] md:text-xs tracking-[0.2em] uppercase font-semibold text-zinc-600 mb-8">Contact</h4>
-                  <ul className="space-y-4 font-light text-sm md:text-base">
-                    <li>Auckland CBD</li>
-                    <li>+64 9 123 4567</li>
-                    <li>info@pillarproperties.co.nz</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-            
-            <div className="pt-8 flex flex-col md:flex-row justify-between items-center text-[10px] md:text-xs tracking-widest uppercase font-semibold text-zinc-600">
-              <p className="mb-4 md:mb-0">&copy; {new Date().getFullYear()} PILLAR PROPERTIES</p>
-              <div className="flex gap-8">
-                <Interactive><span className="hover:text-zinc-400 cursor-pointer transition-colors">Privacy</span></Interactive>
-                <Interactive><span className="hover:text-zinc-400 cursor-pointer transition-colors">Terms</span></Interactive>
-              </div>
-            </div>
-          </div>
-        </footer>
-
+        <div className="w-full pt-8 border-t border-white/[0.04] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 text-[10px] font-mono text-neutral-600 uppercase tracking-widest">
+           <div className="flex items-center gap-4">
+             <Command className="w-3 h-3" />
+             <span>© {new Date().getFullYear()} AI Systems Architect</span>
+           </div>
+           
+           <div className="flex items-center gap-8">
+             <a href="#" className="hover:text-neutral-300 transition-colors interactive-hover"><DecodeText text="LinkedIn" /></a>
+             <a href="#" className="hover:text-neutral-300 transition-colors interactive-hover"><DecodeText text="Twitter" /></a>
+             <a href="mailto:complete.anant@gmail.com" className="hover:text-white transition-colors interactive-hover">complete.anant@gmail.com</a>
+           </div>
+        </div>
       </div>
-    </CursorContext.Provider>
+    </footer>
   );
-}
+};
