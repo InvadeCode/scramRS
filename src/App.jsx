@@ -13,7 +13,9 @@ import {
   Command,
   Database,
   Network,
-  Globe2
+  Globe2,
+  Menu,
+  X
 } from 'lucide-react';
 
 // --- SEO, GEO, & AIO: STRUCTURED DATA ---
@@ -282,7 +284,7 @@ const CustomCursor = () => {
 
 const MetricsTicker = () => {
   return (
-    <div className="relative z-20 w-full border-y thin-border bg-[#050505] overflow-hidden flex py-4 opacity-90">
+    <div className="relative z-20 w-full border-y thin-border bg-[#050505] overflow-hidden flex py-4 opacity-90 mt-auto">
       <div className="animate-ticker flex whitespace-nowrap items-center text-[10px] font-mono text-neutral-500 uppercase tracking-widest">
         {[...Array(3)].map((_, i) => (
           <React.Fragment key={i}>
@@ -323,6 +325,55 @@ const HeroSystemAnimation = () => {
          <path d="M200 200 L200 350 L120 350" fill="none" stroke="#fff" strokeWidth="0.5" className="animate-data-stream" strokeDasharray="15 400" strokeLinecap="round" />
          <path d="M200 200 L300 100 L350 100" fill="none" stroke="#fff" strokeWidth="0.5" className="animate-data-stream-reverse" strokeDasharray="15 400" strokeLinecap="round" />
       </svg>
+    </div>
+  );
+};
+
+// --- NEW COMPONENT: SYSTEM BOOT PRELOADER ---
+const SystemBootLoader = ({ onComplete }) => {
+  const [logs, setLogs] = useState([]);
+  const fullLogs = [
+    "INITIALIZING CORE SYSTEMS...",
+    "ESTABLISHING SECURE CONNECTION...",
+    "LOADING ARCHITECTURAL SCHEMAS...",
+    "MOUNTING AI LOGIC LAYERS...",
+    "BYPASSING HUMAN BOTTLENECKS...",
+    "SYSTEMS OPTIMAL. ACCESS GRANTED."
+  ];
+
+  useEffect(() => {
+    let currentLog = 0;
+    const interval = setInterval(() => {
+      if (currentLog < fullLogs.length) {
+        setLogs(prev => [...prev, fullLogs[currentLog]]);
+        currentLog++;
+      } else {
+        clearInterval(interval);
+        setTimeout(onComplete, 600); 
+      }
+    }, 250); 
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="fixed inset-0 z-[99999] bg-[#020202] flex flex-col justify-end p-12 overflow-hidden animate-out fade-out duration-1000 fill-mode-forwards">
+      <NoiseBackground />
+      <div className="absolute top-0 left-0 w-full h-[2px] bg-cyan-500/30 animate-scanline shadow-[0_0_20px_rgba(6,182,212,0.5)] pointer-events-none"></div>
+      
+      <div className="relative z-10 font-mono text-[10px] md:text-xs text-neutral-500 uppercase tracking-widest space-y-4">
+        {logs.map((log, i) => (
+          <div key={i} className="flex items-center gap-4">
+            <span className="text-cyan-800/60">[{(Math.random() * 10000).toFixed(0).padStart(5, '0')}]</span>
+            <span className={i === fullLogs.length - 1 ? "text-white" : "text-neutral-400"}>{log}</span>
+          </div>
+        ))}
+        {logs.length < fullLogs.length && (
+          <div className="flex items-center gap-4 animate-pulse">
+            <span className="text-cyan-800/60">[WAIT]</span>
+            <span className="text-white">_</span>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
@@ -690,7 +741,6 @@ const GlobalNetworkMap = () => {
 
   return (
     <div className="relative w-full max-w-4xl mx-auto h-[300px] sm:h-[400px] border thin-border bg-[#030303] rounded-[6px] overflow-hidden mt-16">
-       {/* CSS Grid World Abstraction */}
        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTAgMGg0MHY0MEgwem0yMCAyMGgyMHYyMEgyMHoiIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMiIgZmlsbC1ydWxlPSJldmVub2RkIi8+PC9zdmc+')] [mask-image:radial-gradient(ellipse_at_center,black_40%,transparent_100%)]"></div>
        <div className="absolute top-1/2 left-0 w-full h-[1px] bg-white/[0.02]"></div>
        <div className="absolute top-0 left-1/2 w-[1px] h-full bg-white/[0.02]"></div>
@@ -704,8 +754,6 @@ const GlobalNetworkMap = () => {
             <div className="mt-1 text-[8px] font-mono tracking-widest text-neutral-500 uppercase">{node.label}</div>
          </div>
        ))}
-       
-       {/* Scanning line over map */}
        <div className="absolute top-0 left-0 w-full h-[1px] bg-white/10 animate-scanline shadow-[0_0_15px_rgba(255,255,255,0.5)]"></div>
     </div>
   );
@@ -783,8 +831,47 @@ const AboutPage = ({ onOpenAudit }) => {
         </div>
       </section>
 
-      {/* Deployment Methodology */}
+      {/* NEW: Investment Protocol (Pricing) */}
       <section className="relative w-full py-40 px-6 bg-[#030303]">
+         <RevealLine orientation="horizontal" className="absolute top-0 left-0" />
+         <div className="relative z-10 w-full max-w-[1400px] mx-auto px-8 md:px-12">
+            <FadeIn className="mb-24">
+              <span className="text-[10px] font-mono text-neutral-600 uppercase tracking-[0.2em] mb-6 block">Capital Allocation</span>
+              <h2 className="text-3xl sm:text-5xl font-light tracking-tight">
+                <ScrollRevealText>The Engagement Model</ScrollRevealText>
+              </h2>
+            </FadeIn>
+            
+            <div className="grid md:grid-cols-2 gap-8">
+              <FadeIn delay={100} className="border thin-border p-12 bg-white/[0.01] rounded-[6px] relative group overflow-hidden interactive-hover">
+                <div className="absolute top-0 left-0 w-full h-[2px] bg-neutral-800 group-hover:bg-white transition-colors duration-500"></div>
+                <h3 className="text-2xl font-light text-white mb-4">Architecture Audit</h3>
+                <div className="text-3xl font-light text-neutral-400 mb-8">$5,000 <span className="text-sm">/ flat</span></div>
+                <p className="text-sm text-neutral-500 font-light leading-relaxed mb-8 border-l border-white/10 pl-4">
+                  A 3-day deep dive into your operations. You receive a complete wireframe of your current operational debt and a hardcoded blueprint of the required AI architecture.
+                </p>
+                <button onClick={onOpenAudit} className="text-[10px] font-mono tracking-widest uppercase text-white hover:text-neutral-400 transition-colors flex items-center gap-3">
+                  Initiate Audit <ArrowRight className="w-3 h-3" />
+                </button>
+              </FadeIn>
+
+              <FadeIn delay={200} className="border thin-border p-12 bg-white/[0.01] rounded-[6px] relative group overflow-hidden interactive-hover">
+                <div className="absolute top-0 left-0 w-full h-[2px] bg-neutral-800 group-hover:bg-cyan-500 transition-colors duration-500"></div>
+                <h3 className="text-2xl font-light text-white mb-4">System Deployment</h3>
+                <div className="text-3xl font-light text-neutral-400 mb-8">Custom <span className="text-sm">/ 10-51 days</span></div>
+                <p className="text-sm text-neutral-500 font-light leading-relaxed mb-8 border-l border-white/10 pl-4">
+                  I act as your interim CTO of Operations. We build the central database, write the middleware, train the AI logic layers, and deploy the entire system live.
+                </p>
+                <button onClick={onOpenAudit} className="text-[10px] font-mono tracking-widest uppercase text-white hover:text-cyan-400 transition-colors flex items-center gap-3">
+                  Request Deployment <ArrowRight className="w-3 h-3" />
+                </button>
+              </FadeIn>
+            </div>
+         </div>
+      </section>
+
+      {/* Deployment Methodology */}
+      <section className="relative w-full py-40 px-6 bg-[#020202]">
         <RevealLine orientation="horizontal" className="absolute top-0 left-0" />
         <div className="relative z-10 w-full max-w-[1400px] mx-auto px-8 md:px-12">
            <FadeIn className="mb-24">
@@ -856,35 +943,37 @@ const DeploymentsPage = ({ onOpenAudit }) => {
   return (
     <div className="w-full flex flex-col items-center animate-in fade-in duration-1000">
       
-      <section className="relative min-h-[60vh] flex items-center justify-center pt-32 pb-12 w-full">
+      <section className="relative min-h-[100svh] flex flex-col w-full">
         <HeroBackground />
-        <div className="relative z-10 w-full max-w-[1400px] px-8 md:px-12 flex flex-col items-start mt-[-5vh]">
-          <FadeIn direction="up">
-            <div className="flex items-center gap-3 mb-10 border border-white/5 rounded-[6px] px-3 py-1 bg-[#111111] w-fit interactive-hover">
-              <span className="w-1 h-1 rounded-full bg-cyan-500"></span>
-              <span className="text-[8px] font-mono text-neutral-400 uppercase tracking-[0.3em] pt-[1px] cursor-default">
-                <DecodeText text="System Logs" />
-              </span>
-            </div>
-          </FadeIn>
+        
+        <div className="flex-1 flex items-center justify-center pt-32 pb-12 w-full relative z-10">
+          <div className="w-full max-w-[1400px] px-8 md:px-12 flex flex-col items-start mt-[-5vh]">
+            <FadeIn direction="up">
+              <div className="flex items-center gap-3 mb-10 border border-white/5 rounded-[6px] px-3 py-1 bg-[#111111] w-fit interactive-hover">
+                <span className="w-1 h-1 rounded-full bg-cyan-500"></span>
+                <span className="text-[8px] font-mono text-neutral-400 uppercase tracking-[0.3em] pt-[1px] cursor-default">
+                  <DecodeText text="System Logs" />
+                </span>
+              </div>
+            </FadeIn>
 
-          <FadeIn delay={150} direction="up" duration={1200}>
-            <h1 className="text-5xl sm:text-6xl md:text-[5.5rem] font-light leading-[1.05] tracking-tight mb-8">
-              <ScrollRevealText>Architectural</ScrollRevealText><br />
-              <ScrollRevealText revealColor="#777777">Deployments.</ScrollRevealText>
-            </h1>
-          </FadeIn>
-          
-          <FadeIn delay={300} direction="up" className="max-w-xl w-full">
-            <ScrollRevealText as="p" className="text-sm sm:text-[15px] leading-relaxed font-light mb-14" baseColor="#333333" revealColor="#aaaaaa">
-              A public record of operational transformations deployed across the globe. Proof that engineered leverage outperforms human effort.
-            </ScrollRevealText>
-            <GlobalNetworkMap />
-          </FadeIn>
+            <FadeIn delay={150} direction="up" duration={1200}>
+              <h1 className="text-5xl sm:text-6xl md:text-[5.5rem] font-light leading-[1.05] tracking-tight mb-8">
+                <ScrollRevealText>Architectural</ScrollRevealText><br />
+                <ScrollRevealText revealColor="#777777">Deployments.</ScrollRevealText>
+              </h1>
+            </FadeIn>
+            <FadeIn delay={300} direction="up" className="max-w-xl w-full">
+              <ScrollRevealText as="p" className="text-sm sm:text-[15px] leading-relaxed font-light mb-14" baseColor="#333333" revealColor="#aaaaaa">
+                A public record of operational transformations deployed across the globe. Proof that engineered leverage outperforms human effort.
+              </ScrollRevealText>
+              <GlobalNetworkMap />
+            </FadeIn>
+          </div>
         </div>
+        
+        <MetricsTicker />
       </section>
-      
-      <MetricsTicker />
 
       {/* Deep Dives with Quotes */}
       <section className="relative w-full py-20 px-6 bg-[#020202]">
@@ -999,6 +1088,37 @@ const DeploymentsPage = ({ onOpenAudit }) => {
 
 // --- SIGNAL (INSIGHTS) PAGE COMPONENT ---
 const SignalPage = ({ onOpenAudit }) => {
+  const [subscribed, setSubscribed] = useState(false);
+  const [events, setEvents] = useState([
+    "Node US_EAST synchronized... 0.04ms",
+    "AI_Router intercepted generic query. Resolved.",
+    "Payment ledger reconciled. 0 anomalies.",
+    "Webhook received. Processing external payload..."
+  ]);
+  
+  useEffect(() => {
+    const randomEvents = [
+      "Database read successful... 12ms latency.",
+      "Anomaly detected in Node DXB. Rerouting logic...",
+      "Founders ping blocked. Copilot responded.",
+      "Inventory synced globally across 14 APIs.",
+      "Redundant Zapier flow terminated."
+    ];
+    
+    const interval = setInterval(() => {
+      const newEvent = randomEvents[Math.floor(Math.random() * randomEvents.length)];
+      setEvents(prev => [newEvent, ...prev.slice(0, 4)]);
+    }, 4000);
+    
+    return () => clearInterval(interval);
+  }, []);
+  
+  const handleSubscribe = (e) => {
+    e.preventDefault();
+    setSubscribed(true);
+    setTimeout(() => setSubscribed(false), 3000);
+  };
+
   return (
     <div className="w-full flex flex-col items-center animate-in fade-in duration-1000">
       <section className="relative min-h-[60vh] flex items-center justify-center pt-32 pb-12 w-full">
@@ -1025,6 +1145,28 @@ const SignalPage = ({ onOpenAudit }) => {
               Hard truths on operational debt, system architecture, and why human effort is the most expensive commodity in business.
             </ScrollRevealText>
           </FadeIn>
+        </div>
+      </section>
+
+      {/* Live System Events */}
+      <section className="relative w-full py-20 px-6 bg-[#030303]">
+        <RevealLine orientation="horizontal" className="absolute top-0 left-0" />
+        <div className="relative z-10 w-full max-w-[1400px] mx-auto px-8 md:px-12 flex flex-col items-center">
+           <FadeIn className="w-full max-w-4xl border thin-border bg-[#050505] rounded-[6px] overflow-hidden">
+             <div className="border-b thin-border p-4 bg-[#0a0a0a] flex items-center gap-3">
+                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                <span className="text-[10px] font-mono text-neutral-500 tracking-widest uppercase">Global_Telemetry_Stream</span>
+             </div>
+             <div className="p-6 font-mono text-[10px] sm:text-xs text-neutral-600 uppercase tracking-wider space-y-4 h-[200px] overflow-hidden relative">
+                <div className="absolute inset-0 bg-gradient-to-b from-[#050505] via-transparent to-[#050505] opacity-20 z-10 pointer-events-none"></div>
+                {events.map((log, i) => (
+                  <div key={i} className={`flex items-center gap-4 transition-all duration-500 ${i === 0 ? 'text-white translate-y-0 opacity-100' : 'opacity-50'}`}>
+                    <span className="text-cyan-900">[{new Date().toISOString().split('T')[1].substring(0, 8)}]</span>
+                    {log}
+                  </div>
+                ))}
+             </div>
+           </FadeIn>
         </div>
       </section>
 
@@ -1063,7 +1205,7 @@ const SignalPage = ({ onOpenAudit }) => {
         </div>
       </section>
 
-      {/* NEW: Encrypted Subscription Terminal */}
+      {/* Encrypted Subscription Terminal */}
       <section className="relative w-full py-40 px-6 bg-[#020202]">
         <RevealLine orientation="horizontal" className="absolute top-0 left-0" />
         <div className="relative z-10 w-full max-w-[1000px] mx-auto px-8 md:px-12 flex flex-col items-center text-center">
@@ -1074,17 +1216,22 @@ const SignalPage = ({ onOpenAudit }) => {
              <p className="text-sm text-neutral-400 font-light max-w-lg mb-12">
                No spam. Just highly tactical system architecture blueprints and essays sent directly to your comm channel once a month.
              </p>
-             <div className="w-full max-w-md border thin-border bg-[#050505] flex p-2 pl-6 items-center rounded-[6px]">
+             <form onSubmit={handleSubscribe} className="w-full max-w-md border thin-border bg-[#050505] flex p-2 pl-6 items-center rounded-[6px] relative overflow-hidden">
                 <span className="text-cyan-500 font-mono text-xs mr-4">{">"}</span>
                 <input 
                   type="email" 
+                  required
                   placeholder="enter_email_address..." 
                   className="bg-transparent border-none outline-none w-full text-white font-mono text-xs placeholder:text-neutral-600"
                 />
-                <button className="bg-white text-black px-6 py-3 text-[10px] font-mono tracking-widest uppercase hover:bg-neutral-200 transition-colors interactive-hover rounded-[6px]">
+                <button type="submit" className="bg-white text-black px-6 py-3 text-[10px] font-mono tracking-widest uppercase hover:bg-neutral-200 transition-colors interactive-hover rounded-[6px]">
                   Establish
                 </button>
-             </div>
+                {/* Success State Overlay */}
+                <div className={`absolute inset-0 bg-green-500 flex items-center justify-center transition-transform duration-300 ${subscribed ? 'translate-y-0' : 'translate-y-full'}`}>
+                  <span className="text-[10px] font-mono text-black uppercase tracking-widest font-bold">CONNECTION ESTABLISHED</span>
+                </div>
+             </form>
            </FadeIn>
         </div>
       </section>
@@ -1092,457 +1239,123 @@ const SignalPage = ({ onOpenAudit }) => {
   );
 };
 
+// --- STACK PAGE COMPONENT ---
+const StackPage = ({ onOpenAudit }) => {
+  const externalIntegrations = [
+    { tool: "Next.js", purpose: "Core Framework", why: "The frontend and website framework itself. Essential for dynamic journeys, interactive tools, better SEO, and long-term extensibility." },
+    { tool: "Sanity", purpose: "Headless CMS", why: "Cleaner content modeling, easier editorial experience, and better fit for a modern case-study-heavy site than standard WP/Wix." },
+    { tool: "HubSpot", purpose: "CRM & Lead Engine", why: "Everything flows here: contact forms, quiz submissions, booking intent, and source tracking. Marketing + sales in one place." },
+    { tool: "Cal.com", purpose: "Booking Layer", why: "For consults and discovery calls. Embeds natively with pre-filled context so prospects never repeat themselves." },
+    { tool: "Tally", purpose: "Initial Logic Forms", why: "Start fast with Brand Readiness Quizzes and Brief Builders before migrating to custom React. Clean, notion-like UI." },
+    { tool: "Resend", purpose: "Transactional Email", why: "Dedicated mail layer for quiz results, booking confirmations, brief submissions, and internal lead alerts." },
+    { tool: "n8n", purpose: "Automation Core", why: "The operational glue. Pushes form data to CRM, triggers slack alerts, routes leads, and generates PDFs autonomously." },
+    { tool: "GA4 + Clarity + GSC", purpose: "Measurement Layer", why: "Tracks where traffic comes from, how far they scroll, where they drop, and exactly which tools actually convert." }
+  ];
 
-// --- MAIN APPLICATION ---
-
-export default function App() {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [currentPage, setCurrentPage] = useState('home');
-  const [isAuditOpen, setIsAuditOpen] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [currentPage]);
+  const internalModules = [
+    "Brand Readiness Quiz",
+    "Brief Builder",
+    "Service Recommender",
+    "Case Study Finder",
+    "Scope Estimator",
+    "Credentials Generator"
+  ];
 
   return (
-    <div className="min-h-screen bg-[#050505] text-neutral-400 font-sans selection:bg-neutral-800 selection:text-white overflow-x-hidden antialiased">
-      <StructuredData />
-      <CustomCursor />
-      <AuditJourney isOpen={isAuditOpen} onClose={() => setIsAuditOpen(false)} />
-      <style dangerouslySetInnerHTML={{__html: `
-        :root { color-scheme: dark; }
-        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; letter-spacing: -0.01em; cursor: none !important; }
-        a, button, [role="button"] { cursor: none !important; }
-        h1, h2, h3, h4, h5, h6 { letter-spacing: -0.04em; font-weight: 300; }
-        .thin-border { border-color: rgba(255, 255, 255, 0.04); }
-        
-        @keyframes data-stream { 0% { stroke-dashoffset: 400; } 100% { stroke-dashoffset: 0; } }
-        @keyframes data-stream-reverse { 0% { stroke-dashoffset: -400; } 100% { stroke-dashoffset: 0; } }
-        .animate-data-stream { animation: data-stream 3s linear infinite; }
-        .animate-data-stream-reverse { animation: data-stream-reverse 4s linear infinite; }
-
-        @keyframes marquee { 0% { transform: translateX(0%); } 100% { transform: translateX(-50%); } }
-        .animate-marquee { animation: marquee 30s linear infinite; display: flex; width: max-content; }
-        
-        @keyframes ticker { 0% { transform: translateX(0%); } 100% { transform: translateX(-100%); } }
-        .animate-ticker { animation: ticker 40s linear infinite; }
-        
-        @keyframes scanline { 0% { transform: translateY(-100%); } 100% { transform: translateY(1000%); } }
-        .animate-scanline { animation: scanline 8s linear infinite; }
-
-        @keyframes random-blink { 0%, 100% { opacity: 0.1; } 50% { opacity: 1; } }
-
-        @keyframes slow-drift { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(8%, 4%) scale(1.05); } }
-        .animate-slow-drift { animation: slow-drift 20s ease-in-out infinite; }
-        
-        @keyframes slow-drift-reverse { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(-8%, -4%) scale(0.95); } }
-        .animate-slow-drift-reverse { animation: slow-drift-reverse 25s ease-in-out infinite; }
-
-        @keyframes mesh-pan { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(-5%, 5%) scale(1.1); } }
-        .animate-mesh-pan { animation: mesh-pan 15s ease-in-out infinite; }
-        
-        @keyframes mesh-pan-reverse { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(5%, -5%) scale(1.05); } }
-        .animate-mesh-pan-reverse { animation: mesh-pan-reverse 18s ease-in-out infinite; }
-        
-        @keyframes aurora-wave { 0%, 100% { transform: rotate(0deg) scale(1); opacity: 0.3; } 50% { transform: rotate(3deg) scale(1.2); opacity: 0.5; } }
-        .animate-aurora { animation: aurora-wave 12s ease-in-out infinite; transform-origin: center bottom; }
-      `}} />
-
-      {/* NAVBAR */}
-      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${isScrolled ? 'bg-[#050505]/80 backdrop-blur-2xl border-b thin-border' : 'bg-transparent border-b border-transparent'}`}>
-        <nav className={`max-w-[1400px] mx-auto px-8 md:px-12 flex items-center justify-between transition-all duration-700 ${isScrolled ? 'h-16' : 'h-24'}`}>
-          <div 
-            onClick={() => setCurrentPage('home')}
-            className="text-white text-[11px] font-medium tracking-[0.2em] uppercase flex items-center gap-3 group interactive-hover cursor-none"
-          >
-            <Command className="w-4 h-4 text-neutral-500 group-hover:rotate-90 transition-transform duration-500" />
-            <DecodeText text="SYSTEMS" />
-            <span className="text-neutral-600 font-light transition-colors group-hover:text-neutral-400">ARCHITECT</span>
-          </div>
-          
-          <div className="flex items-center gap-8">
-            <div className="hidden lg:flex items-center gap-8">
-               <button 
-                 onClick={() => setCurrentPage('home')} 
-                 className={`text-[9px] font-medium transition-colors tracking-[0.2em] uppercase interactive-hover ${currentPage === 'home' ? 'text-white' : 'text-neutral-600 hover:text-white'}`}
-               >
-                  <DecodeText text="Home" />
-               </button>
-               <button 
-                 onClick={() => setCurrentPage('deployments')} 
-                 className={`text-[9px] font-medium transition-colors tracking-[0.2em] uppercase interactive-hover ${currentPage === 'deployments' ? 'text-white' : 'text-neutral-600 hover:text-white'}`}
-               >
-                  <DecodeText text="Deployments" />
-               </button>
-               <button 
-                 onClick={() => setCurrentPage('signal')} 
-                 className={`text-[9px] font-medium transition-colors tracking-[0.2em] uppercase interactive-hover ${currentPage === 'signal' ? 'text-white' : 'text-neutral-600 hover:text-white'}`}
-               >
-                  <DecodeText text="Signal" />
-               </button>
-               <button 
-                 onClick={() => setCurrentPage('thearchitect')} 
-                 className={`text-[9px] font-medium transition-colors tracking-[0.2em] uppercase interactive-hover ${currentPage === 'thearchitect' ? 'text-white' : 'text-neutral-600 hover:text-white'}`}
-               >
-                  <DecodeText text="The Architect" />
-               </button>
+    <div className="w-full flex flex-col items-center animate-in fade-in duration-1000">
+       {/* Hero */}
+       <section className="relative min-h-[60vh] flex items-center justify-center pt-32 pb-12 w-full">
+        <HeroBackground />
+        <div className="relative z-10 w-full max-w-[1400px] px-8 md:px-12 flex flex-col items-start mt-[-5vh]">
+          <FadeIn direction="up">
+            <div className="flex items-center gap-3 mb-10 border border-white/5 rounded-[6px] px-3 py-1 bg-[#111111] w-fit interactive-hover">
+              <span className="w-1 h-1 rounded-full bg-cyan-500"></span>
+              <span className="text-[8px] font-mono text-neutral-400 uppercase tracking-[0.3em] pt-[1px] cursor-default">
+                <DecodeText text="System Architecture" />
+              </span>
             </div>
-            <button 
-              onClick={() => setIsAuditOpen(true)}
-              className="text-[9px] font-medium text-white border border-white/10 px-5 py-2.5 rounded-[6px] hover:bg-white hover:text-black transition-all duration-500 tracking-[0.2em] uppercase interactive-hover"
-            >
-              <DecodeText text="Request Audit" />
-            </button>
-          </div>
-        </nav>
-      </header>
+          </FadeIn>
 
-      <main className="relative flex flex-col items-center w-full" itemScope itemType="https://schema.org/Service">
-        <meta itemProp="serviceType" content="AI Operations Consulting" />
-        
-        {/* HOMEPAGE ROUTE */}
-        {currentPage === 'home' && (
-          <>
-            {/* 1. HERO SECTION */}
-            <section className="relative min-h-screen flex items-center justify-center pt-32 pb-12 w-full">
-              <HeroBackground />
-              <div className="relative z-10 w-full max-w-[1400px] px-8 md:px-12 flex flex-col lg:flex-row items-center justify-between mt-[-5vh] gap-12">
-                <div className="max-w-3xl lg:w-3/5 flex flex-col items-start">
-                  <FadeIn direction="up">
-                    <div className="flex items-center gap-3 mb-10 border border-white/5 rounded-[6px] px-3 py-1 bg-[#111111] w-fit interactive-hover">
-                      <span className="w-1 h-1 rounded-full bg-white/80"></span>
-                      <span className="text-[8px] font-mono text-neutral-400 uppercase tracking-[0.3em] pt-[1px] cursor-default">
-                        <DecodeText text="Ready for Deployment" />
-                      </span>
-                    </div>
-                  </FadeIn>
+          <FadeIn delay={150} direction="up" duration={1200}>
+            <h1 className="text-5xl sm:text-6xl md:text-[5.5rem] font-light leading-[1.05] tracking-tight mb-8">
+              <ScrollRevealText>The Operating</ScrollRevealText><br />
+              <ScrollRevealText revealColor="#777777">Stack.</ScrollRevealText>
+            </h1>
+          </FadeIn>
+          
+          <FadeIn delay={300} direction="up" className="max-w-xl w-full">
+            <ScrollRevealText as="p" className="text-sm sm:text-[15px] leading-relaxed font-light mb-8" baseColor="#333333" revealColor="#aaaaaa">
+              React does not need a plugin jungle. It needs a clean operating stack: one CMS, one CRM, one booking layer, one email layer, one automation layer, and one analytics layer. 
+            </ScrollRevealText>
+            <ScrollRevealText as="p" className="text-sm sm:text-[15px] leading-relaxed font-light" baseColor="#333333" revealColor="#aaaaaa">
+              That gives you a site that is easy to manage, easy to scale, and infinitely more powerful than a generic template without becoming complicated.
+            </ScrollRevealText>
+          </FadeIn>
+        </div>
+      </section>
 
-                  <FadeIn delay={150} direction="up" duration={1200}>
-                    <h1 className="text-5xl sm:text-6xl md:text-[5.5rem] font-light leading-[1.05] tracking-tight mb-8">
-                      <ScrollRevealText>
-                        Your business<br />
-                        is not broken.
-                      </ScrollRevealText>
-                      <br />
-                      <ScrollRevealText revealColor="#777777">Your system is.</ScrollRevealText>
-                    </h1>
-                  </FadeIn>
+      {/* Integrations Grid */}
+      <section className="relative w-full py-20 px-6 bg-[#040404]">
+        <RevealLine orientation="horizontal" className="absolute top-0 left-0" />
+        <div className="relative z-10 w-full max-w-[1400px] mx-auto px-8 md:px-12">
+          <FadeIn className="mb-24">
+             <span className="text-[10px] font-mono text-neutral-600 uppercase tracking-[0.2em] mb-6 block">External Integration Layer</span>
+             <h2 className="text-3xl sm:text-5xl font-light tracking-tight">
+               <ScrollRevealText>One tool.</ScrollRevealText><br/>
+               <ScrollRevealText revealColor="#777777">One purpose.</ScrollRevealText>
+             </h2>
+           </FadeIn>
+           
+           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+             {externalIntegrations.map((item, i) => (
+               <FadeIn key={i} delay={i*100}>
+                 <GlowCard className="border thin-border bg-white/[0.01] p-8 h-full hover:bg-white/[0.02] transition-colors interactive-hover">
+                    <div className="text-[9px] font-mono text-cyan-500/80 uppercase tracking-widest mb-4">{item.purpose}</div>
+                    <h4 className="text-white text-xl font-light mb-4 pb-4 border-b border-white/5">{item.tool}</h4>
+                    <p className="text-neutral-500 font-light text-xs leading-relaxed">{item.why}</p>
+                 </GlowCard>
+               </FadeIn>
+             ))}
+           </div>
+        </div>
+      </section>
 
-                  <FadeIn delay={300} direction="up" className="max-w-xl">
-                    <ScrollRevealText as="p" className="text-sm sm:text-[15px] leading-relaxed font-light mb-14" baseColor="#333333" revealColor="#aaaaaa">
-                      <span itemProp="description">I rebuild operations into AI-powered systems that eliminate manual work, fix workflows, and scale execution — in 10 to 51 days.</span>
-                    </ScrollRevealText>
-                  </FadeIn>
-
-                  <FadeIn delay={450} direction="up" className="flex gap-8 items-center">
-                    <button 
-                      onClick={() => setIsAuditOpen(true)}
-                      className="text-[9px] text-white uppercase tracking-[0.3em] font-light hover:text-neutral-300 transition-colors interactive-hover"
-                    >
-                      Fix My System
-                    </button>
-                    <div className="w-10 h-[1px] bg-neutral-700"></div>
-                    <button 
-                      onClick={() => {
-                        const archSection = document.getElementById('architecture');
-                        if(archSection) archSection.scrollIntoView({ behavior: 'smooth' });
-                      }}
-                      className="text-[9px] text-[#555555] uppercase tracking-[0.3em] font-light hover:text-white transition-colors interactive-hover"
-                    >
-                      View Architecture
-                    </button>
-                  </FadeIn>
-                </div>
-
-                <FadeIn delay={600} direction="left" duration={1500} className="hidden lg:flex lg:w-2/5 justify-end">
-                  <HeroSystemAnimation />
-                </FadeIn>
-              </div>
-            </section>
-            
-            <MetricsTicker />
-
-            {/* 2. THE PROBLEM */}
-            <section className="relative w-full py-40 px-6 bg-[#020202]">
-              <RevealLine orientation="horizontal" className="absolute top-0 left-0" />
-              <NoiseBackground />
-              <div className="relative z-10 max-w-4xl mx-auto">
-                <FadeIn>
-                  <h2 className="text-2xl sm:text-4xl font-light mb-32 leading-snug max-w-2xl tracking-tight">
-                    <ScrollRevealText>
-                      Most businesses don't fail because of lack of effort. They fail because of broken systems.
-                    </ScrollRevealText>
-                  </h2>
-                </FadeIn>
-
-                <div className="grid md:grid-cols-2 gap-x-20 gap-y-20">
-                  {[
-                    { title: "Scattered Data", desc: "Teams running on Excel, WhatsApp, and memory. Nothing connects. Truth is fragmented." },
-                    { title: "Blind Operations", desc: "No real-time visibility. Decisions are delayed because nothing is live." },
-                    { title: "Slipping Follow-ups", desc: "Leads, tasks, and operational criticals dropping through the cracks silently." },
-                    { title: "Manual Bottlenecks", desc: "Founders stuck playing routing switchboards instead of leading the company." }
-                  ].map((item, i) => (
-                    <div key={i} className="group relative">
-                      <RevealLine delay={i * 100} className="mb-8" />
-                      <FadeIn delay={i * 150} direction="up">
-                        <div className="flex flex-col gap-4">
-                          <h3 className="font-light text-base tracking-wide flex items-center gap-3">
-                            <span className="w-1.5 h-1.5 rounded-full bg-neutral-800 group-hover:bg-white transition-colors duration-500"></span>
-                            <ScrollRevealText revealColor="#ffffff">{item.title}</ScrollRevealText>
-                          </h3>
-                          <ScrollRevealText as="p" className="text-xs sm:text-sm leading-relaxed font-light pl-4.5" revealColor="#a3a3a3">
-                            {item.desc}
-                          </ScrollRevealText>
-                        </div>
-                      </FadeIn>
-                    </div>
-                  ))}
-                </div>
-                
-                <FadeIn delay={400} className="mt-40 border-l border-white/10 pl-6">
-                  <ScrollRevealText as="p" className="text-sm font-light tracking-wide" revealColor="#ffffff" baseColor="#333333">
-                    This is not a people problem.<br/>
-                    This is a system failure.
-                  </ScrollRevealText>
-                </FadeIn>
-              </div>
-            </section>
-
-            {/* COST OF INACTION */}
-            <section className="relative w-full py-40 px-6 bg-[#030303]">
-              <RevealLine orientation="horizontal" className="absolute top-0 left-0" />
-              <div className="relative z-10 w-full max-w-[1400px] mx-auto px-8 md:px-12 grid lg:grid-cols-2 gap-24 items-center">
-                 <div>
-                   <FadeIn>
-                     <span className="text-[10px] font-mono text-neutral-600 uppercase tracking-[0.2em] mb-6 block">The Cost of Human APIs</span>
-                     <h2 className="text-3xl sm:text-5xl font-light tracking-tight mb-8">
-                       <ScrollRevealText>Operations running on human bandwidth</ScrollRevealText><br/>
-                       <ScrollRevealText revealColor="#777777">will eventually collapse.</ScrollRevealText>
-                     </h2>
-                     <p className="text-sm text-neutral-400 font-light leading-relaxed">
-                       If your process requires a human to move data from Tool A to Tool B, you are paying a salary for an API call. Manual routing is the ultimate silent killer of margin. 
-                     </p>
-                   </FadeIn>
-                 </div>
-                 <div className="space-y-6">
-                    {[
-                      { stat: "30%", text: "of payroll in SMEs is spent on repetitive manual data entry and formatting." },
-                      { stat: "7 Days", text: "is the average delay for executive reporting in un-systematized companies." },
-                      { stat: "100%", text: "of manual follow-ups will eventually drop at scale. Human error is inevitable." }
-                    ].map((item, i) => (
-                      <FadeIn key={i} delay={i * 100} className="border thin-border p-6 bg-white/[0.01] flex items-center gap-6 rounded-[6px]">
-                        <div className="text-3xl font-light text-white w-24 shrink-0">{item.stat}</div>
-                        <div className="w-[1px] h-8 bg-neutral-800"></div>
-                        <span className="text-xs sm:text-sm text-neutral-400 font-light leading-relaxed">{item.text}</span>
-                      </FadeIn>
-                    ))}
-                 </div>
-              </div>
-            </section>
-
-            {/* 3. THE SHIFT */}
-            <section className="relative w-full py-40 px-6 overflow-hidden bg-[#020202]">
-              <RevealLine orientation="horizontal" className="absolute top-0 left-0" />
-              <GradientMeshBackground />
-              <div className="relative z-10 max-w-4xl mx-auto grid lg:grid-cols-2 gap-24 items-center">
-                <div>
-                  <FadeIn direction="left">
-                    <h2 className="text-3xl sm:text-4xl font-light mb-8 leading-snug tracking-tight">
-                      <ScrollRevealText>
-                        You don't need<br />more people.
-                      </ScrollRevealText>
-                      <br />
-                      <ScrollRevealText revealColor="#777777">You need a system<br />that thinks.</ScrollRevealText>
-                    </h2>
-                  </FadeIn>
-                </div>
-                
-                <div className="space-y-0 relative">
-                  <RevealLine orientation="vertical" className="absolute left-[-2rem] top-0 hidden lg:block" delay={300} />
-                  {[
-                    ["Manual workflows", "AI-driven flows"],
-                    ["Static reporting", "Live operational dashboards"],
-                    ["Dropped follow-ups", "Autonomous tracking"],
-                    ["Operational chaos", "Structured execution"]
-                  ].map((shift, i) => (
-                    <div key={i} className="relative group">
-                      <RevealLine delay={i * 100} className="absolute top-0 left-0" />
-                      <FadeIn delay={i * 150} direction="right" className="flex flex-col sm:flex-row sm:items-center justify-between py-8 transition-transform duration-500 hover:translate-x-2">
-                        <ScrollRevealText as="span" className="line-through decoration-neutral-800 text-sm font-light mb-2 sm:mb-0" revealColor="#777777" baseColor="#222222">{shift[0]}</ScrollRevealText>
-                        <ArrowRight className="w-3 h-3 text-neutral-800 hidden sm:block group-hover:text-white transition-colors duration-500" />
-                        <ScrollRevealText as="span" className="font-light text-sm" revealColor="#ffffff">{shift[1]}</ScrollRevealText>
-                      </FadeIn>
-                    </div>
-                  ))}
-                  <RevealLine className="absolute bottom-0 left-0" delay={400} />
-                </div>
-              </div>
-            </section>
-
-            {/* CLIENT SIGNAL (TESTIMONIALS) */}
-            <section className="relative w-full py-40 px-6 bg-[#040404]">
-              <RevealLine orientation="horizontal" className="absolute top-0 left-0" />
-              <div className="relative z-10 w-full max-w-[1400px] mx-auto px-8 md:px-12">
-                 <FadeIn className="mb-24 interactive-hover">
-                   <span className="text-[10px] font-mono text-neutral-600 uppercase tracking-[0.2em] mb-6 block">
-                     <DecodeText text="Client Telemetry" />
-                   </span>
-                   <h2 className="text-3xl sm:text-5xl font-light tracking-tight">
-                     <ScrollRevealText>Endorsements from the field.</ScrollRevealText>
-                   </h2>
-                 </FadeIn>
-
-                 <div className="grid md:grid-cols-3 gap-8">
-                    {[
-                      { quote: "We were about to hire 4 more operations managers just to handle email traffic. The AI architecture eliminated that entire hiring requirement in 6 weeks.", author: "CEO, Global Freight Co." },
-                      { quote: "For the first time in three years, I know exactly what is in my warehouses right now without having to call seven different people. The system just handles it.", author: "Founder, Agri-Distribution" },
-                      { quote: "The speed at which we can adjust pricing globally is now our biggest competitive advantage. We literally operate faster than our competitors can refresh their sheets.", author: "COO, E-Commerce Aggregator" }
-                    ].map((test, i) => (
-                      <FadeIn key={i} delay={i * 150}>
-                        <GlowCard className="h-full border thin-border p-10 bg-white/[0.01] hover:bg-white/[0.02] transition-colors flex flex-col justify-between interactive-hover">
-                           <div className="text-3xl text-neutral-700 font-serif mb-6 leading-none">"</div>
-                           <p className="text-neutral-400 font-light text-sm leading-relaxed mb-8">
-                             {test.quote}
-                           </p>
-                           <div className="flex items-center gap-3">
-                              <div className="w-1.5 h-1.5 bg-cyan-500/50 rounded-full"></div>
-                              <span className="text-[10px] font-mono text-white uppercase tracking-widest">{test.author}</span>
-                           </div>
-                        </GlowCard>
-                      </FadeIn>
-                    ))}
-                 </div>
-              </div>
-            </section>
-
-            {/* THE 4 LAYER ARCHITECTURE */}
-            <section id="architecture" className="relative w-full py-40 px-6 bg-[#030303]">
-               <RevealLine orientation="horizontal" className="absolute top-0 left-0" />
-               <div className="relative z-10 w-full max-w-[1400px] mx-auto px-8 md:px-12">
-                  <FadeIn className="mb-24">
-                    <span className="text-[10px] font-mono text-neutral-600 uppercase tracking-[0.2em] mb-6 block">Structural Integrity</span>
-                    <h2 className="text-3xl sm:text-5xl font-light tracking-tight">
-                      <ScrollRevealText>The 4-Layer Architecture</ScrollRevealText>
-                    </h2>
-                  </FadeIn>
-                  <div className="grid md:grid-cols-4 gap-4">
-                    {[
-                      { icon: Database, name: "Layer 1: Ingestion", desc: "We unify inputs. Forms, emails, legacy ERPs, and APIs push data into a single, centralized truth node." },
-                      { icon: Network, name: "Layer 2: Middleware", desc: "The logic core. Webhooks and automation scripts instantly route data without human touch." },
-                      { icon: Cpu, name: "Layer 3: AI Brain", desc: "Predictive decision making. LLMs analyze incoming strings, categorize intent, and trigger responses." },
-                      { icon: Activity, name: "Layer 4: Interface", desc: "Live dashboards for the executive team. Read-only, real-time, zero-latency visibility into operations." }
-                    ].map((layer, i) => (
-                      <FadeIn key={i} delay={i*100} className="border thin-border p-8 bg-white/[0.01] rounded-[6px]">
-                         <layer.icon className="w-6 h-6 text-neutral-500 mb-8" />
-                         <h3 className="text-white font-medium text-sm mb-4">{layer.name}</h3>
-                         <p className="text-neutral-500 font-light text-sm leading-relaxed">{layer.desc}</p>
-                      </FadeIn>
-                    ))}
-                  </div>
+      {/* Internal Modules */}
+      <section className="relative w-full py-40 px-6 bg-[#020202]">
+        <RevealLine orientation="horizontal" className="absolute top-0 left-0" />
+        <div className="relative z-10 w-full max-w-[1400px] mx-auto px-8 md:px-12 grid lg:grid-cols-2 gap-24 items-center">
+           <div>
+             <FadeIn>
+               <span className="text-[10px] font-mono text-neutral-600 uppercase tracking-[0.2em] mb-6 block">Internal React Modules</span>
+               <h2 className="text-3xl sm:text-5xl font-light tracking-tight mb-8">
+                 <ScrollRevealText>Custom product flows,</ScrollRevealText><br/>
+                 <ScrollRevealText revealColor="#777777">not generic pages.</ScrollRevealText>
+               </h2>
+               <p className="text-sm text-neutral-400 font-light leading-relaxed mb-6">
+                 This is the real reason to move to a structured React architecture. These are not static web pages. They are product-like flows designed to capture intent, score leads, and guide users.
+               </p>
+               <div className="flex flex-wrap gap-2 mb-8">
+                 {['Tailwind CSS', 'shadcn/ui', 'React Hook Form', 'Zod', 'Framer Motion'].map((tech, i) => (
+                   <span key={i} className="text-[9px] font-mono text-neutral-500 border border-white/10 px-2 py-1 rounded-[4px] bg-white/[0.02]">{tech}</span>
+                 ))}
                </div>
-            </section>
-
-            {/* 4. WHAT YOU ACTUALLY DO */}
-            <section className="relative w-full py-40 px-6 bg-[#020202]">
-              <div className="max-w-4xl mx-auto">
-                <FadeIn className="mb-24 interactive-hover">
-                  <span className="text-[10px] font-mono text-neutral-600 uppercase tracking-[0.2em] mb-6 block">
-                    <DecodeText text="Methodology" />
-                  </span>
-                  <h2 className="text-3xl sm:text-5xl font-light tracking-tight">
-                    <ScrollRevealText>I Build AI Operating Systems</ScrollRevealText>
-                  </h2>
+             </FadeIn>
+           </div>
+           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {internalModules.map((module, i) => (
+                <FadeIn key={i} delay={i * 100} className="border thin-border p-5 bg-white/[0.01] flex items-center gap-4 rounded-[6px]">
+                  <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
+                  <span className="text-xs font-mono text-neutral-300">{module}</span>
                 </FadeIn>
-
-                <div className="flex flex-col w-full">
-                  {[
-                    { step: "01", title: "Workflow Reconstruction", desc: "We don't automate a broken process. We map everything from scratch, identify leaks, delays, and redundancies, and rebuild the logic." },
-                    { step: "02", title: "System Architecture", desc: "Designing your business like high-performance software. Structuring roles, permissions, data flows, and strict operational dependencies." },
-                    { step: "03", title: "AI Integration", desc: "Embedding AI decision layers. Creating internal copilots for your teams, enabling predictive analytics, and automating reactive tasks." },
-                    { step: "04", title: "Deployment", desc: "Going live in 10–51 days. We don't build useless prototypes. We deploy real, stress-tested systems that your team uses day one." }
-                  ].map((pillar, i) => (
-                    <GlowCard key={i} className="group border-t thin-border -mx-6 px-6 interactive-hover">
-                      <FadeIn delay={i * 150} direction="up" className="py-12 flex flex-col md:flex-row gap-6 md:gap-12">
-                        <div className="text-neutral-700 font-mono text-[10px] pt-1 w-8">{pillar.step}</div>
-                        <div className="md:w-1/3">
-                          <h3 className="text-lg font-light tracking-wide group-hover:translate-x-2 transition-transform duration-500">
-                            <ScrollRevealText revealColor="#ffffff">{pillar.title}</ScrollRevealText>
-                          </h3>
-                        </div>
-                        <div className="md:w-1/2 md:ml-auto">
-                          <ScrollRevealText as="p" className="font-light leading-relaxed text-xs sm:text-sm" revealColor="#a3a3a3">
-                            {pillar.desc}
-                          </ScrollRevealText>
-                        </div>
-                      </FadeIn>
-                    </GlowCard>
-                  ))}
-                  <RevealLine className="mt-0" />
-                </div>
-              </div>
-            </section>
-
-            {/* 5. TIMELINE */}
-            <section className="relative w-full py-40 px-6 overflow-hidden bg-[#030303]">
-              <StripedBackground />
-              <div className="relative z-10 max-w-4xl mx-auto flex flex-col lg:flex-row gap-24">
-                <FadeIn direction="right" className="lg:w-1/3">
-                  <h2 className="text-3xl sm:text-4xl font-light mb-8 leading-snug tracking-tight">
-                    <ScrollRevealText>10–51 Days.</ScrollRevealText><br />
-                    <ScrollRevealText revealColor="#777777">No Excuses.</ScrollRevealText>
-                  </h2>
-                  <ScrollRevealText as="p" className="font-light text-xs sm:text-sm leading-relaxed" revealColor="#a3a3a3">
-                    You don't wait 6 months to fix operations. Speed of execution is the ultimate differentiator.
-                  </ScrollRevealText>
-                </FadeIn>
-
-                <div className="lg:w-2/3 relative">
-                  <RevealLine orientation="vertical" delay={200} className="absolute left-[3px] top-2 bottom-2" />
-                  
-                  <div className="space-y-16">
-                    {[
-                      { day: "Day 0–3", title: "Chaos Audit", desc: "Deep dive system mapping. Finding exactly where you bleed time and money." },
-                      { day: "Day 4–15", title: "Architecture & Flows", desc: "Building the underlying database, logic, and rewriting operational rules." },
-                      { day: "Day 16–35", title: "Build & AI Layer", desc: "Connecting the tech stack, injecting AI decision models, building live dashboards." },
-                      { day: "Day 36–51", title: "Deployment", desc: "System goes live. Team training. Rapid optimization based on real usage." }
-                    ].map((phase, i) => (
-                      <FadeIn key={i} delay={i * 200 + 300} direction="left" className="relative pl-10 group">
-                        <div className="absolute left-[-1px] top-1.5 w-2 h-2 rounded-full bg-[#050505] border border-neutral-700 group-hover:border-white group-hover:scale-150 transition-all duration-500"></div>
-                        <div className="text-[10px] font-mono text-neutral-600 tracking-widest uppercase mb-3">{phase.day}</div>
-                        <h3 className="text-sm font-light tracking-wide mb-2">
-                          <ScrollRevealText revealColor="#ffffff">{phase.title}</ScrollRevealText>
-                        </h3>
-                        <ScrollRevealText as="p" className="font-light text-xs sm:text-sm leading-relaxed max-w-sm" revealColor="#a3a3a3">
-                          {phase.desc}
-                        </ScrollRevealText>
-                      </FadeIn>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </section>
-          </>
-        )}
-
-        {currentPage === 'thearchitect' && <AboutPage onOpenAudit={() => setIsAuditOpen(true)} />}
-        {currentPage === 'deployments' && <DeploymentsPage onOpenAudit={() => setIsAuditOpen(true)} />}
-        {currentPage === 'signal' && <SignalPage onOpenAudit={() => setIsAuditOpen(true)} />}
-        
-        <AnimatedFooter setCurrentPage={setCurrentPage} onOpenAudit={() => setIsAuditOpen(true)} />
-        
-      </main>
+              ))}
+           </div>
+        </div>
+      </section>
     </div>
   );
-}
+};
 
+// --- ANIMATED FOOTER COMPONENT ---
 const AnimatedFooter = ({ setCurrentPage, onOpenAudit }) => {
   const nodes = Array.from({ length: 40 }).map((_, i) => ({
     id: i,
@@ -1601,7 +1414,7 @@ const AnimatedFooter = ({ setCurrentPage, onOpenAudit }) => {
             <div className="flex flex-col gap-6">
               <div className="text-[10px] font-mono text-neutral-600 uppercase tracking-[0.2em]">Index</div>
               <ul className="space-y-4">
-                {['Home', 'Deployments', 'Signal', 'The Architect'].map((link, i) => (
+                {['Home', 'Deployments', 'Signal', 'The Architect', 'The Stack'].map((link, i) => (
                   <li key={i}>
                     <button 
                       onClick={() => setCurrentPage(link.toLowerCase().replace(' ', ''))}
@@ -1645,3 +1458,502 @@ const AnimatedFooter = ({ setCurrentPage, onOpenAudit }) => {
     </footer>
   );
 };
+
+// --- MAIN APPLICATION ---
+export default function App() {
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [currentPage, setCurrentPage] = useState('home');
+  const [isAuditOpen, setIsAuditOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isBooting, setIsBooting] = useState(true);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    setIsMobileMenuOpen(false);
+  }, [currentPage]);
+
+  return (
+    <div className="min-h-screen bg-[#050505] text-neutral-400 font-sans selection:bg-neutral-800 selection:text-white overflow-x-hidden antialiased">
+      <StructuredData />
+      <CustomCursor />
+      
+      {/* Initial Boot Sequence Preloader */}
+      {isBooting && <SystemBootLoader onComplete={() => setIsBooting(false)} />}
+      
+      <AuditJourney isOpen={isAuditOpen} onClose={() => setIsAuditOpen(false)} />
+      
+      <style dangerouslySetInnerHTML={{__html: `
+        :root { color-scheme: dark; }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; letter-spacing: -0.01em; cursor: none !important; }
+        a, button, [role="button"], input { cursor: none !important; }
+        h1, h2, h3, h4, h5, h6 { letter-spacing: -0.04em; font-weight: 300; }
+        .thin-border { border-color: rgba(255, 255, 255, 0.04); }
+        
+        @keyframes data-stream { 0% { stroke-dashoffset: 400; } 100% { stroke-dashoffset: 0; } }
+        @keyframes data-stream-reverse { 0% { stroke-dashoffset: -400; } 100% { stroke-dashoffset: 0; } }
+        .animate-data-stream { animation: data-stream 3s linear infinite; }
+        .animate-data-stream-reverse { animation: data-stream-reverse 4s linear infinite; }
+
+        @keyframes marquee { 0% { transform: translateX(0%); } 100% { transform: translateX(-50%); } }
+        .animate-marquee { animation: marquee 30s linear infinite; display: flex; width: max-content; }
+        
+        @keyframes ticker { 0% { transform: translateX(0%); } 100% { transform: translateX(-100%); } }
+        .animate-ticker { animation: ticker 40s linear infinite; }
+        
+        @keyframes scanline { 0% { transform: translateY(-100%); } 100% { transform: translateY(1000%); } }
+        .animate-scanline { animation: scanline 8s linear infinite; }
+
+        @keyframes random-blink { 0%, 100% { opacity: 0.1; } 50% { opacity: 1; } }
+
+        @keyframes slow-drift { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(8%, 4%) scale(1.05); } }
+        .animate-slow-drift { animation: slow-drift 20s ease-in-out infinite; }
+        
+        @keyframes slow-drift-reverse { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(-8%, -4%) scale(0.95); } }
+        .animate-slow-drift-reverse { animation: slow-drift-reverse 25s ease-in-out infinite; }
+
+        @keyframes mesh-pan { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(-5%, 5%) scale(1.1); } }
+        .animate-mesh-pan { animation: mesh-pan 15s ease-in-out infinite; }
+        
+        @keyframes mesh-pan-reverse { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(5%, -5%) scale(1.05); } }
+        .animate-mesh-pan-reverse { animation: mesh-pan-reverse 18s ease-in-out infinite; }
+        
+        @keyframes aurora-wave { 0%, 100% { transform: rotate(0deg) scale(1); opacity: 0.3; } 50% { transform: rotate(3deg) scale(1.2); opacity: 0.5; } }
+        .animate-aurora { animation: aurora-wave 12s ease-in-out infinite; transform-origin: center bottom; }
+      `}} />
+
+      {/* MOBILE MENU OVERLAY */}
+      <div className={`fixed inset-0 z-[40] bg-[#050505]/95 backdrop-blur-3xl flex flex-col justify-center items-center transition-all duration-500 ease-in-out ${isMobileMenuOpen ? 'opacity-100 pointer-events-auto translate-y-0' : 'opacity-0 pointer-events-none -translate-y-10'}`}>
+         <NoiseBackground />
+         <div className="flex flex-col items-center gap-10 z-10">
+            {['Home', 'Deployments', 'Signal', 'The Architect', 'The Stack'].map((link, i) => (
+              <button 
+                key={i}
+                onClick={() => setCurrentPage(link.toLowerCase().replace(' ', ''))}
+                className={`text-2xl font-light tracking-[0.2em] uppercase transition-colors interactive-hover ${currentPage === link.toLowerCase().replace(' ', '') ? 'text-white' : 'text-neutral-500 hover:text-white'}`}
+              >
+                <DecodeText text={link} />
+              </button>
+            ))}
+         </div>
+      </div>
+
+      {/* NAVBAR */}
+      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${isScrolled || isMobileMenuOpen ? 'bg-[#050505]/80 backdrop-blur-2xl border-b thin-border' : 'bg-transparent border-b border-transparent'}`}>
+        <nav className={`max-w-[1400px] mx-auto px-6 md:px-12 flex items-center justify-between transition-all duration-700 ${isScrolled || isMobileMenuOpen ? 'h-16' : 'h-24'}`}>
+          <div 
+            onClick={() => setCurrentPage('home')}
+            className="text-white text-[11px] font-medium tracking-[0.2em] uppercase flex items-center gap-3 group interactive-hover cursor-none z-50"
+          >
+            <Command className="w-4 h-4 text-neutral-500 group-hover:rotate-90 transition-transform duration-500" />
+            <DecodeText text="SYSTEMS" className="hidden sm:inline-block" />
+            <span className="text-neutral-600 font-light transition-colors group-hover:text-neutral-400 hidden sm:inline-block">ARCHITECT</span>
+          </div>
+          
+          <div className="flex items-center gap-4 sm:gap-8 z-50">
+            {/* Desktop Navigation */}
+            <div className="hidden lg:flex items-center gap-8">
+               <button 
+                 onClick={() => setCurrentPage('home')} 
+                 className={`text-[9px] font-medium transition-colors tracking-[0.2em] uppercase interactive-hover ${currentPage === 'home' ? 'text-white' : 'text-neutral-600 hover:text-white'}`}
+               >
+                  <DecodeText text="Home" />
+               </button>
+               <button 
+                 onClick={() => setCurrentPage('deployments')} 
+                 className={`text-[9px] font-medium transition-colors tracking-[0.2em] uppercase interactive-hover ${currentPage === 'deployments' ? 'text-white' : 'text-neutral-600 hover:text-white'}`}
+               >
+                  <DecodeText text="Deployments" />
+               </button>
+               <button 
+                 onClick={() => setCurrentPage('signal')} 
+                 className={`text-[9px] font-medium transition-colors tracking-[0.2em] uppercase interactive-hover ${currentPage === 'signal' ? 'text-white' : 'text-neutral-600 hover:text-white'}`}
+               >
+                  <DecodeText text="Signal" />
+               </button>
+               <button 
+                 onClick={() => setCurrentPage('thearchitect')} 
+                 className={`text-[9px] font-medium transition-colors tracking-[0.2em] uppercase interactive-hover ${currentPage === 'thearchitect' ? 'text-white' : 'text-neutral-600 hover:text-white'}`}
+               >
+                  <DecodeText text="The Architect" />
+               </button>
+               <button 
+                 onClick={() => setCurrentPage('thestack')} 
+                 className={`text-[9px] font-medium transition-colors tracking-[0.2em] uppercase interactive-hover ${currentPage === 'thestack' ? 'text-white' : 'text-neutral-600 hover:text-white'}`}
+               >
+                  <DecodeText text="The Stack" />
+               </button>
+            </div>
+            
+            <button 
+              onClick={() => setIsAuditOpen(true)}
+              className="text-[9px] font-medium text-white border border-white/10 px-4 sm:px-5 py-2 sm:py-2.5 rounded-[6px] hover:bg-white hover:text-black transition-all duration-500 tracking-[0.2em] uppercase interactive-hover shrink-0"
+            >
+              <DecodeText text="Request Audit" />
+            </button>
+
+            {/* Mobile Nav Toggle */}
+            <button 
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="lg:hidden text-neutral-400 hover:text-white interactive-hover p-2"
+            >
+              {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+          </div>
+        </nav>
+      </header>
+
+      {/* Hide main content while booting to prevent scroll issues */}
+      <div className={isBooting ? "opacity-0" : "opacity-100 transition-opacity duration-1000"}>
+        <main className="relative flex flex-col items-center w-full" itemScope itemType="https://schema.org/Service">
+          <meta itemProp="serviceType" content="AI Operations Consulting" />
+          
+          {/* ROUTES */}
+          {currentPage === 'home' && (
+            <>
+              {/* 1. HERO SECTION */}
+              <section className="relative min-h-[100svh] flex flex-col w-full">
+                <HeroBackground />
+                
+                <div className="flex-1 flex items-center justify-center pt-32 pb-12 w-full relative z-10">
+                  <div className="w-full max-w-[1400px] px-8 md:px-12 flex flex-col lg:flex-row items-center justify-between mt-[-5vh] gap-12">
+                    <div className="max-w-3xl lg:w-3/5 flex flex-col items-start">
+                      <FadeIn direction="up">
+                        <div className="flex items-center gap-3 mb-10 border border-white/5 rounded-[6px] px-3 py-1 bg-[#111111] w-fit interactive-hover">
+                          <span className="w-1 h-1 rounded-full bg-white/80"></span>
+                          <span className="text-[8px] font-mono text-neutral-400 uppercase tracking-[0.3em] pt-[1px] cursor-default">
+                            <DecodeText text="Ready for Deployment" />
+                          </span>
+                        </div>
+                      </FadeIn>
+
+                      <FadeIn delay={150} direction="up" duration={1200}>
+                        <h1 className="text-5xl sm:text-6xl md:text-[5.5rem] font-light leading-[1.05] tracking-tight mb-8">
+                          <ScrollRevealText>
+                            Your business<br />
+                            is not broken.
+                          </ScrollRevealText>
+                          <br />
+                          <ScrollRevealText revealColor="#777777">Your system is.</ScrollRevealText>
+                        </h1>
+                      </FadeIn>
+
+                      <FadeIn delay={300} direction="up" className="max-w-xl">
+                        <ScrollRevealText as="p" className="text-sm sm:text-[15px] leading-relaxed font-light mb-14" baseColor="#333333" revealColor="#aaaaaa">
+                          <span itemProp="description">I rebuild operations into AI-powered systems that eliminate manual work, fix workflows, and scale execution — in 10 to 51 days.</span>
+                        </ScrollRevealText>
+                      </FadeIn>
+
+                      <FadeIn delay={450} direction="up" className="flex gap-8 items-center">
+                        <button 
+                          onClick={() => setIsAuditOpen(true)}
+                          className="text-[9px] text-white uppercase tracking-[0.3em] font-light hover:text-neutral-300 transition-colors interactive-hover"
+                        >
+                          Fix My System
+                        </button>
+                        <div className="w-10 h-[1px] bg-neutral-700"></div>
+                        <button 
+                          onClick={() => {
+                            const archSection = document.getElementById('architecture');
+                            if(archSection) archSection.scrollIntoView({ behavior: 'smooth' });
+                          }}
+                          className="text-[9px] text-[#555555] uppercase tracking-[0.3em] font-light hover:text-white transition-colors interactive-hover"
+                        >
+                          View Architecture
+                        </button>
+                      </FadeIn>
+                    </div>
+
+                    <FadeIn delay={600} direction="left" duration={1500} className="hidden lg:flex lg:w-2/5 justify-end">
+                      <HeroSystemAnimation />
+                    </FadeIn>
+                  </div>
+                </div>
+                
+                <MetricsTicker />
+              </section>
+
+              {/* 2. THE PROBLEM */}
+              <section className="relative w-full py-40 px-6 bg-[#020202]">
+                <RevealLine orientation="horizontal" className="absolute top-0 left-0" />
+                <NoiseBackground />
+                <div className="relative z-10 max-w-4xl mx-auto">
+                  <FadeIn>
+                    <h2 className="text-2xl sm:text-4xl font-light mb-32 leading-snug max-w-2xl tracking-tight">
+                      <ScrollRevealText>
+                        Most businesses don't fail because of lack of effort. They fail because of broken systems.
+                      </ScrollRevealText>
+                    </h2>
+                  </FadeIn>
+
+                  <div className="grid md:grid-cols-2 gap-x-20 gap-y-20">
+                    {[
+                      { title: "Scattered Data", desc: "Teams running on Excel, WhatsApp, and memory. Nothing connects. Truth is fragmented." },
+                      { title: "Blind Operations", desc: "No real-time visibility. Decisions are delayed because nothing is live." },
+                      { title: "Slipping Follow-ups", desc: "Leads, tasks, and operational criticals dropping through the cracks silently." },
+                      { title: "Manual Bottlenecks", desc: "Founders stuck playing routing switchboards instead of leading the company." }
+                    ].map((item, i) => (
+                      <div key={i} className="group relative">
+                        <RevealLine delay={i * 100} className="mb-8" />
+                        <FadeIn delay={i * 150} direction="up">
+                          <div className="flex flex-col gap-4">
+                            <h3 className="font-light text-base tracking-wide flex items-center gap-3">
+                              <span className="w-1.5 h-1.5 rounded-full bg-neutral-800 group-hover:bg-white transition-colors duration-500"></span>
+                              <ScrollRevealText revealColor="#ffffff">{item.title}</ScrollRevealText>
+                            </h3>
+                            <ScrollRevealText as="p" className="text-xs sm:text-sm leading-relaxed font-light pl-4.5" revealColor="#a3a3a3">
+                              {item.desc}
+                            </ScrollRevealText>
+                          </div>
+                        </FadeIn>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <FadeIn delay={400} className="mt-40 border-l border-white/10 pl-6">
+                    <ScrollRevealText as="p" className="text-sm font-light tracking-wide" revealColor="#ffffff" baseColor="#333333">
+                      This is not a people problem.<br/>
+                      This is a system failure.
+                    </ScrollRevealText>
+                  </FadeIn>
+                </div>
+              </section>
+
+              {/* COST OF INACTION */}
+              <section className="relative w-full py-40 px-6 bg-[#030303]">
+                <RevealLine orientation="horizontal" className="absolute top-0 left-0" />
+                <div className="relative z-10 w-full max-w-[1400px] mx-auto px-8 md:px-12 grid lg:grid-cols-2 gap-24 items-center">
+                   <div>
+                     <FadeIn>
+                       <span className="text-[10px] font-mono text-neutral-600 uppercase tracking-[0.2em] mb-6 block">The Cost of Human APIs</span>
+                       <h2 className="text-3xl sm:text-5xl font-light tracking-tight mb-8">
+                         <ScrollRevealText>Operations running on human bandwidth</ScrollRevealText><br/>
+                         <ScrollRevealText revealColor="#777777">will eventually collapse.</ScrollRevealText>
+                       </h2>
+                       <p className="text-sm text-neutral-400 font-light leading-relaxed">
+                         If your process requires a human to move data from Tool A to Tool B, you are paying a salary for an API call. Manual routing is the ultimate silent killer of margin. 
+                       </p>
+                     </FadeIn>
+                   </div>
+                   <div className="space-y-6">
+                      {[
+                        { stat: "30%", text: "of payroll in SMEs is spent on repetitive manual data entry and formatting." },
+                        { stat: "7 Days", text: "is the average delay for executive reporting in un-systematized companies." },
+                        { stat: "100%", text: "of manual follow-ups will eventually drop at scale. Human error is inevitable." }
+                      ].map((item, i) => (
+                        <FadeIn key={i} delay={i * 100} className="border thin-border p-6 bg-white/[0.01] flex items-center gap-6 rounded-[6px]">
+                          <div className="text-3xl font-light text-white w-24 shrink-0">{item.stat}</div>
+                          <div className="w-[1px] h-8 bg-neutral-800"></div>
+                          <span className="text-xs sm:text-sm text-neutral-400 font-light leading-relaxed">{item.text}</span>
+                        </FadeIn>
+                      ))}
+                   </div>
+                </div>
+              </section>
+
+              {/* 3. THE SHIFT */}
+              <section className="relative w-full py-40 px-6 overflow-hidden bg-[#020202]">
+                <RevealLine orientation="horizontal" className="absolute top-0 left-0" />
+                <GradientMeshBackground />
+                <div className="relative z-10 max-w-4xl mx-auto grid lg:grid-cols-2 gap-24 items-center">
+                  <div>
+                    <FadeIn direction="left">
+                      <h2 className="text-3xl sm:text-4xl font-light mb-8 leading-snug tracking-tight">
+                        <ScrollRevealText>
+                          You don't need<br />more people.
+                        </ScrollRevealText>
+                        <br />
+                        <ScrollRevealText revealColor="#777777">You need a system<br />that thinks.</ScrollRevealText>
+                      </h2>
+                    </FadeIn>
+                  </div>
+                  
+                  <div className="space-y-0 relative">
+                    <RevealLine orientation="vertical" className="absolute left-[-2rem] top-0 hidden lg:block" delay={300} />
+                    {[
+                      ["Manual workflows", "AI-driven flows"],
+                      ["Static reporting", "Live operational dashboards"],
+                      ["Dropped follow-ups", "Autonomous tracking"],
+                      ["Operational chaos", "Structured execution"]
+                    ].map((shift, i) => (
+                      <div key={i} className="relative group">
+                        <RevealLine delay={i * 100} className="absolute top-0 left-0" />
+                        <FadeIn delay={i * 150} direction="right" className="flex flex-col sm:flex-row sm:items-center justify-between py-8 transition-transform duration-500 hover:translate-x-2">
+                          <ScrollRevealText as="span" className="line-through decoration-neutral-800 text-sm font-light mb-2 sm:mb-0" revealColor="#777777" baseColor="#222222">{shift[0]}</ScrollRevealText>
+                          <ArrowRight className="w-3 h-3 text-neutral-800 hidden sm:block group-hover:text-white transition-colors duration-500" />
+                          <ScrollRevealText as="span" className="font-light text-sm" revealColor="#ffffff">{shift[1]}</ScrollRevealText>
+                        </FadeIn>
+                      </div>
+                    ))}
+                    <RevealLine className="absolute bottom-0 left-0" delay={400} />
+                  </div>
+                </div>
+              </section>
+
+              {/* CLIENT SIGNAL (TESTIMONIALS) */}
+              <section className="relative w-full py-40 px-6 bg-[#040404]">
+                <RevealLine orientation="horizontal" className="absolute top-0 left-0" />
+                <div className="relative z-10 w-full max-w-[1400px] mx-auto px-8 md:px-12">
+                   <FadeIn className="mb-24 interactive-hover">
+                     <span className="text-[10px] font-mono text-neutral-600 uppercase tracking-[0.2em] mb-6 block">
+                       <DecodeText text="Client Telemetry" />
+                     </span>
+                     <h2 className="text-3xl sm:text-5xl font-light tracking-tight">
+                       <ScrollRevealText>Endorsements from the field.</ScrollRevealText>
+                     </h2>
+                   </FadeIn>
+
+                   <div className="grid md:grid-cols-3 gap-8">
+                      {[
+                        { quote: "We were about to hire 4 more operations managers just to handle email traffic. The AI architecture eliminated that entire hiring requirement in 6 weeks.", author: "CEO, Global Freight Co." },
+                        { quote: "For the first time in three years, I know exactly what is in my warehouses right now without having to call seven different people. The system just handles it.", author: "Founder, Agri-Distribution" },
+                        { quote: "The speed at which we can adjust pricing globally is now our biggest competitive advantage. We literally operate faster than our competitors can refresh their sheets.", author: "COO, E-Commerce Aggregator" }
+                      ].map((test, i) => (
+                        <FadeIn key={i} delay={i * 150}>
+                          <GlowCard className="h-full border thin-border p-10 bg-white/[0.01] hover:bg-white/[0.02] transition-colors flex flex-col justify-between interactive-hover rounded-[6px]">
+                             <div className="text-3xl text-neutral-700 font-serif mb-6 leading-none">"</div>
+                             <p className="text-neutral-400 font-light text-sm leading-relaxed mb-8">
+                               {test.quote}
+                             </p>
+                             <div className="flex items-center gap-3">
+                                <div className="w-1.5 h-1.5 bg-cyan-500/50 rounded-full"></div>
+                                <span className="text-[10px] font-mono text-white uppercase tracking-widest">{test.author}</span>
+                             </div>
+                          </GlowCard>
+                        </FadeIn>
+                      ))}
+                   </div>
+                </div>
+              </section>
+
+              {/* THE 4 LAYER ARCHITECTURE */}
+              <section id="architecture" className="relative w-full py-40 px-6 bg-[#030303]">
+                 <RevealLine orientation="horizontal" className="absolute top-0 left-0" />
+                 <div className="relative z-10 w-full max-w-[1400px] mx-auto px-8 md:px-12">
+                    <FadeIn className="mb-24">
+                      <span className="text-[10px] font-mono text-neutral-600 uppercase tracking-[0.2em] mb-6 block">Structural Integrity</span>
+                      <h2 className="text-3xl sm:text-5xl font-light tracking-tight">
+                        <ScrollRevealText>The 4-Layer Architecture</ScrollRevealText>
+                      </h2>
+                    </FadeIn>
+                    <div className="grid md:grid-cols-4 gap-4">
+                      {[
+                        { icon: Database, name: "Layer 1: Ingestion", desc: "We unify inputs. Forms, emails, legacy ERPs, and APIs push data into a single, centralized truth node." },
+                        { icon: Network, name: "Layer 2: Middleware", desc: "The logic core. Webhooks and automation scripts instantly route data without human touch." },
+                        { icon: Cpu, name: "Layer 3: AI Brain", desc: "Predictive decision making. LLMs analyze incoming strings, categorize intent, and trigger responses." },
+                        { icon: Activity, name: "Layer 4: Interface", desc: "Live dashboards for the executive team. Read-only, real-time, zero-latency visibility into operations." }
+                      ].map((LayerItem, i) => {
+                        const Icon = LayerItem.icon;
+                        return (
+                          <FadeIn key={i} delay={i*100} className="border thin-border p-8 bg-white/[0.01] rounded-[6px]">
+                             <Icon className="w-6 h-6 text-neutral-500 mb-8" />
+                             <h3 className="text-white font-medium text-sm mb-4">{LayerItem.name}</h3>
+                             <p className="text-neutral-500 font-light text-sm leading-relaxed">{LayerItem.desc}</p>
+                          </FadeIn>
+                        );
+                      })}
+                    </div>
+                 </div>
+              </section>
+
+              {/* 4. WHAT YOU ACTUALLY DO */}
+              <section className="relative w-full py-40 px-6 bg-[#020202]">
+                <div className="max-w-4xl mx-auto">
+                  <FadeIn className="mb-24 interactive-hover">
+                    <span className="text-[10px] font-mono text-neutral-600 uppercase tracking-[0.2em] mb-6 block">
+                      <DecodeText text="Methodology" />
+                    </span>
+                    <h2 className="text-3xl sm:text-5xl font-light tracking-tight">
+                      <ScrollRevealText>I Build AI Operating Systems</ScrollRevealText>
+                    </h2>
+                  </FadeIn>
+
+                  <div className="flex flex-col w-full">
+                    {[
+                      { step: "01", title: "Workflow Reconstruction", desc: "We don't automate a broken process. We map everything from scratch, identify leaks, delays, and redundancies, and rebuild the logic." },
+                      { step: "02", title: "System Architecture", desc: "Designing your business like high-performance software. Structuring roles, permissions, data flows, and strict operational dependencies." },
+                      { step: "03", title: "AI Integration", desc: "Embedding AI decision layers. Creating internal copilots for your teams, enabling predictive analytics, and automating reactive tasks." },
+                      { step: "04", title: "Deployment", desc: "Going live in 10–51 days. We don't build useless prototypes. We deploy real, stress-tested systems that your team uses day one." }
+                    ].map((pillar, i) => (
+                      <GlowCard key={i} className="group border-t thin-border -mx-6 px-6 interactive-hover">
+                        <FadeIn delay={i * 150} direction="up" className="py-12 flex flex-col md:flex-row gap-6 md:gap-12">
+                          <div className="text-neutral-700 font-mono text-[10px] pt-1 w-8">{pillar.step}</div>
+                          <div className="md:w-1/3">
+                            <h3 className="text-lg font-light tracking-wide group-hover:translate-x-2 transition-transform duration-500">
+                              <ScrollRevealText revealColor="#ffffff">{pillar.title}</ScrollRevealText>
+                            </h3>
+                          </div>
+                          <div className="md:w-1/2 md:ml-auto">
+                            <ScrollRevealText as="p" className="font-light leading-relaxed text-xs sm:text-sm" revealColor="#a3a3a3">
+                              {pillar.desc}
+                            </ScrollRevealText>
+                          </div>
+                        </FadeIn>
+                      </GlowCard>
+                    ))}
+                    <RevealLine className="mt-0" />
+                  </div>
+                </div>
+              </section>
+
+              {/* 5. TIMELINE */}
+              <section className="relative w-full py-40 px-6 overflow-hidden bg-[#030303]">
+                <StripedBackground />
+                <div className="relative z-10 max-w-4xl mx-auto flex flex-col lg:flex-row gap-24">
+                  <FadeIn direction="right" className="lg:w-1/3">
+                    <h2 className="text-3xl sm:text-4xl font-light mb-8 leading-snug tracking-tight">
+                      <ScrollRevealText>10–51 Days.</ScrollRevealText><br />
+                      <ScrollRevealText revealColor="#777777">No Excuses.</ScrollRevealText>
+                    </h2>
+                    <ScrollRevealText as="p" className="font-light text-xs sm:text-sm leading-relaxed" revealColor="#a3a3a3">
+                      You don't wait 6 months to fix operations. Speed of execution is the ultimate differentiator.
+                    </ScrollRevealText>
+                  </FadeIn>
+
+                  <div className="lg:w-2/3 relative">
+                    <RevealLine orientation="vertical" delay={200} className="absolute left-[3px] top-2 bottom-2" />
+                    
+                    <div className="space-y-16">
+                      {[
+                        { day: "Day 0–3", title: "Chaos Audit", desc: "Deep dive system mapping. Finding exactly where you bleed time and money." },
+                        { day: "Day 4–15", title: "Architecture & Flows", desc: "Building the underlying database, logic, and rewriting operational rules." },
+                        { day: "Day 16–35", title: "Build & AI Layer", desc: "Connecting the tech stack, injecting AI decision models, building live dashboards." },
+                        { day: "Day 36–51", title: "Deployment", desc: "System goes live. Team training. Rapid optimization based on real usage." }
+                      ].map((phase, i) => (
+                        <FadeIn key={i} delay={i * 200 + 300} direction="left" className="relative pl-10 group">
+                          <div className="absolute left-[-1px] top-1.5 w-2 h-2 rounded-full bg-[#050505] border border-neutral-700 group-hover:border-white group-hover:scale-150 transition-all duration-500"></div>
+                          <div className="text-[10px] font-mono text-neutral-600 tracking-widest uppercase mb-3">{phase.day}</div>
+                          <h3 className="text-sm font-light tracking-wide mb-2">
+                            <ScrollRevealText revealColor="#ffffff">{phase.title}</ScrollRevealText>
+                          </h3>
+                          <ScrollRevealText as="p" className="font-light text-xs sm:text-sm leading-relaxed max-w-sm" revealColor="#a3a3a3">
+                            {phase.desc}
+                          </ScrollRevealText>
+                        </FadeIn>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </>
+          )}
+
+          {currentPage === 'thearchitect' && <AboutPage onOpenAudit={() => setIsAuditOpen(true)} />}
+          {currentPage === 'deployments' && <DeploymentsPage onOpenAudit={() => setIsAuditOpen(true)} />}
+          {currentPage === 'signal' && <SignalPage onOpenAudit={() => setIsAuditOpen(true)} />}
+          {currentPage === 'thestack' && <StackPage onOpenAudit={() => setIsAuditOpen(true)} />}
+          
+          <AnimatedFooter setCurrentPage={setCurrentPage} onOpenAudit={() => setIsAuditOpen(true)} />
+          
+        </main>
+      </div>
+    </div>
+  );
+}
