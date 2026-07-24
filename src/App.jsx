@@ -26,8 +26,8 @@ const StructuredData = () => {
     script.text = JSON.stringify({
       "@context": "https://schema.org",
       "@type": "ProfessionalService",
-      "name": "AI Systems Architect",
-      "description": "I turn messy, manual businesses into AI-powered operating systems in 10-51 days. I build how your business runs.",
+      "name": "SCRAM-RS",
+      "description": "We turn messy, manual businesses into AI-powered operating systems in 10-51 days. We build how your business runs.",
       "url": window.location.href,
       "areaServed": [
         { "@type": "Country", "name": "India" },
@@ -50,9 +50,41 @@ const StructuredData = () => {
   return null;
 };
 
+// --- SANITY CMS INTEGRATION ---
+const useSanityData = (query, fallbackData) => {
+  const [data, setData] = useState(fallbackData);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const PROJECT_ID = 'b10jvssm';
+        const DATASET = 'production';
+        const url = `https://${PROJECT_ID}.api.sanity.io/v2023-05-03/data/query/${DATASET}?query=${encodeURIComponent(query)}`;
+        
+        const response = await fetch(url);
+        
+        if (!response.ok) {
+           console.log("Sanity API restricted or not yet public. Using local fallback data.");
+           return;
+        }
+        
+        const result = await response.json();
+        if (result.result && result.result.length > 0) {
+          setData(result.result);
+        }
+      } catch (error) {
+        console.log("Sanity connection pending (CORS/Network). Using local architectural blueprints.");
+      }
+    };
+    fetchData();
+  }, [query]);
+
+  return data;
+};
+
 // --- UTILITY COMPONENTS & HOOKS ---
 
-const FadeIn = ({ children, delay = 0, direction = 'up', className = "", duration = 1000 }) => {
+const FadeIn = ({ children, delay = 0, direction = 'up', className = "", duration = 1200 }) => {
   const [isVisible, setIsVisible] = useState(false);
   const ref = useRef(null);
 
@@ -71,13 +103,13 @@ const FadeIn = ({ children, delay = 0, direction = 'up', className = "", duratio
   }, []);
 
   const getTransform = () => {
-    if (isVisible) return 'translate-y-0 translate-x-0 scale-100';
+    if (isVisible) return 'translate-y-0 translate-x-0 scale-100 rotate-0';
     switch (direction) {
-      case 'up': return 'translate-y-8 scale-95';
-      case 'down': return '-translate-y-8 scale-95';
-      case 'left': return 'translate-x-8 scale-95';
-      case 'right': return '-translate-x-8 scale-95';
-      default: return 'translate-y-8 scale-95';
+      case 'up': return 'translate-y-12 scale-95 -rotate-1';
+      case 'down': return '-translate-y-12 scale-95 rotate-1';
+      case 'left': return 'translate-x-12 scale-95 rotate-1';
+      case 'right': return '-translate-x-12 scale-95 -rotate-1';
+      default: return 'translate-y-12 scale-95';
     }
   };
 
@@ -85,7 +117,7 @@ const FadeIn = ({ children, delay = 0, direction = 'up', className = "", duratio
     <div
       ref={ref}
       className={`transition-all ease-[cubic-bezier(0.16,1,0.3,1)] ${
-        isVisible ? 'opacity-100 blur-0' : 'opacity-0 blur-[8px]'
+        isVisible ? 'opacity-100 blur-0' : 'opacity-0 blur-[12px]'
       } ${getTransform()} ${className}`}
       style={{ transitionDuration: `${duration}ms`, transitionDelay: `${delay}ms` }}
     >
@@ -113,8 +145,8 @@ const RevealLine = ({ delay = 0, orientation = 'horizontal', className = "" }) =
   }, []);
 
   const baseStyle = orientation === 'horizontal' 
-    ? "h-[1px] w-full origin-left bg-white/[0.04]" 
-    : "w-[1px] h-full origin-top bg-white/[0.04]";
+    ? "h-[1px] w-full origin-left bg-white/[0.06]" 
+    : "w-[1px] h-full origin-top bg-white/[0.06]";
     
   const transform = orientation === 'horizontal'
     ? (isVisible ? 'scale-x-100' : 'scale-x-0')
@@ -232,13 +264,13 @@ const GlowCard = ({ children, className = "" }) => {
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setOpacity(1)}
       onMouseLeave={() => setOpacity(0)}
-      className={`relative overflow-hidden rounded-[6px] ${className}`}
+      className={`relative overflow-hidden rounded-[6px] transition-transform duration-500 hover:scale-[1.02] ${className}`}
     >
       <div
         className="pointer-events-none absolute -inset-px opacity-0 transition-opacity duration-300 z-0"
         style={{
           opacity,
-          background: `radial-gradient(600px circle at ${pos.x}px ${pos.y}px, rgba(255,255,255,0.04), transparent 40%)`,
+          background: `radial-gradient(600px circle at ${pos.x}px ${pos.y}px, rgba(255,255,255,0.06), transparent 40%)`,
         }}
       />
       <div className="relative z-10 w-full h-full">
@@ -291,7 +323,7 @@ const MetricsTicker = () => {
             <span className="mx-8 text-white/80">14+ Architectures Deployed</span> <span className="text-white/20">///</span>
             <span className="mx-8 text-white/80">$1.2B+ Revenue Routed</span> <span className="text-white/20">///</span>
             <span className="mx-8 text-white/80">100k+ Human Hours Reclaimed</span> <span className="text-white/20">///</span>
-            <span className="mx-8 text-white/80">Zero Failed Deployments</span> <span className="text-white/20">///</span>
+            <span className="mx-8 text-white/80">Zero Data Breaches</span> <span className="text-white/20">///</span>
             <span className="mx-8 text-white/80">Global Operations</span> <span className="text-white/20">///</span>
           </React.Fragment>
         ))}
@@ -302,7 +334,7 @@ const MetricsTicker = () => {
 
 const HeroSystemAnimation = () => {
   return (
-    <div className="relative w-[300px] h-[300px] sm:w-[400px] sm:h-[400px] flex items-center justify-center opacity-80 mix-blend-screen pointer-events-none">
+    <div className="relative w-[300px] h-[300px] sm:w-[400px] sm:h-[400px] flex items-center justify-center opacity-80 mix-blend-screen pointer-events-none animate-float">
       <div className="absolute w-[200px] h-[200px] bg-white/[0.03] blur-[60px] rounded-full animate-pulse-slow"></div>
       <div className="absolute inset-0 rounded-full border border-white/[0.04] border-dashed animate-[spin_40s_linear_infinite]"></div>
       <div className="absolute inset-10 rounded-full border border-white/[0.02] animate-[spin_30s_linear_infinite_reverse]"></div>
@@ -329,33 +361,40 @@ const HeroSystemAnimation = () => {
   );
 };
 
-// Moving fullLogs outside the component fixes the infinite loop dependency bug
-const bootLogs = [
-  "INITIALIZING CORE SYSTEMS...",
-  "ESTABLISHING SECURE CONNECTION...",
-  "LOADING ARCHITECTURAL SCHEMAS...",
-  "MOUNTING AI LOGIC LAYERS...",
-  "BYPASSING HUMAN BOTTLENECKS...",
-  "SYSTEMS OPTIMAL. ACCESS GRANTED."
-];
-
 // --- COMPONENT: SYSTEM BOOT PRELOADER ---
 const SystemBootLoader = ({ onComplete }) => {
   const [logs, setLogs] = useState([]);
-
+  // Define fullLogs outside or use useMemo if complex, but simple array is fine here if we don't put it in dependency array
+  
   useEffect(() => {
+    const fullLogs = [
+      "INITIALIZING SCRAM-RS CORE...",
+      "ESTABLISHING SECURE CONNECTION...",
+      "LOADING ARCHITECTURAL SCHEMAS...",
+      "MOUNTING AI LOGIC LAYERS...",
+      "BYPASSING HUMAN BOTTLENECKS...",
+      "SYSTEMS OPTIMAL. ACCESS GRANTED."
+    ];
     let currentLog = 0;
+    
+    // We clear logs on mount to ensure a clean start if React strict mode double-invokes
+    setLogs([]);
+
     const interval = setInterval(() => {
-      if (currentLog < bootLogs.length) {
-        setLogs(prev => [...prev, bootLogs[currentLog]]);
+      if (currentLog < fullLogs.length) {
+        // Use functional state update to avoid stale closures
+        setLogs(prev => [...prev, fullLogs[currentLog]]);
         currentLog++;
       } else {
         clearInterval(interval);
         setTimeout(onComplete, 600); 
       }
     }, 250); 
+    
     return () => clearInterval(interval);
-  }, [onComplete]);
+  // Empty dependency array is CRITICAL here so the interval isn't repeatedly destroyed and recreated
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="fixed inset-0 z-[99999] bg-[#020202] flex flex-col justify-end p-12 overflow-hidden animate-out fade-out duration-1000 fill-mode-forwards">
@@ -366,10 +405,11 @@ const SystemBootLoader = ({ onComplete }) => {
         {logs.map((log, i) => (
           <div key={i} className="flex items-center gap-4">
             <span className="text-cyan-800/60">[{(Math.random() * 10000).toFixed(0).padStart(5, '0')}]</span>
-            <span className={i === bootLogs.length - 1 ? "text-white" : "text-neutral-400"}>{log}</span>
+            <span className={i === logs.length - 1 ? "text-white" : "text-neutral-400"}>{log}</span>
           </div>
         ))}
-        {logs.length < bootLogs.length && (
+        {/* Simplified the "waiting" condition so it doesn't rely on the external fullLogs length which was causing issues */}
+        {logs.length < 6 && (
           <div className="flex items-center gap-4 animate-pulse">
             <span className="text-cyan-800/60">[WAIT]</span>
             <span className="text-white">_</span>
@@ -508,7 +548,7 @@ const AuditJourney = ({ isOpen, onClose }) => {
       "> ANALYZING DATA VELOCITY RESPONSES...",
       "> DETECTING 'HUMAN API' BOTTLENECKS...",
       "> CALCULATING OPERATIONAL DEBT...",
-      "> SIMULATING AI-OS INTEGRATION...",
+      "> SIMULATING SCRAM-RS INTEGRATION...",
       "> FINALIZING AUTOMATION PROBABILITY INDEX..."
     ];
     let currentLog = 0;
@@ -532,9 +572,9 @@ const AuditJourney = ({ isOpen, onClose }) => {
     const avgScore = Math.round(values.reduce((acc, curr) => acc + curr.score, 0) / values.length);
     let summary = "";
     if (avgScore > 80) {
-      summary = "CRITICAL: Your business is surviving on human effort, not systems. You are acting as the router for your own company. An AI-OS deployment will immediately reclaim 40%+ of your operational bandwidth and remove you from the day-to-day.";
+      summary = "CRITICAL: Your business is surviving on human effort, not systems. You are acting as the router for your own company. A SCRAM-RS deployment will immediately reclaim 40%+ of your operational bandwidth and remove you from the day-to-day.";
     } else if (avgScore > 50) {
-      summary = "WARNING: Moderate operational drag. Your systems are fragmented. AI integration is required to connect your data silos and automate predictive decision-making before you scale further.";
+      summary = "WARNING: Moderate operational drag. Your systems are fragmented. Scalable architecture is required to connect your data silos and automate predictive decision-making before you hit a plateau.";
     } else {
       summary = "OPTIMAL: High system maturity detected. You have strong automation primitives in place. Further architecture is only required for complex predictive AI layering.";
     }
@@ -547,7 +587,7 @@ const AuditJourney = ({ isOpen, onClose }) => {
 
     setIsSending(true);
 
-    let reportText = `=== AI SYSTEMS ARCHITECT : DIAGNOSTIC REPORT ===\n\n`;
+    let reportText = `=== SCRAM-RS : DIAGNOSTIC REPORT ===\n\n`;
     reportText += `CONTACT INFORMATION\n`;
     reportText += `Name: ${name}\n`;
     reportText += `Email: ${email}\n`;
@@ -569,7 +609,7 @@ const AuditJourney = ({ isOpen, onClose }) => {
           'Authorization': 'Bearer re_av5aMsKt_8TaWYjY3X5ACrt6JaeKkKdXA'
         },
         body: JSON.stringify({
-          from: 'System Architect <onboarding@resend.dev>',
+          from: 'SCRAM-RS Audit <onboarding@resend.dev>',
           to: ['complete.anant@gmail.com'],
           subject: `Audit Request: ${report.potential}% Automation Potential - ${name}`,
           text: reportText
@@ -595,7 +635,7 @@ const AuditJourney = ({ isOpen, onClose }) => {
   return (
     <div className="fixed inset-0 z-[100] flex flex-col justify-center bg-[#050505] animate-in fade-in duration-300 overflow-y-auto">
       <NoiseBackground />
-      <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-white/[0.015] blur-[120px] rounded-full pointer-events-none"></div>
+      <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-white/[0.015] blur-[120px] rounded-full pointer-events-none animate-float"></div>
       <div className="absolute top-0 left-0 w-full h-[2px] bg-white/5 z-30">
         <div 
           className="h-full bg-white transition-all duration-500 ease-out"
@@ -616,7 +656,7 @@ const AuditJourney = ({ isOpen, onClose }) => {
       </div>
 
       <div className="relative z-10 w-full mx-auto px-[3%] flex flex-col items-center py-24 mt-12 md:mt-0">
-        <div className="w-full max-w-3xl flex flex-col items-start text-left">
+        <div className="w-full max-w-4xl flex flex-col items-start text-left">
           {!isAnalyzing && !report && (
             <FadeIn direction="up" duration={500} className="w-full">
               <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8 mb-12">
@@ -673,7 +713,7 @@ const AuditJourney = ({ isOpen, onClose }) => {
                    <div key={i} className="flex items-center gap-4 animate-in slide-in-from-left-4 fade-in duration-200">
                      <span className="text-[10px] text-cyan-800/50">{(Math.random() * 100000).toFixed(0)}</span>
                      <span className="text-white">{log}</span>
-                   </div>
+                 </div>
                  ))}
                  <div className="animate-pulse flex items-center gap-4 mt-4">
                    <span className="text-[10px] text-cyan-800/50">WAIT</span>
@@ -702,7 +742,7 @@ const AuditJourney = ({ isOpen, onClose }) => {
               </div>
               
               <div className="text-[10px] font-mono text-neutral-600 tracking-[0.2em] uppercase mb-4">
-                System Architect Output
+                SCRAM-RS Output
               </div>
               <p className="text-base sm:text-lg text-neutral-300 font-light leading-relaxed mb-10 border-l border-white/10 pl-6">
                 {report.summary}
@@ -736,7 +776,7 @@ const AuditJourney = ({ isOpen, onClose }) => {
                </div>
                <h2 className="text-3xl sm:text-4xl font-light text-white tracking-tight mb-4">Transmission Successful.</h2>
                <p className="text-base text-neutral-400 font-light leading-relaxed mb-10 max-w-lg">
-                 Your diagnostic telemetry has been securely dispatched to the Architect. We will review your systems and contact you shortly.
+                 Your diagnostic telemetry has been securely dispatched to the SCRAM-RS team. We will review your systems and contact you shortly.
                </p>
                <button onClick={onClose} className="text-[10px] sm:text-xs text-black bg-white px-10 py-4 uppercase tracking-[0.2em] font-medium hover:bg-neutral-200 transition-colors interactive-hover rounded-[6px]">
                  <DecodeText text="Return to Main Console" />
@@ -781,7 +821,7 @@ const GradientMeshBackground = () => (
 
 const StripedBackground = () => (
   <div className="absolute inset-0 z-0 pointer-events-none opacity-20">
-    <div className="h-full w-full" style={{ backgroundImage: 'linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px)', backgroundSize: '100px 100%' }}></div>
+    <div className="h-full w-full animate-mesh-pan" style={{ backgroundImage: 'linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px)', backgroundSize: '100px 100%' }}></div>
   </div>
 );
 
@@ -795,7 +835,7 @@ const GlobalNetworkMap = () => {
   ];
 
   return (
-    <div className="relative w-full mx-auto h-[300px] sm:h-[400px] border thin-border bg-[#030303] rounded-[6px] overflow-hidden mt-16">
+    <div className="relative w-full mx-auto h-[300px] sm:h-[400px] border thin-border bg-[#030303] rounded-[6px] overflow-hidden mt-16 transition-transform duration-700 hover:scale-[1.01]">
        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTAgMGg0MHY0MEgwem0yMCAyMGgyMHYyMEgyMHoiIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMiIgZmlsbC1ydWxlPSJldmVub2RkIi8+PC9zdmc+')] [mask-image:radial-gradient(ellipse_at_center,black_40%,transparent_100%)]"></div>
        <div className="absolute top-1/2 left-0 w-full h-[1px] bg-white/[0.02]"></div>
        <div className="absolute top-0 left-1/2 w-[1px] h-full bg-white/[0.02]"></div>
@@ -816,6 +856,12 @@ const GlobalNetworkMap = () => {
 
 // --- ABOUT PAGE COMPONENT ---
 const AboutPage = ({ onOpenAudit }) => {
+  const team = [
+    { name: "Preksha", role: "Chief Executive Officer", desc: "Directing global strategy and client scale. Ensuring every deployed architecture multiplies revenue." },
+    { name: "Anant", role: "Chief Technology Officer", desc: "The core architect. Hardcoding operational truth into custom AI models, middleware, and infrastructure." },
+    { name: "Amit", role: "Chief Operating Officer", desc: "Commanding deployment execution. Mapping chaotic workflows into ruthless, streamlined logic gates." }
+  ];
+
   return (
     <div className="w-full flex flex-col items-center animate-in fade-in duration-1000">
       <section className="relative min-h-[70vh] flex items-center justify-center pt-32 pb-12 w-full">
@@ -832,8 +878,8 @@ const AboutPage = ({ onOpenAudit }) => {
 
           <FadeIn delay={150} direction="up" duration={1200}>
             <h1 className="text-5xl sm:text-6xl md:text-[5.5rem] font-light leading-[1.05] tracking-tight mb-8">
-              <ScrollRevealText>I don't run an agency.</ScrollRevealText><br />
-              <ScrollRevealText revealColor="#777777">I engineer leverage.</ScrollRevealText>
+              <ScrollRevealText>We don't run an agency.</ScrollRevealText><br />
+              <ScrollRevealText revealColor="#777777">We engineer leverage.</ScrollRevealText>
             </h1>
           </FadeIn>
         </div>
@@ -846,7 +892,7 @@ const AboutPage = ({ onOpenAudit }) => {
           <FadeIn className="max-w-4xl mb-32">
             <h2 className="text-2xl sm:text-4xl font-light leading-snug tracking-tight">
               <ScrollRevealText>
-                I spent years inside scaling startups and legacy enterprises. What I saw was universally terrifying: million-dollar operations held together by WhatsApp groups, nested Excel sheets, and sheer human anxiety.
+                We spent years inside scaling startups and legacy enterprises. What we saw was universally terrifying: million-dollar operations held together by WhatsApp groups, nested Excel sheets, and sheer human anxiety.
               </ScrollRevealText>
             </h2>
           </FadeIn>
@@ -858,10 +904,10 @@ const AboutPage = ({ onOpenAudit }) => {
                  <h3 className="text-2xl font-light text-white mb-6 max-w-lg">Founders were breaking under their own success.</h3>
                  <div className="max-w-xl space-y-6">
                    <p className="text-sm sm:text-base text-neutral-400 font-light leading-relaxed">
-                     I realized the industry didn't need more "consultants" offering advice, or "agencies" selling monthly retainers to do manual work. It needed an architect. Someone who could tear down bloated processes and hardcode operational truth into a unified system.
+                     We realized the industry didn't need more "consultants" offering advice, or "agencies" selling monthly retainers to do manual work. It needed architects. Teams who could tear down bloated processes and hardcode operational truth into a unified system.
                    </p>
                    <p className="text-sm sm:text-base text-neutral-400 font-light leading-relaxed">
-                     So I stopped giving advice and started building the infrastructure. I replace human routers with AI decision engines. I turn chaotic, fragile growth into inevitable, systematic scale.
+                     So we stopped giving advice and started building the infrastructure. We replace human routers with AI decision engines. We turn chaotic, fragile growth into inevitable, systematic scale.
                    </p>
                  </div>
                </FadeIn>
@@ -872,9 +918,9 @@ const AboutPage = ({ onOpenAudit }) => {
                  <span className="text-[10px] font-mono text-neutral-600 uppercase tracking-[0.2em] mb-6 block">Rules of Engagement</span>
                  <div className="space-y-8 max-w-xl">
                    {[
-                     { title: "No Retainers", desc: "I build the system, train your team, and exit. You own your infrastructure forever." },
-                     { title: "No Fluff", desc: "I don't do 'strategy mapping sessions'. I do deep system audits and rapid deployment." },
-                     { title: "Zero Delegation", desc: "When you hire me, you get me. Not a junior developer or a generic account manager." }
+                     { title: "No Retainers", desc: "We build the system, train your team, and exit. You own your infrastructure forever." },
+                     { title: "No Fluff", desc: "We don't do 'strategy mapping sessions'. We do deep system audits and rapid deployment." },
+                     { title: "Zero Delegation", desc: "When you hire SCRAM-RS, you get the core team. Not a junior developer or a generic account manager." }
                    ].map((rule, i) => (
                      <div key={i} className="border-l border-white/10 pl-6 group">
                         <h4 className="text-white font-medium text-sm mb-2 group-hover:text-white transition-colors">{rule.title}</h4>
@@ -888,8 +934,43 @@ const AboutPage = ({ onOpenAudit }) => {
         </div>
       </section>
 
-      {/* NEW: Philosophy of Leverage */}
+      {/* NEW: THE TEAM SECTION */}
       <section className="relative w-full py-40 bg-[#030303]">
+         <RevealLine orientation="horizontal" className="absolute top-0 left-0" />
+         <div className="relative z-10 w-full mx-auto px-[3%]">
+            <FadeIn className="mb-24">
+              <span className="text-[10px] font-mono text-neutral-600 uppercase tracking-[0.2em] mb-6 block">The Architects</span>
+              <h2 className="text-3xl sm:text-5xl font-light tracking-tight">
+                <ScrollRevealText>SCRAM-RS Leadership</ScrollRevealText>
+              </h2>
+            </FadeIn>
+            
+            <div className="grid md:grid-cols-3 gap-8">
+              {team.map((member, i) => (
+                <FadeIn key={i} delay={i * 150} direction="up">
+                  <GlowCard className="h-full border thin-border bg-white/[0.01] p-10 flex flex-col group">
+                     <div className="flex items-center gap-4 mb-10">
+                        <div className="w-12 h-12 rounded-full border border-white/10 bg-[#0a0a0a] flex items-center justify-center relative overflow-hidden group-hover:border-cyan-500/50 transition-colors duration-500">
+                          <div className="absolute inset-0 bg-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                          <span className="text-white font-mono text-sm relative z-10">{member.name.charAt(0)}</span>
+                        </div>
+                        <div>
+                          <h4 className="text-white text-lg font-light">{member.name}</h4>
+                          <span className="text-[9px] font-mono text-cyan-500 uppercase tracking-widest">{member.role}</span>
+                        </div>
+                     </div>
+                     <p className="text-neutral-500 font-light text-sm leading-relaxed">
+                        {member.desc}
+                     </p>
+                  </GlowCard>
+                </FadeIn>
+              ))}
+            </div>
+         </div>
+      </section>
+
+      {/* Philosophy of Leverage */}
+      <section className="relative w-full py-40 bg-[#020202]">
          <RevealLine orientation="horizontal" className="absolute top-0 left-0" />
          <div className="relative z-10 w-full mx-auto px-[3%] grid lg:grid-cols-2 gap-24 items-center">
             <div>
@@ -910,7 +991,7 @@ const AboutPage = ({ onOpenAudit }) => {
                  { title: "Bandwidth is finite.", desc: "Every minute a founder spends routing information is a minute not spent acquiring capital." },
                  { title: "Complexity is an enemy.", desc: "We aggressively prune software. If a tool doesn't reduce friction, it gets uninstalled." }
                ].map((item, i) => (
-                 <FadeIn key={i} delay={i * 100} className="border thin-border p-6 bg-white/[0.01] rounded-[6px]">
+                 <FadeIn key={i} delay={i * 100} className="border thin-border p-6 bg-white/[0.01] rounded-[6px] transition-transform duration-500 hover:scale-[1.02]">
                    <h4 className="text-white font-medium text-sm mb-2">{item.title}</h4>
                    <p className="text-neutral-500 font-light text-sm leading-relaxed">{item.desc}</p>
                  </FadeIn>
@@ -919,7 +1000,7 @@ const AboutPage = ({ onOpenAudit }) => {
          </div>
       </section>
 
-      <section className="relative w-full py-40 bg-[#020202]">
+      <section className="relative w-full py-40 bg-[#030303]">
          <RevealLine orientation="horizontal" className="absolute top-0 left-0" />
          <div className="relative z-10 w-full mx-auto px-[3%]">
             <FadeIn className="mb-24">
@@ -947,7 +1028,7 @@ const AboutPage = ({ onOpenAudit }) => {
                 <h3 className="text-2xl font-light text-white mb-4">System Deployment</h3>
                 <div className="text-3xl font-light text-neutral-400 mb-8">Custom <span className="text-sm">/ 10-51 days</span></div>
                 <p className="text-sm text-neutral-500 font-light leading-relaxed mb-8 border-l border-white/10 pl-4 max-w-lg">
-                  I act as your interim CTO of Operations. We build the central database, write the middleware, train the AI logic layers, and deploy the entire system live.
+                  SCRAM-RS acts as your interim CTO of Operations. We build the central database, write the middleware, train the AI logic layers, and deploy the entire system live.
                 </p>
                 <button onClick={onOpenAudit} className="text-[10px] font-mono tracking-widest uppercase text-white hover:text-cyan-400 transition-colors flex items-center gap-3">
                   Request Deployment <ArrowRight className="w-3 h-3" />
@@ -962,6 +1043,35 @@ const AboutPage = ({ onOpenAudit }) => {
 
 // --- DEPLOYMENTS (CASE STUDIES) PAGE COMPONENT ---
 const DeploymentsPage = ({ onOpenAudit }) => {
+  const defaultLogs = [
+    {
+      id: "SYS-089",
+      client: "National Agri-Distribution Network",
+      metrics: ["-80% Manual Tracking", "7 Days to Real-time Reporting", "Zero Lost Inventory"],
+      before: "Operations were spread across 40+ WhatsApp groups and 12 distinct Excel sheets maintained by 8 different regional managers. Executive reporting took 7 days to compile, meaning leadership was always making decisions based on week-old ghost data.",
+      after: "Deployed a centralized, AI-driven ingestion engine. Regional managers now send plain-text WhatsApp messages. The AI instantly parses the NLP, updates the central PostgreSQL database, and reflects live on a custom Next.js executive dashboard.",
+      quote: "For the first time in three years, I know exactly what is in my warehouses right now without having to call seven different people. The system just handles it."
+    },
+    {
+      id: "SYS-104",
+      client: "B2B Logistics & Freight Co.",
+      metrics: ["100% Automated Dispatch", "Founders removed from triage", "42 Days to Deploy"],
+      before: "Founders were acting as high-paid dispatchers. Every exception, delay, or client query had to be manually routed through them because the data lived in a closed legacy ERP system.",
+      after: "Architected a custom middleware layer sitting on top of the legacy ERP. Built a Slack-integrated internal AI Copilot. When ground teams face a delay, they ping the Copilot. It checks the database, autonomously notifies the client via webhook, and updates the ERP.",
+      quote: "We were about to hire 4 more operations managers just to handle email traffic. The AI architecture eliminated that entire hiring requirement in 6 weeks."
+    },
+    {
+      id: "SYS-112",
+      client: "Global E-Commerce Aggregator",
+      metrics: ["Zero Stockouts", "Dynamic Price Routing", "-90% Data Entry"],
+      before: "Inventory matching across 14 different international marketplaces required a team of 6 doing daily manual CSV uploads. Price changes took 48 hours to propagate, leading to massive arbitrage losses.",
+      after: "Built a central node via Supabase and Make.com. AI vision models now scan incoming supplier invoices instantly, updating central inventory. A custom logic engine pushes price syncs to all 14 APIs simultaneously.",
+      quote: "The speed at which we can adjust pricing globally is now our biggest competitive advantage. We literally operate faster than our competitors can refresh their sheets."
+    }
+  ];
+
+  const logs = useSanityData('*[_type == "systemLog"] | order(_createdAt desc)', defaultLogs);
+
   return (
     <div className="w-full flex flex-col items-center animate-in fade-in duration-1000">
       
@@ -1008,7 +1118,7 @@ const DeploymentsPage = ({ onOpenAudit }) => {
               </div>
               <div className="flex flex-wrap gap-4 text-xs font-mono uppercase tracking-widest text-neutral-500">
                  {['Fintech', 'Logistics', 'Agri-Tech', 'E-Commerce', 'B2B SaaS', 'Healthcare'].map((ind, i) => (
-                    <span key={i} className="border thin-border px-4 py-2 rounded-[4px] bg-white/[0.01]">{ind}</span>
+                    <span key={i} className="border thin-border px-4 py-2 rounded-[4px] bg-white/[0.01] hover:bg-white/[0.05] transition-colors">{ind}</span>
                  ))}
               </div>
            </FadeIn>
@@ -1021,32 +1131,7 @@ const DeploymentsPage = ({ onOpenAudit }) => {
         <NoiseBackground />
         <div className="relative z-10 w-full mx-auto px-[3%] space-y-40">
           
-          {[
-            {
-              id: "SYS-089",
-              client: "National Agri-Distribution Network",
-              metrics: ["-80% Manual Tracking", "7 Days to Real-time Reporting", "Zero Lost Inventory"],
-              before: "Operations were spread across 40+ WhatsApp groups and 12 distinct Excel sheets maintained by 8 different regional managers. Executive reporting took 7 days to compile, meaning leadership was always making decisions based on week-old ghost data.",
-              after: "Deployed a centralized, AI-driven ingestion engine. Regional managers now send plain-text WhatsApp messages. The AI instantly parses the NLP, updates the central PostgreSQL database, and reflects live on a custom Next.js executive dashboard.",
-              quote: "For the first time in three years, I know exactly what is in my warehouses right now without having to call seven different people. The system just handles it."
-            },
-            {
-              id: "SYS-104",
-              client: "B2B Logistics & Freight Co.",
-              metrics: ["100% Automated Dispatch", "Founders removed from triage", "42 Days to Deploy"],
-              before: "Founders were acting as high-paid dispatchers. Every exception, delay, or client query had to be manually routed through them because the data lived in a closed legacy ERP system.",
-              after: "Architected a custom middleware layer sitting on top of the legacy ERP. Built a Slack-integrated internal AI Copilot. When ground teams face a delay, they ping the Copilot. It checks the database, autonomously notifies the client via webhook, and updates the ERP.",
-              quote: "We were about to hire 4 more operations managers just to handle email traffic. The AI architecture eliminated that entire hiring requirement in 6 weeks."
-            },
-            {
-              id: "SYS-112",
-              client: "Global E-Commerce Aggregator",
-              metrics: ["Zero Stockouts", "Dynamic Price Routing", "-90% Data Entry"],
-              before: "Inventory matching across 14 different international marketplaces required a team of 6 doing daily manual CSV uploads. Price changes took 48 hours to propagate, leading to massive arbitrage losses.",
-              after: "Built a central node via Supabase and Make.com. AI vision models now scan incoming supplier invoices instantly, updating central inventory. A custom logic engine pushes price syncs to all 14 APIs simultaneously.",
-              quote: "The speed at which we can adjust pricing globally is now our biggest competitive advantage. We literally operate faster than our competitors can refresh their sheets."
-            }
-          ].map((log, i) => (
+          {logs.map((log, i) => (
             <div key={i} className="grid lg:grid-cols-12 gap-16 relative group">
               <RevealLine delay={100} className="absolute -top-16 left-0" />
               
@@ -1108,14 +1193,14 @@ const DeploymentsPage = ({ onOpenAudit }) => {
                  <ScrollRevealText revealColor="#777777">Bad Systems.</ScrollRevealText>
                </h2>
                <p className="text-sm text-neutral-400 font-light leading-relaxed max-w-lg">
-                 A system is only as strong as its weakest link. Over the years, I have systematically ripped out, bypassed, or completely replaced these operational hazards. If your company relies on these for core data truth, you are bleeding bandwidth.
+                 A system is only as strong as its weakest link. Over the years, we have systematically ripped out, bypassed, or completely replaced these operational hazards. If your company relies on these for core data truth, you are bleeding bandwidth.
                </p>
              </FadeIn>
            </div>
            <div className="grid grid-cols-2 gap-4">
               {['VBA Macros', 'Endless Zapier Chains', 'WhatsApp "Official" Groups', 'Paper Invoices', 'Nested Excel Files', 'Legacy On-Prem ERPs'].map((item, i) => (
-                <FadeIn key={i} delay={i * 100} className="border thin-border p-4 bg-white/[0.01] flex items-center gap-3 rounded-[6px]">
-                  <div className="w-1.5 h-1.5 bg-red-500/50 rounded-full"></div>
+                <FadeIn key={i} delay={i * 100} className="border thin-border p-4 bg-white/[0.01] flex items-center gap-3 rounded-[6px] transition-transform duration-500 hover:-translate-y-1">
+                  <div className="w-1.5 h-1.5 bg-red-500/50 rounded-full animate-pulse"></div>
                   <span className="text-xs font-mono text-neutral-500 line-through decoration-red-500/50">{item}</span>
                 </FadeIn>
               ))}
@@ -1153,6 +1238,17 @@ const SignalPage = ({ onOpenAudit }) => {
     return () => clearInterval(interval);
   }, []);
   
+  const defaultPosts = [
+    { date: "SYS_LOG // 001", title: "Why Your New SaaS Subscription Won't Save You.", snippet: "Founders buy software hoping it buys them systems. But software without logic mapping just creates faster chaos. Here is why you must map your business reality before buying another tool." },
+    { date: "SYS_LOG // 002", title: "The Math Behind Human APIs.", snippet: "If a human's job is to read an email, extract a PDF, and type the data into a CRM, they are a Human API. It is the most expensive, error-prone bandwidth leak in scaling companies." },
+    { date: "SYS_LOG // 003", title: "Founders as Routers: The Ultimate Bottleneck.", snippet: "When every critical decision must pass through the founder's WhatsApp, the company's growth ceiling is the founder's sleep schedule. Systematizing exception handling is the only way out." },
+    { date: "SYS_LOG // 004", title: "Data Velocity > Data Quality.", snippet: "A perfectly accurate report delivered 7 days late is ghost data. Operations require telemetry. Here is how to architect instantaneous feedback loops." },
+    { date: "SYS_LOG // 005", title: "The End of the 'Data Entry' Job.", snippet: "With LLMs acting as parsing layers, hiring entry-level staff purely for data formatting is mathematically obsolete. Why routing logic replaces manual input." },
+    { date: "SYS_LOG // 006", title: "Building Defensibility Through Architecture.", snippet: "Your moat isn't your brand; it's your execution speed. Companies with automated operational backends can iterate, ship, and deliver 10x faster than manually heavy competitors." }
+  ];
+
+  const posts = useSanityData('*[_type == "transmission"] | order(_createdAt desc)', defaultPosts);
+
   const handleSubscribe = (e) => {
     e.preventDefault();
     setSubscribed(true);
@@ -1192,7 +1288,7 @@ const SignalPage = ({ onOpenAudit }) => {
       <section className="relative w-full py-20 bg-[#030303]">
         <RevealLine orientation="horizontal" className="absolute top-0 left-0" />
         <div className="relative z-10 w-full mx-auto px-[3%] flex flex-col items-center">
-           <FadeIn className="w-full max-w-4xl border thin-border bg-[#050505] rounded-[6px] overflow-hidden">
+           <FadeIn className="w-full max-w-4xl border thin-border bg-[#050505] rounded-[6px] overflow-hidden transition-transform duration-700 hover:scale-[1.01]">
              <div className="border-b thin-border p-4 bg-[#0a0a0a] flex items-center gap-3">
                 <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
                 <span className="text-[10px] font-mono text-neutral-500 tracking-widest uppercase">Global_Telemetry_Stream</span>
@@ -1216,14 +1312,7 @@ const SignalPage = ({ onOpenAudit }) => {
         <div className="relative z-10 w-full mx-auto px-[3%]">
           
           <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
-            {[
-              { date: "SYS_LOG // 001", title: "Why Your New SaaS Subscription Won't Save You.", snippet: "Founders buy software hoping it buys them systems. But software without logic mapping just creates faster chaos. Here is why you must map your business reality before buying another tool." },
-              { date: "SYS_LOG // 002", title: "The Math Behind Human APIs.", snippet: "If a human's job is to read an email, extract a PDF, and type the data into a CRM, they are a Human API. It is the most expensive, error-prone bandwidth leak in scaling companies." },
-              { date: "SYS_LOG // 003", title: "Founders as Routers: The Ultimate Bottleneck.", snippet: "When every critical decision must pass through the founder's WhatsApp, the company's growth ceiling is the founder's sleep schedule. Systematizing exception handling is the only way out." },
-              { date: "SYS_LOG // 004", title: "Data Velocity > Data Quality.", snippet: "A perfectly accurate report delivered 7 days late is ghost data. Operations require telemetry. Here is how to architect instantaneous feedback loops." },
-              { date: "SYS_LOG // 005", title: "The End of the 'Data Entry' Job.", snippet: "With LLMs acting as parsing layers, hiring entry-level staff purely for data formatting is mathematically obsolete. Why routing logic replaces manual input." },
-              { date: "SYS_LOG // 006", title: "Building Defensibility Through Architecture.", snippet: "Your moat isn't your brand; it's your execution speed. Companies with automated operational backends can iterate, ship, and deliver 10x faster than manually heavy competitors." }
-            ].map((post, i) => (
+            {posts.map((post, i) => (
               <FadeIn key={i} delay={i * 100} direction="up">
                 <GlowCard className="group h-full flex flex-col items-start p-10 border thin-border bg-white/[0.01] hover:bg-white/[0.03] transition-colors interactive-hover cursor-pointer">
                   <div className="text-[9px] font-mono text-neutral-600 uppercase tracking-[0.2em] mb-6 transition-colors group-hover:text-neutral-400">
@@ -1256,8 +1345,8 @@ const SignalPage = ({ onOpenAudit }) => {
              <p className="text-sm text-neutral-400 font-light max-w-lg mb-12">
                No spam. Just highly tactical system architecture blueprints and essays sent directly to your comm channel once a month.
              </p>
-             <form onSubmit={handleSubscribe} className="w-full max-w-md mx-auto border thin-border bg-[#050505] flex p-2 pl-6 items-center rounded-[6px] relative overflow-hidden">
-                <span className="text-cyan-500 font-mono text-xs mr-4">{">"}</span>
+             <form onSubmit={handleSubscribe} className="w-full max-w-md mx-auto border thin-border bg-[#050505] flex p-2 pl-6 items-center rounded-[6px] relative overflow-hidden transition-transform duration-500 hover:scale-[1.02]">
+                <span className="text-cyan-500 font-mono text-xs mr-4 animate-pulse">{">"}</span>
                 <input 
                   type="email" 
                   required
@@ -1334,7 +1423,7 @@ const StackPage = ({ onOpenAudit }) => {
         </div>
       </section>
 
-      {/* NEW: Integration Timeline Component */}
+      {/* Integration Timeline Component */}
       <section className="relative w-full py-20 bg-[#030303]">
         <RevealLine orientation="horizontal" className="absolute top-0 left-0" />
         <div className="relative z-10 w-full px-[3%]">
@@ -1344,7 +1433,7 @@ const StackPage = ({ onOpenAudit }) => {
            </FadeIn>
            <div className="flex flex-col md:flex-row gap-4 w-full">
               {['Phase 1: Foundation (Next.js + Sanity + Vercel)', 'Phase 2: CRM Routing (HubSpot + Tally + n8n)', 'Phase 3: React Modules (Brief Builder + Analyzers)'].map((step, i) => (
-                <FadeIn key={i} delay={i*150} className="flex-1 border thin-border p-6 bg-white/[0.01] rounded-[6px]">
+                <FadeIn key={i} delay={i*150} className="flex-1 border thin-border p-6 bg-white/[0.01] rounded-[6px] transition-transform duration-500 hover:-translate-y-1">
                   <div className="text-[10px] font-mono text-cyan-500 mb-4">0{i+1}</div>
                   <div className="text-sm text-neutral-300 font-light">{step}</div>
                 </FadeIn>
@@ -1395,14 +1484,14 @@ const StackPage = ({ onOpenAudit }) => {
                </p>
                <div className="flex flex-wrap gap-2 mb-8 max-w-lg">
                  {['Tailwind CSS', 'shadcn/ui', 'React Hook Form', 'Zod', 'Framer Motion'].map((tech, i) => (
-                   <span key={i} className="text-[9px] font-mono text-neutral-500 border border-white/10 px-2 py-1 rounded-[4px] bg-white/[0.02]">{tech}</span>
+                   <span key={i} className="text-[9px] font-mono text-neutral-500 border border-white/10 px-2 py-1 rounded-[4px] bg-white/[0.02] transition-colors hover:text-white">{tech}</span>
                  ))}
                </div>
              </FadeIn>
            </div>
            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {internalModules.map((module, i) => (
-                <FadeIn key={i} delay={i * 100} className="border thin-border p-5 bg-white/[0.01] flex items-center gap-4 rounded-[6px]">
+                <FadeIn key={i} delay={i * 100} className="border thin-border p-5 bg-white/[0.01] flex items-center gap-4 rounded-[6px] transition-transform duration-500 hover:-translate-y-1">
                   <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
                   <span className="text-xs font-mono text-neutral-300">{module}</span>
                 </FadeIn>
@@ -1414,100 +1503,95 @@ const StackPage = ({ onOpenAudit }) => {
   );
 };
 
-// --- ANIMATED FOOTER COMPONENT ---
-const AnimatedFooter = ({ setCurrentPage, onOpenAudit }) => {
-  const nodes = Array.from({ length: 40 }).map((_, i) => ({
-    id: i,
-    left: `${Math.random() * 100}%`,
-    top: `${Math.random() * 100}%`,
-    delay: `${Math.random() * 5}s`,
-    duration: `${2 + Math.random() * 4}s`
-  }));
-
+// --- PRE-FOOTER COMPONENT ---
+const PreFooter = ({ onOpenAudit }) => {
   return (
-    <footer className="relative w-full bg-[#050505] overflow-hidden pt-32 pb-12 flex flex-col items-center z-10">
+    <section className="relative w-full py-40 bg-[#050505] border-t thin-border overflow-hidden flex flex-col items-center">
+      <div className="absolute inset-0 pointer-events-none z-0 opacity-20">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-cyan-900/20 blur-[120px] rounded-full animate-pulse-slow"></div>
+      </div>
+      <div className="relative z-10 w-full mx-auto px-[3%] flex flex-col items-center text-center">
+         <FadeIn>
+           <div className="flex items-center justify-center gap-3 mb-8 border border-white/5 rounded-[6px] px-3 py-1 bg-[#111111] w-fit mx-auto interactive-hover">
+             <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+             <span className="text-[9px] font-mono text-neutral-400 uppercase tracking-[0.25em] pt-[1px]">Systems Online</span>
+           </div>
+           <h2 className="text-4xl sm:text-6xl md:text-7xl font-light text-white tracking-tight mb-10 leading-[1.1]">
+             <ScrollRevealText>Ready to fix</ScrollRevealText><br />
+             <ScrollRevealText revealColor="#777777">your operations?</ScrollRevealText>
+           </h2>
+           <button 
+              onClick={onOpenAudit}
+              className="group relative inline-flex items-center justify-center gap-6 text-xs text-black bg-white px-10 py-5 uppercase tracking-[0.2em] font-medium hover:bg-neutral-200 transition-colors interactive-hover rounded-[6px]"
+            >
+              <DecodeText text="Initialize Diagnostics" />
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </button>
+         </FadeIn>
+      </div>
+    </section>
+  );
+};
+
+// --- ANIMATED FOOTER COMPONENT ---
+const AnimatedFooter = ({ setCurrentPage }) => {
+  return (
+    <footer className="relative w-full bg-[#020202] overflow-hidden pt-24 pb-12 flex flex-col items-center z-10 border-t border-white/[0.02]">
       {/* Blend gradient to smoothly melt into the preceding section */}
-      <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-[#020202] to-transparent z-10 pointer-events-none"></div>
+      <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-[#050505] to-transparent z-10 pointer-events-none"></div>
 
       <div className="absolute inset-0 pointer-events-none z-0 opacity-30">
         <div className="absolute top-0 left-0 w-full h-[2px] bg-cyan-500/30 shadow-[0_0_20px_rgba(6,182,212,0.8)] animate-scanline"></div>
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTAgMGg0MHY0MEgwem0yMCAyMGgyMHYyMEgyMHoiIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMSIgZmlsbC1ydWxlPSJldmVub2RkIi8+PC9zdmc+')] [mask-image:linear-gradient(to_bottom,black_10%,transparent_90%)]"></div>
-        {nodes.map(node => (
-          <div 
-            key={node.id}
-            className="absolute w-1 h-1 bg-white rounded-full"
-            style={{ 
-              left: node.left, 
-              top: node.top, 
-              animation: `random-blink ${node.duration} ease-in-out ${node.delay} infinite` 
-            }}
-          />
-        ))}
         <div className="absolute top-[20%] left-0 w-full overflow-hidden opacity-[0.02] select-none flex">
           <div className="animate-marquee whitespace-nowrap text-[15vw] font-black tracking-tighter text-transparent" style={{ WebkitTextStroke: '2px white' }}>
-            SYSTEMS ARCHITECT // ENGINEER LEVERAGE // SYSTEMS ARCHITECT // ENGINEER LEVERAGE // 
+            SCRAM-RS // ENGINEER LEVERAGE // SCRAM-RS // ENGINEER LEVERAGE // 
           </div>
         </div>
       </div>
 
       <div className="relative z-10 w-full mx-auto px-[3%] flex flex-col items-start gap-24">
-        <div className="grid lg:grid-cols-12 gap-16 w-full">
-          <div className="lg:col-span-6 flex flex-col items-start">
-             <div className="flex items-center gap-3 mb-8 border border-white/5 rounded-[6px] px-3 py-1 bg-[#111111] w-fit">
-               <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
-               <span className="text-[9px] font-mono text-neutral-400 uppercase tracking-[0.25em] pt-[1px]">Systems Online</span>
-             </div>
-             <h2 className="text-4xl sm:text-5xl font-light text-white tracking-tight mb-8">
-               <ScrollRevealText>Ready to fix</ScrollRevealText><br />
-               <ScrollRevealText revealColor="#777777">your operations?</ScrollRevealText>
-             </h2>
-             <button 
-                onClick={onOpenAudit}
-                className="group relative inline-flex items-center justify-start gap-6 text-xs text-white uppercase tracking-[0.2em] font-light transition-colors pb-2 overflow-hidden interactive-hover w-fit mt-4"
-              >
-                <span className="relative z-10 group-hover:text-neutral-300 transition-colors duration-500">Initialize Diagnostics</span>
-                <ArrowRight className="w-3 h-3 relative z-10 group-hover:translate-x-2 transition-transform duration-500" />
-                <div className="absolute bottom-0 left-0 w-full h-[1px] bg-white/20"></div>
-                <div className="absolute bottom-0 left-[-100%] w-full h-[1px] bg-white group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out"></div>
-              </button>
+        <div className="grid sm:grid-cols-3 gap-12 w-full max-w-6xl">
+          <div className="flex flex-col gap-6">
+            <div className="text-[10px] font-mono text-neutral-600 uppercase tracking-[0.2em]">Index</div>
+            <ul className="space-y-4">
+              {['Home', 'Deployments', 'Signal', 'About Us', 'The Stack'].map((link, i) => (
+                <li key={i}>
+                  <button 
+                    onClick={() => setCurrentPage(link.toLowerCase().replace(' ', ''))}
+                    className="text-sm font-light text-neutral-400 hover:text-white transition-colors interactive-hover relative group overflow-hidden"
+                  >
+                    <DecodeText text={link} />
+                    <div className="absolute bottom-0 left-0 w-full h-[1px] bg-white translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-500"></div>
+                  </button>
+                </li>
+              ))}
+            </ul>
           </div>
 
-          <div className="lg:col-span-6 grid sm:grid-cols-2 gap-12 w-full">
-            <div className="flex flex-col gap-6">
-              <div className="text-[10px] font-mono text-neutral-600 uppercase tracking-[0.2em]">Index</div>
-              <ul className="space-y-4">
-                {['Home', 'Deployments', 'Signal', 'The Architect', 'The Stack'].map((link, i) => (
-                  <li key={i}>
-                    <button 
-                      onClick={() => setCurrentPage(link.toLowerCase().replace(' ', ''))}
-                      className="text-sm font-light text-neutral-400 hover:text-white transition-colors interactive-hover relative group overflow-hidden"
-                    >
-                      <DecodeText text={link} />
-                      <div className="absolute bottom-0 left-0 w-full h-[1px] bg-white translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-500"></div>
-                    </button>
-                  </li>
-                ))}
-              </ul>
+          <div className="flex flex-col gap-6" itemScope itemType="https://schema.org/DefinedTerm">
+            <div className="text-[10px] font-mono text-neutral-600 uppercase tracking-[0.2em]">Knowledge Base</div>
+            <div className="text-xs text-neutral-500 font-light leading-relaxed border border-white/[0.02] bg-white/[0.01] p-6 rounded-[6px] text-left hover:bg-white/[0.03] transition-colors">
+              <span itemProp="name" className="text-neutral-300 block mb-1">AI Operating System (AI-OS)</span>
+              <span itemProp="description">A centralized architectural framework replacing disjointed manual workflows with unified, AI-driven automation, enabling real-time visibility and structured scale.</span>
             </div>
+          </div>
 
-            <div className="flex flex-col gap-6" itemScope itemType="https://schema.org/DefinedTerm">
-              <div className="text-[10px] font-mono text-neutral-600 uppercase tracking-[0.2em]">Knowledge Base</div>
-              <div className="text-xs text-neutral-500 font-light leading-relaxed border border-white/[0.02] bg-white/[0.01] p-6 rounded-[6px] text-left">
-                <span itemProp="name" className="text-neutral-300 block mb-1">AI Operating System (AI-OS)</span>
-                <span itemProp="description">A centralized architectural framework replacing disjointed manual workflows with unified, AI-driven automation, enabling real-time visibility and structured scale.</span>
-              </div>
-              <div className="mt-4 pt-4 border-t border-white/[0.04]">
-                <div className="text-[9px] font-mono text-neutral-600 uppercase tracking-[0.2em] mb-2">Global Operations</div>
-                <div className="text-xs text-neutral-400 font-light">India // USA // UAE // KSA</div>
-              </div>
+          <div className="flex flex-col gap-6">
+            <div className="text-[10px] font-mono text-neutral-600 uppercase tracking-[0.2em]">Global Operations</div>
+            <div className="text-xs text-neutral-400 font-light space-y-3">
+               <div className="flex items-center gap-3"><Globe2 className="w-4 h-4 text-neutral-600"/> India</div>
+               <div className="flex items-center gap-3"><Globe2 className="w-4 h-4 text-neutral-600"/> USA</div>
+               <div className="flex items-center gap-3"><Globe2 className="w-4 h-4 text-neutral-600"/> UAE</div>
+               <div className="flex items-center gap-3"><Globe2 className="w-4 h-4 text-neutral-600"/> KSA</div>
             </div>
           </div>
         </div>
 
-        <div className="w-full flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 text-[10px] font-mono text-neutral-600 uppercase tracking-widest">
+        <div className="w-full pt-8 border-t border-white/[0.04] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 text-[10px] font-mono text-neutral-600 uppercase tracking-widest">
            <div className="flex items-center gap-4">
              <Command className="w-3 h-3" />
-             <span>© {new Date().getFullYear()} AI Systems Architect</span>
+             <span>© {new Date().getFullYear()} SCRAM-RS</span>
            </div>
            
            <div className="flex items-center gap-8">
@@ -1589,13 +1673,19 @@ export default function App() {
         
         @keyframes aurora-wave { 0%, 100% { transform: rotate(0deg) scale(1); opacity: 0.3; } 50% { transform: rotate(3deg) scale(1.2); opacity: 0.5; } }
         .animate-aurora { animation: aurora-wave 12s ease-in-out infinite; transform-origin: center bottom; }
+
+        @keyframes float {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-10px); }
+        }
+        .animate-float { animation: float 6s ease-in-out infinite; }
       `}} />
 
       {/* MOBILE MENU OVERLAY */}
       <div className={`fixed inset-0 z-[40] bg-[#050505]/95 backdrop-blur-3xl flex flex-col justify-center items-center transition-all duration-500 ease-in-out ${isMobileMenuOpen ? 'opacity-100 pointer-events-auto translate-y-0' : 'opacity-0 pointer-events-none -translate-y-10'}`}>
          <NoiseBackground />
          <div className="flex flex-col items-center gap-10 z-10">
-            {['Home', 'Deployments', 'Signal', 'The Architect', 'The Stack'].map((link, i) => (
+            {['Home', 'Deployments', 'Signal', 'About Us', 'The Stack'].map((link, i) => (
               <button 
                 key={i}
                 onClick={() => setCurrentPage(link.toLowerCase().replace(' ', ''))}
@@ -1615,8 +1705,7 @@ export default function App() {
             className="text-white text-[11px] font-medium tracking-[0.2em] uppercase flex items-center gap-3 group interactive-hover cursor-none z-50"
           >
             <Command className="w-4 h-4 text-neutral-500 group-hover:rotate-90 transition-transform duration-500" />
-            <DecodeText text="SYSTEMS" className="hidden sm:inline-block" />
-            <span className="text-neutral-600 font-light transition-colors group-hover:text-neutral-400 hidden sm:inline-block">ARCHITECT</span>
+            <DecodeText text="SCRAM-RS" className="hidden sm:inline-block" />
           </div>
           
           <div className="flex items-center gap-4 sm:gap-8 z-50">
@@ -1641,10 +1730,10 @@ export default function App() {
                   <DecodeText text="Signal" />
                </button>
                <button 
-                 onClick={() => setCurrentPage('thearchitect')} 
-                 className={`text-[9px] font-medium transition-colors tracking-[0.2em] uppercase interactive-hover ${currentPage === 'thearchitect' ? 'text-white' : 'text-neutral-600 hover:text-white'}`}
+                 onClick={() => setCurrentPage('aboutus')} 
+                 className={`text-[9px] font-medium transition-colors tracking-[0.2em] uppercase interactive-hover ${currentPage === 'aboutus' ? 'text-white' : 'text-neutral-600 hover:text-white'}`}
                >
-                  <DecodeText text="The Architect" />
+                  <DecodeText text="About Us" />
                </button>
                <button 
                  onClick={() => setCurrentPage('thestack')} 
@@ -1689,7 +1778,7 @@ export default function App() {
                     <div className="max-w-3xl lg:w-3/5 flex flex-col items-start">
                       <FadeIn direction="up">
                         <div className="flex items-center gap-3 mb-10 border border-white/5 rounded-[6px] px-3 py-1 bg-[#111111] w-fit interactive-hover">
-                          <span className="w-1 h-1 rounded-full bg-white/80"></span>
+                          <span className="w-1 h-1 rounded-full bg-white/80 animate-pulse"></span>
                           <span className="text-[8px] font-mono text-neutral-400 uppercase tracking-[0.3em] pt-[1px] cursor-default">
                             <DecodeText text="Ready for Deployment" />
                           </span>
@@ -1709,7 +1798,7 @@ export default function App() {
 
                       <FadeIn delay={300} direction="up" className="max-w-xl">
                         <ScrollRevealText as="p" className="text-sm sm:text-[15px] leading-relaxed font-light mb-14" baseColor="#333333" revealColor="#aaaaaa">
-                          <span itemProp="description">I rebuild operations into AI-powered systems that eliminate manual work, fix workflows, and scale execution — in 10 to 51 days.</span>
+                          <span itemProp="description">We rebuild operations into AI-powered systems that eliminate manual work, fix workflows, and scale execution — in 10 to 51 days.</span>
                         </ScrollRevealText>
                       </FadeIn>
 
@@ -1756,7 +1845,7 @@ export default function App() {
                          { step: "02", title: "The Fragmentation", desc: "You buy 10 different SaaS tools to fix the manual work. None of them talk to each other. The 'Human Glue' now spends their entire day copy-pasting between systems." },
                          { step: "03", title: "Founder as Router", desc: "Exceptions rise. Edge cases break the Zapier flows. Every critical decision is now routed back to the founder's WhatsApp. Scale halts entirely." }
                        ].map((item, i) => (
-                         <FadeIn key={i} delay={i*150} className="border thin-border p-8 bg-white/[0.01] rounded-[6px]">
+                         <FadeIn key={i} delay={i*150} className="border thin-border p-8 bg-white/[0.01] rounded-[6px] transition-transform duration-500 hover:-translate-y-2">
                             <div className="text-[10px] font-mono text-cyan-500 mb-6">{item.step}</div>
                             <h3 className="text-lg font-light text-white mb-4">{item.title}</h3>
                             <p className="text-xs text-neutral-500 leading-relaxed font-light">{item.desc}</p>
@@ -1774,7 +1863,7 @@ export default function App() {
                   <FadeIn>
                     <h2 className="text-2xl sm:text-4xl font-light mb-32 leading-snug max-w-2xl tracking-tight">
                       <ScrollRevealText>
-                        Most businesses don't fail because of lack of effort. They fail because of broken systems.
+                        Successful businesses don't hit a wall due to a lack of effort. They plateau because of fragile systems.
                       </ScrollRevealText>
                     </h2>
                   </FadeIn>
@@ -1791,7 +1880,7 @@ export default function App() {
                         <FadeIn delay={i * 150} direction="up">
                           <div className="flex flex-col gap-4">
                             <h3 className="font-light text-base tracking-wide flex items-center gap-3">
-                              <span className="w-1.5 h-1.5 rounded-full bg-neutral-800 group-hover:bg-white transition-colors duration-500"></span>
+                              <span className="w-1.5 h-1.5 rounded-full bg-neutral-800 group-hover:bg-cyan-500 transition-colors duration-500"></span>
                               <ScrollRevealText revealColor="#ffffff">{item.title}</ScrollRevealText>
                             </h3>
                             <ScrollRevealText as="p" className="text-xs sm:text-sm leading-relaxed font-light pl-4.5" revealColor="#a3a3a3">
@@ -1806,7 +1895,7 @@ export default function App() {
                   <FadeIn delay={400} className="mt-40 border-l border-white/10 pl-6 max-w-2xl">
                     <ScrollRevealText as="p" className="text-sm font-light tracking-wide" revealColor="#ffffff" baseColor="#333333">
                       This is not a people problem.<br/>
-                      This is a system failure.
+                      This is a system bottleneck.
                     </ScrollRevealText>
                   </FadeIn>
                 </div>
@@ -1834,7 +1923,7 @@ export default function App() {
                         { stat: "7 Days", text: "is the average delay for executive reporting in un-systematized companies." },
                         { stat: "100%", text: "of manual follow-ups will eventually drop at scale. Human error is inevitable." }
                       ].map((item, i) => (
-                        <FadeIn key={i} delay={i * 100} className="border thin-border p-6 bg-white/[0.01] flex items-center gap-6 rounded-[6px]">
+                        <FadeIn key={i} delay={i * 100} className="border thin-border p-6 bg-white/[0.01] flex items-center gap-6 rounded-[6px] transition-transform duration-500 hover:translate-x-2">
                           <div className="text-3xl font-light text-white w-24 shrink-0">{item.stat}</div>
                           <div className="w-[1px] h-8 bg-neutral-800"></div>
                           <span className="text-xs sm:text-sm text-neutral-400 font-light leading-relaxed">{item.text}</span>
@@ -1871,9 +1960,9 @@ export default function App() {
                     ].map((shift, i) => (
                       <div key={i} className="relative group">
                         <RevealLine delay={i * 100} className="absolute top-0 left-0" />
-                        <FadeIn delay={i * 150} direction="right" className="flex flex-col sm:flex-row sm:items-center justify-between py-8 transition-transform duration-500 hover:translate-x-2">
+                        <FadeIn delay={i * 150} direction="right" className="flex flex-col sm:flex-row sm:items-center justify-between py-8 transition-transform duration-500 hover:translate-x-4">
                           <ScrollRevealText as="span" className="line-through decoration-neutral-800 text-sm font-light mb-2 sm:mb-0" revealColor="#777777" baseColor="#222222">{shift[0]}</ScrollRevealText>
-                          <ArrowRight className="w-3 h-3 text-neutral-800 hidden sm:block group-hover:text-white transition-colors duration-500" />
+                          <ArrowRight className="w-3 h-3 text-cyan-500 hidden sm:block opacity-0 group-hover:opacity-100 transition-all duration-500 -translate-x-4 group-hover:translate-x-0" />
                           <ScrollRevealText as="span" className="font-light text-sm" revealColor="#ffffff">{shift[1]}</ScrollRevealText>
                         </FadeIn>
                       </div>
@@ -1938,8 +2027,8 @@ export default function App() {
                       ].map((LayerItem, i) => {
                         const Icon = LayerItem.icon;
                         return (
-                          <FadeIn key={i} delay={i*100} className="border thin-border p-8 bg-white/[0.01] rounded-[6px] h-full flex flex-col">
-                             <Icon className="w-6 h-6 text-neutral-500 mb-8" />
+                          <FadeIn key={i} delay={i*100} className="border thin-border p-8 bg-white/[0.01] rounded-[6px] h-full flex flex-col group transition-transform duration-500 hover:-translate-y-2">
+                             <Icon className="w-6 h-6 text-neutral-500 mb-8 group-hover:text-cyan-500 transition-colors duration-500" />
                              <h3 className="text-white font-medium text-sm mb-4">{LayerItem.name}</h3>
                              <p className="text-neutral-500 font-light text-sm leading-relaxed mt-auto">{LayerItem.desc}</p>
                           </FadeIn>
@@ -1957,7 +2046,7 @@ export default function App() {
                       <DecodeText text="Methodology" />
                     </span>
                     <h2 className="text-3xl sm:text-5xl font-light tracking-tight">
-                      <ScrollRevealText>I Build AI Operating Systems</ScrollRevealText>
+                      <ScrollRevealText>We Build AI Operating Systems</ScrollRevealText>
                     </h2>
                   </FadeIn>
 
@@ -2014,7 +2103,7 @@ export default function App() {
                         { day: "Day 36–51", title: "Deployment", desc: "System goes live. Team training. Rapid optimization based on real usage." }
                       ].map((phase, i) => (
                         <FadeIn key={i} delay={i * 200 + 300} direction="left" className="relative pl-10 group">
-                          <div className="absolute left-[-1px] top-1.5 w-2 h-2 rounded-full bg-[#050505] border border-neutral-700 group-hover:border-white group-hover:scale-150 transition-all duration-500"></div>
+                          <div className="absolute left-[-1px] top-1.5 w-2 h-2 rounded-full bg-[#050505] border border-neutral-700 group-hover:border-cyan-500 group-hover:scale-150 transition-all duration-500"></div>
                           <div className="text-[10px] font-mono text-neutral-600 tracking-widest uppercase mb-3">{phase.day}</div>
                           <h3 className="text-sm font-light tracking-wide mb-2">
                             <ScrollRevealText revealColor="#ffffff">{phase.title}</ScrollRevealText>
@@ -2031,12 +2120,13 @@ export default function App() {
             </>
           )}
 
-          {currentPage === 'thearchitect' && <AboutPage onOpenAudit={() => setIsAuditOpen(true)} />}
+          {currentPage === 'aboutus' && <AboutPage onOpenAudit={() => setIsAuditOpen(true)} />}
           {currentPage === 'deployments' && <DeploymentsPage onOpenAudit={() => setIsAuditOpen(true)} />}
           {currentPage === 'signal' && <SignalPage onOpenAudit={() => setIsAuditOpen(true)} />}
           {currentPage === 'thestack' && <StackPage onOpenAudit={() => setIsAuditOpen(true)} />}
           
-          <AnimatedFooter setCurrentPage={setCurrentPage} onOpenAudit={() => setIsAuditOpen(true)} />
+          <PreFooter onOpenAudit={() => setIsAuditOpen(true)} />
+          <AnimatedFooter setCurrentPage={setCurrentPage} />
           
         </main>
       </div>
