@@ -610,7 +610,7 @@ const AuditJourney = ({ isOpen, onClose }) => {
         },
         body: JSON.stringify({
           from: 'SCRAM-RS Audit <onboarding@resend.dev>',
-          to: ['complete.anant@gmail.com'],
+          to: ['hi@scram-rs.com'],
           subject: `Audit Request: ${report.potential}% Automation Potential - ${name}`,
           text: reportText
         })
@@ -1506,20 +1506,23 @@ const StackPage = ({ onOpenAudit }) => {
 // --- PRE-FOOTER COMPONENT ---
 const PreFooter = ({ onOpenAudit }) => {
   return (
-    <section className="relative w-full py-40 bg-[#050505] border-t thin-border overflow-hidden flex flex-col items-center">
+    <section className="relative w-full py-40 bg-[#050505] border-t thin-border overflow-hidden flex flex-col items-center px-[3%]">
       <div className="absolute inset-0 pointer-events-none z-0 opacity-20">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-cyan-900/20 blur-[120px] rounded-full animate-pulse-slow"></div>
       </div>
-      <div className="relative z-10 w-full mx-auto px-[3%] flex flex-col items-center text-center">
+      <div className="relative z-10 w-full max-w-5xl mx-auto flex flex-col items-center text-center">
          <FadeIn>
            <div className="flex items-center justify-center gap-3 mb-8 border border-white/5 rounded-[6px] px-3 py-1 bg-[#111111] w-fit mx-auto interactive-hover">
              <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
              <span className="text-[9px] font-mono text-neutral-400 uppercase tracking-[0.25em] pt-[1px]">Systems Online</span>
            </div>
-           <h2 className="text-4xl sm:text-6xl md:text-7xl font-light text-white tracking-tight mb-10 leading-[1.1]">
-             <ScrollRevealText>Ready to fix</ScrollRevealText><br />
-             <ScrollRevealText revealColor="#777777">your operations?</ScrollRevealText>
+           <h2 className="text-4xl sm:text-6xl md:text-7xl font-light text-white tracking-tight mb-8 leading-[1.1]">
+             <ScrollRevealText>Ready to engineer</ScrollRevealText><br />
+             <ScrollRevealText revealColor="#777777">absolute leverage?</ScrollRevealText>
            </h2>
+           <p className="text-neutral-400 font-light text-sm sm:text-base mb-12 max-w-xl mx-auto">
+             Stop scaling your payroll to match your revenue. Build an architecture that handles 10x volume without breaking.
+           </p>
            <button 
               onClick={onOpenAudit}
               className="group relative inline-flex items-center justify-center gap-6 text-xs text-black bg-white px-10 py-5 uppercase tracking-[0.2em] font-medium hover:bg-neutral-200 transition-colors interactive-hover rounded-[6px]"
@@ -1536,7 +1539,7 @@ const PreFooter = ({ onOpenAudit }) => {
 // --- ANIMATED FOOTER COMPONENT ---
 const AnimatedFooter = ({ setCurrentPage }) => {
   return (
-    <footer className="relative w-full bg-[#020202] overflow-hidden pt-24 pb-12 flex flex-col items-center z-10 border-t border-white/[0.02]">
+    <footer className="relative w-full bg-[#020202] overflow-hidden pt-32 pb-12 flex flex-col items-center z-10 border-t border-white/[0.02]">
       {/* Blend gradient to smoothly melt into the preceding section */}
       <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-[#050505] to-transparent z-10 pointer-events-none"></div>
 
@@ -1550,8 +1553,25 @@ const AnimatedFooter = ({ setCurrentPage }) => {
         </div>
       </div>
 
-      <div className="relative z-10 w-full mx-auto px-[3%] flex flex-col items-start gap-24">
-        <div className="grid sm:grid-cols-3 gap-12 w-full max-w-6xl">
+      <div className="relative z-10 w-full px-[3%] flex flex-col items-start gap-24">
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 w-full">
+          
+          {/* Brand Col */}
+          <div className="flex flex-col items-start gap-6">
+             <div className="flex items-center gap-3 text-white text-xs font-medium tracking-[0.2em] uppercase cursor-default">
+                <Command className="w-5 h-5 text-cyan-500" />
+                <DecodeText text="SCRAM-RS" />
+             </div>
+             <p className="text-xs text-neutral-500 font-light leading-relaxed max-w-xs">
+                We turn messy, manual businesses into AI-powered operating systems. Your business is not broken. Your system is.
+             </p>
+             <a href="mailto:hi@scram-rs.com" className="text-xs font-mono text-neutral-400 hover:text-white transition-colors interactive-hover border border-white/10 px-4 py-2 bg-white/[0.02] rounded-[4px] flex items-center gap-2 mt-4 w-fit">
+                <Terminal className="w-3 h-3"/> hi@scram-rs.com
+             </a>
+          </div>
+
+          {/* Index Col */}
           <div className="flex flex-col gap-6">
             <div className="text-[10px] font-mono text-neutral-600 uppercase tracking-[0.2em]">Index</div>
             <ul className="space-y-4">
@@ -1569,35 +1589,40 @@ const AnimatedFooter = ({ setCurrentPage }) => {
             </ul>
           </div>
 
-          <div className="flex flex-col gap-6" itemScope itemType="https://schema.org/DefinedTerm">
-            <div className="text-[10px] font-mono text-neutral-600 uppercase tracking-[0.2em]">Knowledge Base</div>
-            <div className="text-xs text-neutral-500 font-light leading-relaxed border border-white/[0.02] bg-white/[0.01] p-6 rounded-[6px] text-left hover:bg-white/[0.03] transition-colors">
-              <span itemProp="name" className="text-neutral-300 block mb-1">AI Operating System (AI-OS)</span>
-              <span itemProp="description">A centralized architectural framework replacing disjointed manual workflows with unified, AI-driven automation, enabling real-time visibility and structured scale.</span>
+          {/* Capabilities Col */}
+          <div className="flex flex-col gap-6">
+            <div className="text-[10px] font-mono text-neutral-600 uppercase tracking-[0.2em]">Core Capabilities</div>
+            <ul className="space-y-4 text-sm font-light text-neutral-500">
+              <li className="hover:text-neutral-300 transition-colors cursor-default">Architectural Audits</li>
+              <li className="hover:text-neutral-300 transition-colors cursor-default">Data Ingestion Pipelines</li>
+              <li className="hover:text-neutral-300 transition-colors cursor-default">Middleware Logic & Routing</li>
+              <li className="hover:text-neutral-300 transition-colors cursor-default">AI Decision Engines</li>
+              <li className="hover:text-neutral-300 transition-colors cursor-default">Live Executive Dashboards</li>
+            </ul>
+          </div>
+
+          {/* Ops Col */}
+          <div className="flex flex-col gap-6">
+            <div className="text-[10px] font-mono text-neutral-600 uppercase tracking-[0.2em]">Global Nodes</div>
+            <div className="text-xs text-neutral-400 font-light space-y-4">
+               <div className="flex items-center gap-3"><Globe2 className="w-4 h-4 text-neutral-600"/> Pune, India</div>
+               <div className="flex items-center gap-3"><Globe2 className="w-4 h-4 text-neutral-600"/> New York, USA</div>
+               <div className="flex items-center gap-3"><Globe2 className="w-4 h-4 text-neutral-600"/> Dubai, UAE</div>
+               <div className="flex items-center gap-3"><Globe2 className="w-4 h-4 text-neutral-600"/> Riyadh, KSA</div>
             </div>
           </div>
 
-          <div className="flex flex-col gap-6">
-            <div className="text-[10px] font-mono text-neutral-600 uppercase tracking-[0.2em]">Global Operations</div>
-            <div className="text-xs text-neutral-400 font-light space-y-3">
-               <div className="flex items-center gap-3"><Globe2 className="w-4 h-4 text-neutral-600"/> India</div>
-               <div className="flex items-center gap-3"><Globe2 className="w-4 h-4 text-neutral-600"/> USA</div>
-               <div className="flex items-center gap-3"><Globe2 className="w-4 h-4 text-neutral-600"/> UAE</div>
-               <div className="flex items-center gap-3"><Globe2 className="w-4 h-4 text-neutral-600"/> KSA</div>
-            </div>
-          </div>
         </div>
 
+        {/* Bottom Bar */}
         <div className="w-full pt-8 border-t border-white/[0.04] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 text-[10px] font-mono text-neutral-600 uppercase tracking-widest">
            <div className="flex items-center gap-4">
              <Command className="w-3 h-3" />
-             <span>© {new Date().getFullYear()} SCRAM-RS</span>
+             <span>© {new Date().getFullYear()} SCRAM-RS AGENCY</span>
            </div>
            
            <div className="flex items-center gap-8">
-             <a href="#" className="hover:text-neutral-300 transition-colors interactive-hover"><DecodeText text="LinkedIn" /></a>
-             <a href="#" className="hover:text-neutral-300 transition-colors interactive-hover"><DecodeText text="Twitter" /></a>
-             <a href="mailto:complete.anant@gmail.com" className="hover:text-white transition-colors interactive-hover">complete.anant@gmail.com</a>
+             <span className="cursor-default">System Logic Prevails.</span>
            </div>
         </div>
       </div>
